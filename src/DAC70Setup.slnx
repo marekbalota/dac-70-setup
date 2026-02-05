@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="DAC70Setup.BL/DAC70Setup.BL.csproj" Id="731c6249-0f45-4702-aa8a-7b472da84c17" />
+  <Project Path="DAC70Setup/DAC70Setup.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+</Solution>
