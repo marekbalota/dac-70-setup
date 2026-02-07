@@ -65,4 +65,8 @@
 	  <ProjectReference Include="..\DAC70Setup.BL\DAC70Setup.BL.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Resources\Fonts\" />
+	</ItemGroup>
+
 </Project>

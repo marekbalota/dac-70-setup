@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:local="clr-namespace:DAC70Setup.BL.Features.ConfigurationsLanding"
+            xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
+            xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
+            xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+            android:TabbedPage.ToolbarPlacement="Bottom"
+            x:Class="DAC70Setup.BL.Features.ConfigurationsLanding.ConfigurationsLandingPage"
+            x:DataType="local:ConfigurationsLandingPageViewModel"
+            Title="{localization:Translate ConfigurationsLandingTitle}">
+
+    <TabbedPage.ToolbarItems>
+        <ToolbarItem Order="Primary" Priority="0" Command="{Binding ApplicationCommands.SelectCommand}">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.SquareCheck}" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+
+        <ToolbarItem Order="Primary" Priority="1" Command="{Binding ApplicationCommands.RemoveCommand}">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.SquareMinus}" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+
+        <ToolbarItem Order="Primary" Priority="2" Command="{Binding ApplicationCommands.AddCommand}">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.SquarePlus}" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+    </TabbedPage.ToolbarItems>
+</TabbedPage>

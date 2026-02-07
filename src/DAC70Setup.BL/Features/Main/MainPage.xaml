@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<FlyoutPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:models="clr-namespace:DAC70Setup.BL.Models"
+            xmlns:local="clr-namespace:DAC70Setup.BL.Features.Main"
+            xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
+            x:Class="DAC70Setup.BL.Features.Main.MainPage"
+            x:DataType="local:MainPageViewModel"
+            Title="MainPage">
+    <FlyoutPage.Flyout>
+        <ContentPage Title="Menu">
+            <StackLayout>
+                <StackLayout Padding="20" Margin="0" Spacing="5" BackgroundColor="Gray">
+                    <Label Text="DAC-70 Setup" FontSize="Title"/>
+                </StackLayout>
+
+                <CollectionView ItemsSource="{Binding NavigationItems, Mode=OneTime}" Margin="0" SelectionMode="Single" SelectionChangedCommand="{Binding ItemSelectedCommand, Mode=OneTime}" SelectedItem="{Binding SelectedItem}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:FlyoutNavigationItem">
+                            <HorizontalStackLayout>
+                                <Label FontFamily="FA-S" Text="{Binding Icon, Mode=OneTime}" VerticalOptions="Center" Margin="5,0,0,0" WidthRequest="45" MinimumWidthRequest="45" VerticalTextAlignment="Center" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+                                <StackLayout Margin="0,5,10,5" Spacing ="2">
+                                    <Label Text="{localization:TranslateBinding NameKey, TranslateValue=True}" FontAttributes="Bold"  HorizontalOptions="Start" HorizontalTextAlignment="Start" FontSize="Subtitle"/>
+                                    <Label Text="{localization:TranslateBinding DescriptionKey, TranslateValue=True}"  HorizontalOptions="Start" HorizontalTextAlignment="Start" FontSize="Micro"/>
+                                </StackLayout>
+                            </HorizontalStackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+        </ContentPage>
+    </FlyoutPage.Flyout>
+</FlyoutPage>

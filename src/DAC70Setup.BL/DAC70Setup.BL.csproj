@@ -17,7 +17,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<MauiFont Include="Resources\Fonts\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="14.0.0" />
+		<PackageReference Include="LocalizationResourceManager.Maui" Version="1.2.2" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.31" />
 		<PackageReference Include="Prism.DryIoc.Maui" Version="9.0.537" />
 		<PackageReference Include="Prism.Maui" Version="9.0.537" />
@@ -28,6 +33,39 @@
 	  <Folder Include="Platforms\iOS\" />
 	  <Folder Include="Platforms\MacCatalyst\" />
 	  <Folder Include="Platforms\Windows\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Features\ConfigurationsLanding\Resources\ConfigurationsLandingPageSR.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ConfigurationsLandingPageSR.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Features\Main\Resources\MainPageSR.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>MainPageSR.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\GeneralSR.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>GeneralSR.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Features\ConfigurationsLanding\Resources\ConfigurationsLandingPageSR.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ConfigurationsLandingPageSR.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Features\Main\Resources\MainPageSR.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>MainPageSR.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\GeneralSR.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>GeneralSR.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 </Project>
