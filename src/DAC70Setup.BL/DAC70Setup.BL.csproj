@@ -29,6 +29,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Features\Configurations\Commands\" />
 	  <Folder Include="Platforms\Android\" />
 	  <Folder Include="Platforms\iOS\" />
 	  <Folder Include="Platforms\MacCatalyst\" />
@@ -41,10 +42,25 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>ConfigurationsLandingPageSR.resx</DependentUpon>
 	  </Compile>
+	  <Compile Update="Features\Configurations\Resources\ConfigurationsPageSR.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ConfigurationsPageSR.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Features\EditConfiguration\Resources\EditConfigurationPageSR.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>EditConfigurationPageSR.resx</DependentUpon>
+	  </Compile>
 	  <Compile Update="Features\Main\Resources\MainPageSR.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>MainPageSR.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Features\SelectedConfiguration\Resources\SelectedConfigurationPageSR.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>SelectedConfigurationPageSR.resx</DependentUpon>
 	  </Compile>
 	  <Compile Update="Resources\GeneralSR.Designer.cs">
 	    <DesignTime>True</DesignTime>
@@ -58,9 +74,21 @@
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	    <LastGenOutput>ConfigurationsLandingPageSR.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
+	  <EmbeddedResource Update="Features\Configurations\Resources\ConfigurationsPageSR.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ConfigurationsPageSR.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Features\EditConfiguration\Resources\EditConfigurationPageSR.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>EditConfigurationPageSR.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	  <EmbeddedResource Update="Features\Main\Resources\MainPageSR.resx">
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	    <LastGenOutput>MainPageSR.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Features\SelectedConfiguration\Resources\SelectedConfigurationPageSR.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>SelectedConfigurationPageSR.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	  <EmbeddedResource Update="Resources\GeneralSR.resx">
 	    <Generator>PublicResXFileCodeGenerator</Generator>

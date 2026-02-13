@@ -1,9 +1,16 @@
 ﻿using CommunityToolkit.Maui;
+using DAC70Setup.BL.Features.Configurations;
+using DAC70Setup.BL.Features.Configurations.Resources;
 using DAC70Setup.BL.Features.ConfigurationsLanding;
 using DAC70Setup.BL.Features.ConfigurationsLanding.Resources;
+using DAC70Setup.BL.Features.EditConfiguration;
+using DAC70Setup.BL.Features.EditConfiguration.Resources;
 using DAC70Setup.BL.Features.Main;
 using DAC70Setup.BL.Features.Main.Resources;
+using DAC70Setup.BL.Features.SelectedConfiguration;
+using DAC70Setup.BL.Features.SelectedConfiguration.Resources;
 using DAC70Setup.BL.Features.Settings;
+using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Resources;
 using DAC70Setup.BL.Services.Commands;
 using DAC70Setup.BL.Services.Navigation;
@@ -28,6 +35,9 @@ namespace DAC70Setup
                     localization.AddResource(GeneralSR.ResourceManager);
                     localization.AddResource(MainPageSR.ResourceManager);
                     localization.AddResource(ConfigurationsLandingPageSR.ResourceManager);
+                    localization.AddResource(SelectedConfigurationPageSR.ResourceManager);
+                    localization.AddResource(EditConfigurationPageSR.ResourceManager);
+                    localization.AddResource(ConfigurationsPageSR.ResourceManager);
                     localization.RestoreLatestCulture(true);
                 })
                 .UsePrism(prism =>
@@ -49,12 +59,16 @@ namespace DAC70Setup
 
             containerRegistry.RegisterSingleton<INavigationUri, NavigationUri>();
             containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
+            containerRegistry.RegisterSingleton<DataModel>();
         }
 
         private static void RegisterNavigation(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
             containerRegistry.RegisterForNavigation<ConfigurationsLandingPage, ConfigurationsLandingPageViewModel>();
+            containerRegistry.RegisterForNavigation<SelectedConfigurationPage, SelectedConfigurationPageViewModel>();
+            containerRegistry.RegisterForNavigation<EditConfigurationPage, EditConfigurationPageViewModel>();
+            containerRegistry.RegisterForNavigation<ConfigurationsPage, ConfigurationsPageViewModel>();
             containerRegistry.RegisterForNavigation<SettingsPage, SettingsPageViewModel>();
         }
 

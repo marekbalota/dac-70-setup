@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local ="clr-namespace:DAC70Setup.BL.Features.Configurations"
+             xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
+             xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
+             x:Class="DAC70Setup.BL.Features.Configurations.ConfigurationsPage"
+             x:DataType="local:ConfigurationsPageViewModel"
+             Title="{localization:Translate ConfigurationsTitle}">
+
+    <ContentPage.IconImageSource>
+        <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Toolbox}"/>
+    </ContentPage.IconImageSource>
+
+    <CollectionView ItemsSource="{Binding Model.Configurations}" SelectedItem="{Binding SelectedConfiguration}" SelectionMode="Single">
+        <CollectionView.EmptyView>
+            <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                <Label Text="{localization:Translate NoExistingConfiguration}"/>
+                <Button HorizontalOptions="Center"/>
+            </StackLayout>
+        </CollectionView.EmptyView>
+        
+        <CollectionView.ItemTemplate>
+            <DataTemplate>
+                
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+</ContentPage>

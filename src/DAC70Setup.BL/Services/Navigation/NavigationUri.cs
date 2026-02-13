@@ -1,5 +1,8 @@
-﻿using DAC70Setup.BL.Features.ConfigurationsLanding;
+﻿using DAC70Setup.BL.Features.Configurations;
+using DAC70Setup.BL.Features.ConfigurationsLanding;
+using DAC70Setup.BL.Features.EditConfiguration;
 using DAC70Setup.BL.Features.Main;
+using DAC70Setup.BL.Features.SelectedConfiguration;
 using DAC70Setup.BL.Features.Settings;
 using Prism.Navigation.Builder;
 
@@ -18,7 +21,12 @@ public class NavigationUri : INavigationUri
         return _navigationService.CreateBuilder()
             .AddSegment(nameof(MainPage))
             .AddNavigationPage()
-            .AddSegment(nameof(ConfigurationsLandingPage));
+            .AddTabbedSegment(nameof(ConfigurationsLandingPage), config =>
+            {
+                config.CreateTab<SelectedConfigurationPage>();
+                config.CreateTab<EditConfigurationPage>();
+                config.CreateTab<ConfigurationsPage>();
+            });
     }
 
     public INavigationBuilder CreateSettingsNavigationBuilder()
@@ -26,6 +34,6 @@ public class NavigationUri : INavigationUri
         return _navigationService.CreateBuilder()
             .AddSegment(nameof(MainPage))
             .AddNavigationPage()
-            .AddSegment(nameof(SettingsPage)); ;
+            .AddSegment(nameof(SettingsPage));
     }
 }
