@@ -1,5 +1,5 @@
-﻿using DAC70Setup.BL.Services.Commands;
-using DAC70Setup.BL.ViewModels;
+﻿using DAC70Setup.BL.Models.ViewModels;
+using DAC70Setup.BL.Services.Commands;
 
 namespace DAC70Setup.BL.Features.ConfigurationsLanding;
 

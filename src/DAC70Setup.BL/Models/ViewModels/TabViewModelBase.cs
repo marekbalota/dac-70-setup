@@ -1,6 +1,6 @@
-﻿namespace DAC70Setup.BL.ViewModels;
+﻿namespace DAC70Setup.BL.Models.ViewModels;
 
-public class TabViewModelBase : ViewModelBase, IActiveAware
+public abstract class TabViewModelBase : ViewModelBase, IActiveAware
 {
     public TabViewModelBase() : base()
     {

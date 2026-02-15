@@ -1,10 +1,17 @@
-﻿namespace DAC70Setup.BL.ViewModels;
+﻿namespace DAC70Setup.BL.Models.ViewModels;
 
-public class ViewModelBase : BindableBase, INavigationAware, IInitializeAsync, IDestructible
+public abstract class ViewModelBase : BindableBase, INavigationAware, IInitializeAsync, IDestructible
 {
     public ViewModelBase()
     {
 
+    }
+
+    private bool _isBusy;
+    public bool IsBusy 
+    {
+        get => _isBusy;
+        private set => SetProperty(ref _isBusy, value);
     }
 
     protected virtual Task OnNavigatedFromInt(INavigationParameters parameters)

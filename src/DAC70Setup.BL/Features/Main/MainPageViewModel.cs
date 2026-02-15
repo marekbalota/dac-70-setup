@@ -1,8 +1,8 @@
 ﻿using DAC70Setup.BL.Features.Main.Resources;
 using DAC70Setup.BL.Models;
+using DAC70Setup.BL.Models.ViewModels;
 using DAC70Setup.BL.Resources;
 using DAC70Setup.BL.Services.Navigation;
-using DAC70Setup.BL.ViewModels;
 
 namespace DAC70Setup.BL.Features.Main;
 

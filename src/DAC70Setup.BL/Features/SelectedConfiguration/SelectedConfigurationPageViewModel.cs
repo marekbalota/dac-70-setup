@@ -1,4 +1,4 @@
-﻿using DAC70Setup.BL.ViewModels;
+﻿using DAC70Setup.BL.Models.ViewModels;
 
 namespace DAC70Setup.BL.Features.SelectedConfiguration;
 
