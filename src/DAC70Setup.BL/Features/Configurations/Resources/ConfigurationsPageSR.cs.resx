@@ -123,4 +123,13 @@
   <data name="NoExistingConfiguration" xml:space="preserve">
     <value>Zatím není vytvořena žádná konfigurace.</value>
   </data>
+  <data name="CreateConfigurationDisplayPromptMessage" xml:space="preserve">
+    <value>Zadejte jméno pro novou konfiguraci.</value>
+  </data>
+  <data name="CreateConfigurationDisplayPromptAccept" xml:space="preserve">
+    <value>Potvrdit</value>
+  </data>
+  <data name="CreateConfigurationDisplayPromptCancel" xml:space="preserve">
+    <value>Zrušit</value>
+  </data>
 </root>

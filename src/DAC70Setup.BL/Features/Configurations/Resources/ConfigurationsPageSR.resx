@@ -123,4 +123,13 @@
   <data name="NoExistingConfiguration" xml:space="preserve">
     <value>There is currently no existing configuration.</value>
   </data>
+  <data name="CreateConfigurationDisplayPromptMessage" xml:space="preserve">
+    <value>Enter a name for the new configuration.</value>
+  </data>
+  <data name="CreateConfigurationDisplayPromptAccept" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="CreateConfigurationDisplayPromptCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
 </root>

@@ -70,6 +70,33 @@ namespace DAC70Setup.BL.Features.Configurations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Accept.
+        /// </summary>
+        public static string CreateConfigurationDisplayPromptAccept {
+            get {
+                return ResourceManager.GetString("CreateConfigurationDisplayPromptAccept", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string CreateConfigurationDisplayPromptCancel {
+            get {
+                return ResourceManager.GetString("CreateConfigurationDisplayPromptCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter a name for the new configuration..
+        /// </summary>
+        public static string CreateConfigurationDisplayPromptMessage {
+            get {
+                return ResourceManager.GetString("CreateConfigurationDisplayPromptMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is currently no existing configuration..
         /// </summary>
         public static string NoExistingConfiguration {

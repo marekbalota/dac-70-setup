@@ -20,9 +20,9 @@ public class Configuration : BindableBase
 
     public DateTime Created { get; }
 
-    public string DateCreated => Created.Date.ToString();
+    public string DateCreatedText => Created.ToString("d");
 
-    public string TimeCreated => Created.TimeOfDay.ToString();
+    public string TimeCreatedText => Created.ToString("t");
 
     public ObservableCollection<IDac70Setting> Settings { get; } = new ObservableCollection<IDac70Setting>();
 }

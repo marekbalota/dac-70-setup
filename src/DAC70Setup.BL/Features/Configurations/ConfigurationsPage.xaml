@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local ="clr-namespace:DAC70Setup.BL.Features.Configurations"
+             xmlns:local="clr-namespace:DAC70Setup.BL.Features.Configurations"
+             xmlns:models="clr-namespace:DAC70Setup.BL.Models"
              xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
              xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
              x:Class="DAC70Setup.BL.Features.Configurations.ConfigurationsPage"
@@ -16,13 +17,18 @@
         <CollectionView.EmptyView>
             <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
                 <Label Text="{localization:Translate NoExistingConfiguration}"/>
-                <Button HorizontalOptions="Center"/>
             </StackLayout>
         </CollectionView.EmptyView>
         
         <CollectionView.ItemTemplate>
-            <DataTemplate>
-                
+            <DataTemplate x:DataType="models:Configuration">
+                <Border>
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,*" Margin="10">
+                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding Name}"/>
+                        <Label Grid.Row="0" Grid.Column="1" HorizontalOptions="End" Text="{Binding DateCreatedText}"/>
+                        <Label Grid.Row="1" Grid.Column="1" HorizontalOptions="End" Text="{Binding TimeCreatedText}"/>
+                    </Grid>
+                </Border>
             </DataTemplate>
         </CollectionView.ItemTemplate>
     </CollectionView>
