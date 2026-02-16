@@ -30,8 +30,8 @@ public class ConfigurationsPageViewModel : TabViewModelBase
 
     public DataModel Model { get; }
 
-    private Configuration _selectedConfiguration;
-    public Configuration SelectedConfiguration
+    private Configuration? _selectedConfiguration;
+    public Configuration? SelectedConfiguration
     {
         get => _selectedConfiguration;
         set => SetProperty(ref _selectedConfiguration, value);
