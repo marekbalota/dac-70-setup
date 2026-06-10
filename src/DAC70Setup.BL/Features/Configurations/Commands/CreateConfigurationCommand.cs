@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using DAC70Setup.BL.Features.Configurations.Resources;
+﻿using DAC70Setup.BL.Features.Configurations.Resources;
 using DAC70Setup.BL.Models.Commands;
 using DAC70Setup.BL.Services;
 using LocalizationResourceManager.Maui;
@@ -20,15 +19,7 @@ public class CreateConfigurationCommand : ActiveCommandBase<ConfigurationsPageVi
         _pageDialogService = pageDialogService;
         _localizationResourceManager = localizationResourceManager;
 
-        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
-    }
-
-    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(ViewModel.IsBusy))
-        {
-            RaiseCanExecuteChanged();
-        }
+        ObserveProperties(nameof(ViewModel.IsBusy));
     }
 
     protected override bool CanExecute(object? parameter)
@@ -53,7 +44,5 @@ public class CreateConfigurationCommand : ActiveCommandBase<ConfigurationsPageVi
     protected override void OnDestroy()
     {
         base.OnDestroy();
-
-        ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
     }
 }

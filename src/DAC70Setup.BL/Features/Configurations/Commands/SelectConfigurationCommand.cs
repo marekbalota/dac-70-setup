@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using DAC70Setup.BL.Models.Commands;
+﻿using DAC70Setup.BL.Models.Commands;
 
 namespace DAC70Setup.BL.Features.Configurations.Commands;
 
@@ -7,15 +6,7 @@ public class SelectConfigurationCommand : ActiveCommandBase<ConfigurationsPageVi
 {
     public SelectConfigurationCommand()
     {
-        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
-    }
-
-    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(ViewModel.IsBusy) || e.PropertyName == nameof(ViewModel.SelectedConfiguration))
-        {
-            RaiseCanExecuteChanged();
-        }
+        ObserveProperties(nameof(ViewModel.IsBusy), nameof(ViewModel.SelectedConfiguration));
     }
 
     protected override bool CanExecute(object? parameter)
@@ -31,7 +22,5 @@ public class SelectConfigurationCommand : ActiveCommandBase<ConfigurationsPageVi
     protected override void OnDestroy()
     {
         base.OnDestroy();
-
-        ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
     }
 }
