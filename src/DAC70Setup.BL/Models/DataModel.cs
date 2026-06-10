@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using DAC70Setup.Core.Models;
 
 namespace DAC70Setup.BL.Models;
 
