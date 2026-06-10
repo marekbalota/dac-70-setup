@@ -21,9 +21,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Maui" Version="14.0.0" />
-		<PackageReference Include="LocalizationResourceManager.Maui" Version="1.2.2" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.31" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="14.2.0" />
+		<PackageReference Include="LocalizationResourceManager.Maui" Version="1.2.6" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.70" />
 		<PackageReference Include="Prism.DryIoc.Maui" Version="9.0.537" />
 		<PackageReference Include="Prism.Maui" Version="9.0.537" />
 	</ItemGroup>
