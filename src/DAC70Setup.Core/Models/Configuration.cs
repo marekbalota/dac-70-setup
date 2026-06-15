@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using DAC70Setup.Core.Models.SettingTypes;
+using DAC70Setup.Core.Models.Values;
 
 namespace DAC70Setup.Core.Models;
 
@@ -24,5 +24,5 @@ public class Configuration : NotifyPropertyChangedBase
 
     public string TimeCreatedText => Created.ToString("t");
 
-    public ObservableCollection<IDac70Setting> Settings { get; } = new ObservableCollection<IDac70Setting>();
+    public ObservableCollection<Dac70SettingValue> Settings { get; } = new ObservableCollection<Dac70SettingValue>();
 }

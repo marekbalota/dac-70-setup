@@ -1,4 +1,4 @@
-﻿namespace DAC70Setup.Core.Models.ConfigEnums;
+﻿namespace DAC70Setup.Core.Models.Definitions;
 
 public enum PanelType
 {
