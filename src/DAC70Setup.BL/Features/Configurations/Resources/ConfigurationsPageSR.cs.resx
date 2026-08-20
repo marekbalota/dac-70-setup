@@ -123,6 +123,9 @@
   <data name="NoExistingConfiguration" xml:space="preserve">
     <value>Zatím není vytvořena žádná konfigurace.</value>
   </data>
+  <data name="CreateConfigurationDisplayPromptTitle" xml:space="preserve">
+    <value>Vytvořit konfiguraci</value>
+  </data>
   <data name="CreateConfigurationDisplayPromptMessage" xml:space="preserve">
     <value>Zadejte jméno pro novou konfiguraci.</value>
   </data>
@@ -130,6 +133,18 @@
     <value>Potvrdit</value>
   </data>
   <data name="CreateConfigurationDisplayPromptCancel" xml:space="preserve">
+    <value>Zrušit</value>
+  </data>
+  <data name="DeleteConfigurationConfirmTitle" xml:space="preserve">
+    <value>Smazat konfiguraci</value>
+  </data>
+  <data name="DeleteConfigurationConfirmMessage" xml:space="preserve">
+    <value>Opravdu chcete smazat konfiguraci „{0}“?</value>
+  </data>
+  <data name="DeleteConfigurationConfirmAccept" xml:space="preserve">
+    <value>Smazat</value>
+  </data>
+  <data name="DeleteConfigurationConfirmCancel" xml:space="preserve">
     <value>Zrušit</value>
   </data>
 </root>

@@ -1,11 +1,20 @@
-﻿using DAC70Setup.BL.Models.Commands;
+﻿using DAC70Setup.BL.Features.SelectedConfiguration;
+using DAC70Setup.BL.Models.Commands;
+using DAC70Setup.BL.Services;
 
 namespace DAC70Setup.BL.Features.Configurations.Commands;
 
 public class SelectConfigurationCommand : ActiveCommandBase<ConfigurationsPageViewModel>
 {
-    public SelectConfigurationCommand()
+    private readonly IConfigurationsService _configurationsService;
+    private readonly INavigationService _navigationService;
+
+    public SelectConfigurationCommand(IConfigurationsService configurationsService,
+        INavigationService navigationService)
     {
+        _configurationsService = configurationsService;
+        _navigationService = navigationService;
+
         ObserveProperties(nameof(ViewModel.IsBusy), nameof(ViewModel.SelectedConfiguration));
     }
 
@@ -14,13 +23,12 @@ public class SelectConfigurationCommand : ActiveCommandBase<ConfigurationsPageVi
         return !ViewModel.IsBusy && ViewModel.SelectedConfiguration != null;
     }
 
-    protected override void Execute(object? parameter)
+    protected override async void Execute(object? parameter)
     {
-        throw new NotImplementedException();
-    }
-
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
+        await RunBusyAsync(async () =>
+        {
+            _configurationsService.SelectConfiguration(ViewModel.SelectedConfiguration!);
+            await _navigationService.SelectTabAsync(nameof(SelectedConfigurationPage));
+        });
     }
 }

@@ -95,6 +95,15 @@ namespace DAC70Setup.BL.Features.Configurations.Resources {
                 return ResourceManager.GetString("CreateConfigurationDisplayPromptMessage", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Create configuration.
+        /// </summary>
+        public static string CreateConfigurationDisplayPromptTitle {
+            get {
+                return ResourceManager.GetString("CreateConfigurationDisplayPromptTitle", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to There is currently no existing configuration..
@@ -102,6 +111,42 @@ namespace DAC70Setup.BL.Features.Configurations.Resources {
         public static string NoExistingConfiguration {
             get {
                 return ResourceManager.GetString("NoExistingConfiguration", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Delete configuration.
+        /// </summary>
+        public static string DeleteConfigurationConfirmTitle {
+            get {
+                return ResourceManager.GetString("DeleteConfigurationConfirmTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete the selected configuration?.
+        /// </summary>
+        public static string DeleteConfigurationConfirmMessage {
+            get {
+                return ResourceManager.GetString("DeleteConfigurationConfirmMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string DeleteConfigurationConfirmAccept {
+            get {
+                return ResourceManager.GetString("DeleteConfigurationConfirmAccept", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string DeleteConfigurationConfirmCancel {
+            get {
+                return ResourceManager.GetString("DeleteConfigurationConfirmCancel", resourceCulture);
             }
         }
     }

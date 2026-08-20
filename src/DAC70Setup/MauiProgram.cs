@@ -12,71 +12,87 @@ using DAC70Setup.BL.Features.SelectedConfiguration.Resources;
 using DAC70Setup.BL.Features.Settings;
 using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Resources;
+using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Commands;
 using DAC70Setup.BL.Services.Navigation;
+using DAC70Setup.Core.Interfaces;
+using DAC70Setup.Data;
 using LocalizationResourceManager.Maui;
 using Microsoft.Extensions.Logging;
 
-namespace DAC70Setup
+namespace DAC70Setup;
+
+public static class MauiProgram
 {
-    public static class MauiProgram
+    public static MauiApp CreateMauiApp()
     {
-        public static MauiApp CreateMauiApp()
-        {
-            var builder = MauiApp.CreateBuilder();
-            builder.UseMauiApp<App>()
-                .UseMauiCommunityToolkit()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("Font_Awesome_7_Free-Solid-900.otf", "FA-S");
-                })
-                .UseLocalizationResourceManager(localization =>
-                {
-                    localization.AddResource(GeneralSR.ResourceManager);
-                    localization.AddResource(MainPageSR.ResourceManager);
-                    localization.AddResource(ConfigurationsLandingPageSR.ResourceManager);
-                    localization.AddResource(SelectedConfigurationPageSR.ResourceManager);
-                    localization.AddResource(EditConfigurationPageSR.ResourceManager);
-                    localization.AddResource(ConfigurationsPageSR.ResourceManager);
-                    localization.RestoreLatestCulture(true);
-                })
-                .UsePrism(prism =>
-                {
-                    prism.RegisterTypes(RegisterTypes);
-                    prism.CreateWindow(InitialView);
-                });
+        var builder = MauiApp.CreateBuilder();
+        builder.UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("Font_Awesome_7_Free-Solid-900.otf", "FA-S");
+            })
+            .UseLocalizationResourceManager(localization =>
+            {
+                localization.AddResource(GeneralSR.ResourceManager);
+                localization.AddResource(MainPageSR.ResourceManager);
+                localization.AddResource(ConfigurationsLandingPageSR.ResourceManager);
+                localization.AddResource(SelectedConfigurationPageSR.ResourceManager);
+                localization.AddResource(EditConfigurationPageSR.ResourceManager);
+                localization.AddResource(ConfigurationsPageSR.ResourceManager);
+                localization.RestoreLatestCulture(true);
+            })
+            .UsePrism(prism =>
+            {
+                prism.RegisterTypes(RegisterTypes);
+                prism.OnInitialized(InitializeServices);
+                prism.CreateWindow(InitialView);
+            });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
-        }
+        return builder.Build();
+    }
 
-        private static void RegisterTypes(IContainerRegistry containerRegistry)
-        {
-            RegisterNavigation(containerRegistry);
+    private static void RegisterTypes(IContainerRegistry containerRegistry)
+    {
+        RegisterNavigation(containerRegistry);
 
-            containerRegistry.RegisterSingleton<INavigationUri, NavigationUri>();
-            containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
-            containerRegistry.RegisterSingleton<DataModel>();
-        }
+        string databasePath = Path.Combine(FileSystem.AppDataDirectory, "dac70setup.db3");
+        containerRegistry.RegisterInstance<IConfigurationRepository>(new ConfigurationRepository(databasePath));
+        containerRegistry.RegisterSingleton<IConfigurationsService, ConfigurationsService>();
 
-        private static void RegisterNavigation(IContainerRegistry containerRegistry)
-        {
-            containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
-            containerRegistry.RegisterForNavigation<ConfigurationsLandingPage, ConfigurationsLandingPageViewModel>();
-            containerRegistry.RegisterForNavigation<SelectedConfigurationPage, SelectedConfigurationPageViewModel>();
-            containerRegistry.RegisterForNavigation<EditConfigurationPage, EditConfigurationPageViewModel>();
-            containerRegistry.RegisterForNavigation<ConfigurationsPage, ConfigurationsPageViewModel>();
-            containerRegistry.RegisterForNavigation<SettingsPage, SettingsPageViewModel>();
-        }
+        containerRegistry.RegisterSingleton<INavigationUri, NavigationUri>();
+        containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
+        containerRegistry.RegisterSingleton<DataModel>();
+    }
 
-        private static async Task InitialView(IContainerProvider containerProvider, INavigationService navigationService)
-        {
-            var navigationUri = containerProvider.Resolve<INavigationUri>();
+    private static void RegisterNavigation(IContainerRegistry containerRegistry)
+    {
+        containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
+        containerRegistry.RegisterForNavigation<ConfigurationsLandingPage, ConfigurationsLandingPageViewModel>();
+        containerRegistry.RegisterForNavigation<SelectedConfigurationPage, SelectedConfigurationPageViewModel>();
+        containerRegistry.RegisterForNavigation<EditConfigurationPage, EditConfigurationPageViewModel>();
+        containerRegistry.RegisterForNavigation<ConfigurationsPage, ConfigurationsPageViewModel>();
+        containerRegistry.RegisterForNavigation<SettingsPage, SettingsPageViewModel>();
+    }
 
-            await navigationService.NavigateAsync(navigationUri.CreateConfigurationsNavigationBuilder().UseAbsoluteNavigation().Uri);
-        }
+    private static void InitializeServices(IContainerProvider containerProvider)
+    {
+        var configurationsService = containerProvider.Resolve<IConfigurationsService>();
+
+        // Prism invokes this on the UI thread and then blocks that thread on the CreateWindow task
+        // (onStart.Wait()), so awaiting here would deadlock.
+        Task.Run(configurationsService.InitializeAsync).GetAwaiter().GetResult();
+    }
+
+    private static Task InitialView(IContainerProvider containerProvider, INavigationService navigationService)
+    {
+        var navigationUri = containerProvider.Resolve<INavigationUri>();
+
+        return navigationService.NavigateAsync(navigationUri.CreateConfigurationsNavigationBuilder().UseAbsoluteNavigation().Uri);
     }
 }

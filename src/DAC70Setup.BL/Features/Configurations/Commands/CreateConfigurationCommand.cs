@@ -7,15 +7,15 @@ namespace DAC70Setup.BL.Features.Configurations.Commands;
 
 public class CreateConfigurationCommand : ActiveCommandBase<ConfigurationsPageViewModel>
 {
-    private readonly ManageConfigurationsService _manageConfigurationsService;
+    private readonly IConfigurationsService _configurationsService;
     private readonly IPageDialogService _pageDialogService;
     private readonly ILocalizationResourceManager _localizationResourceManager;
 
-    public CreateConfigurationCommand(ManageConfigurationsService manageConfigurationsService,
+    public CreateConfigurationCommand(IConfigurationsService configurationsService,
         IPageDialogService pageDialogService,
         ILocalizationResourceManager localizationResourceManager)
     {
-        _manageConfigurationsService = manageConfigurationsService;
+        _configurationsService = configurationsService;
         _pageDialogService = pageDialogService;
         _localizationResourceManager = localizationResourceManager;
 
@@ -29,20 +29,20 @@ public class CreateConfigurationCommand : ActiveCommandBase<ConfigurationsPageVi
 
     protected override async void Execute(object? parameter)
     {
-        var name = await _pageDialogService.DisplayPromptAsync(null, _localizationResourceManager[nameof(ConfigurationsPageSR.CreateConfigurationDisplayPromptMessage)],
-            _localizationResourceManager[nameof(ConfigurationsPageSR.CreateConfigurationDisplayPromptAccept)],
-            _localizationResourceManager[nameof(ConfigurationsPageSR.CreateConfigurationDisplayPromptCancel)]);
-
-        if (name == null)
+        await RunBusyAsync(async () =>
         {
-            return;
-        }
+            var name = await _pageDialogService.DisplayPromptAsync(
+                _localizationResourceManager[nameof(ConfigurationsPageSR.CreateConfigurationDisplayPromptTitle)],
+                _localizationResourceManager[nameof(ConfigurationsPageSR.CreateConfigurationDisplayPromptMessage)],
+                _localizationResourceManager[nameof(ConfigurationsPageSR.CreateConfigurationDisplayPromptAccept)],
+                _localizationResourceManager[nameof(ConfigurationsPageSR.CreateConfigurationDisplayPromptCancel)]);
 
-        await _manageConfigurationsService.CreateNewConfiguration(name);
-    }
+            if (name == null)
+            {
+                return;
+            }
 
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
+            await _configurationsService.CreateNewConfiguration(name);
+        });
     }
 }
