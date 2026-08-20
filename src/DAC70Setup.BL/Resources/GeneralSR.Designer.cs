@@ -59,5 +59,23 @@ namespace DAC70Setup.BL.Resources {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Go to configurations.
+        /// </summary>
+        public static string GoToConfigurations {
+            get {
+                return ResourceManager.GetString("GoToConfigurations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No configuration selected..
+        /// </summary>
+        public static string NoConfigurationSelected {
+            get {
+                return ResourceManager.GetString("NoConfigurationSelected", resourceCulture);
+            }
+        }
     }
 }
