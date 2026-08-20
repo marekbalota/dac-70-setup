@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel;
+using DAC70Setup.BL.Models.ViewModels;
 
 namespace DAC70Setup.BL.Models.Commands;
 
-public abstract class ActiveCommandBase<TModel> : CommandBase<TModel> 
-    where TModel : INotifyPropertyChanged, IActiveAware
+public abstract class ActiveCommandBase<TModel> : CommandBase<TModel>
+    where TModel : INotifyPropertyChanged, IActiveAware, IBusyAware
 {
     protected override void OnViewModelSet()
     {
