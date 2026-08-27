@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DAC70Setup.BL.Features.EditSetting"
+             xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
+             xmlns:selectors="clr-namespace:DAC70Setup.BL.Selectors"
+             xmlns:definitions="clr-namespace:DAC70Setup.Core.Models.Definitions;assembly=DAC70Setup.Core"
+             xmlns:values="clr-namespace:DAC70Setup.Core.Models.Values;assembly=DAC70Setup.Core"
+             xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
+             x:Class="DAC70Setup.BL.Features.EditSetting.EditSettingPage"
+             x:DataType="local:EditSettingPageViewModel"
+             Title="{Binding PageTitle}">
+
+    <ContentPage.Resources>
+        <DataTemplate x:Key="EnumEditorTemplate">
+            <Picker x:DataType="values:EnumSettingValue" Margin="20"
+                    ItemsSource="{Binding Definition.Options}"
+                    ItemDisplayBinding="{Binding Name, x:DataType=definitions:EnumOption}"
+                    SelectedItem="{Binding SelectedOption}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="RangeEditorTemplate">
+            <controls:SliderEntryEditor x:DataType="values:RangeSettingValue" Margin="20"
+                    Minimum="{Binding Definition.Minimum}"
+                    Maximum="{Binding Definition.Maximum}"
+                    Value="{Binding Value}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="PositionEditorTemplate">
+            <StackLayout x:DataType="values:PositionSettingValue" Margin="20" Spacing="10">
+                <Label Text="{localization:Translate EditSettingHorizontal}"/>
+                <controls:SliderEntryEditor
+                        Minimum="{Binding Definition.HorizontalMinimum}"
+                        Maximum="{Binding Definition.HorizontalMaximum}"
+                        Value="{Binding Horizontal}"/>
+                <Label Text="{localization:Translate EditSettingVertical}"/>
+                <controls:SliderEntryEditor
+                        Minimum="{Binding Definition.VerticalMinimum}"
+                        Maximum="{Binding Definition.VerticalMaximum}"
+                        Value="{Binding Vertical}"/>
+            </StackLayout>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SizeEditorTemplate">
+            <StackLayout x:DataType="values:SizeSettingValue" Margin="20" Spacing="10">
+                <Label Text="{localization:Translate EditSettingHorizontal}"/>
+                <controls:SliderEntryEditor
+                        Minimum="{Binding Definition.Minimum}"
+                        Maximum="{Binding Definition.Maximum}"
+                        Value="{Binding Horizontal}"/>
+                <Label Text="{localization:Translate EditSettingVertical}"/>
+                <controls:SliderEntryEditor
+                        Minimum="{Binding Definition.Minimum}"
+                        Maximum="{Binding Definition.Maximum}"
+                        Value="{Binding Vertical}"/>
+            </StackLayout>
+        </DataTemplate>
+
+        <selectors:ValueEditorTemplateSelector x:Key="ValueEditorTemplateSelector"
+                EnumTemplate="{StaticResource EnumEditorTemplate}"
+                RangeTemplate="{StaticResource RangeEditorTemplate}"
+                PositionTemplate="{StaticResource PositionEditorTemplate}"
+                SizeTemplate="{StaticResource SizeEditorTemplate}"/>
+    </ContentPage.Resources>
+
+    <StackLayout Margin="20" Spacing="20">
+        <Label Text="{Binding SettingName}" FontSize="Title"/>
+
+        <controls:TemplatedContentView Item="{Binding WorkingValue}"
+                     ItemTemplateSelector="{StaticResource ValueEditorTemplateSelector}"/>
+
+        <StackLayout Orientation="Horizontal" Spacing="20" HorizontalOptions="End">
+            <Button Text="{localization:Translate EditSettingCancel}" Command="{Binding CancelCommand}"/>
+            <Button Text="{localization:Translate EditSettingSave}" Command="{Binding SaveCommand}"/>
+        </StackLayout>
+    </StackLayout>
+</ContentPage>

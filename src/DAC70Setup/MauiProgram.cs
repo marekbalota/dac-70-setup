@@ -5,6 +5,8 @@ using DAC70Setup.BL.Features.ConfigurationsLanding;
 using DAC70Setup.BL.Features.ConfigurationsLanding.Resources;
 using DAC70Setup.BL.Features.EditConfiguration;
 using DAC70Setup.BL.Features.EditConfiguration.Resources;
+using DAC70Setup.BL.Features.EditSetting;
+using DAC70Setup.BL.Features.EditSetting.Resources;
 using DAC70Setup.BL.Features.Main;
 using DAC70Setup.BL.Features.Main.Resources;
 using DAC70Setup.BL.Features.SelectedConfiguration;
@@ -42,6 +44,7 @@ public static class MauiProgram
                 localization.AddResource(SelectedConfigurationPageSR.ResourceManager);
                 localization.AddResource(EditConfigurationPageSR.ResourceManager);
                 localization.AddResource(ConfigurationsPageSR.ResourceManager);
+                localization.AddResource(EditSettingPageSR.ResourceManager);
                 localization.RestoreLatestCulture(true);
             })
             .UsePrism(prism =>
@@ -81,6 +84,7 @@ public static class MauiProgram
         containerRegistry.RegisterForNavigation<EditConfigurationPage, EditConfigurationPageViewModel>();
         containerRegistry.RegisterForNavigation<ConfigurationsPage, ConfigurationsPageViewModel>();
         containerRegistry.RegisterForNavigation<SettingsPage, SettingsPageViewModel>();
+        containerRegistry.RegisterForNavigation<EditSettingPage, EditSettingPageViewModel>();
     }
 
     private static void InitializeServices(IContainerProvider containerProvider)

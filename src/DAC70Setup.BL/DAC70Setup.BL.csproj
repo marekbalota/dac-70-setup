@@ -58,6 +58,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>EditConfigurationPageSR.resx</DependentUpon>
     </Compile>
+    <Compile Update="Features\EditSetting\Resources\EditSettingPageSR.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EditSettingPageSR.resx</DependentUpon>
+    </Compile>
     <Compile Update="Features\Main\Resources\MainPageSR.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -87,6 +92,10 @@
     <EmbeddedResource Update="Features\EditConfiguration\Resources\EditConfigurationPageSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>EditConfigurationPageSR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Features\EditSetting\Resources\EditSettingPageSR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>EditSettingPageSR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Features\Main\Resources\MainPageSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
