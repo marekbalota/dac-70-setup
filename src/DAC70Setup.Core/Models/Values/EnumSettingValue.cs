@@ -14,8 +14,10 @@ public sealed class EnumSettingValue : Dac70SettingValue<EnumSettingDefinition>
     public EnumOption SelectedOption
     {
         get => _selectedOption;
-        set => SetProperty(ref _selectedOption, value);
+        set => SetProperty(ref _selectedOption, value, () => RaisePropertyChanged(nameof(DisplayValueText)));
     }
+
+    public override string DisplayValueText => SelectedOption.Name;
 
     protected override int ValueByteCount => Definition.Template.Length;
 

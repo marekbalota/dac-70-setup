@@ -11,6 +11,8 @@ public abstract class Dac70SettingValue : NotifyPropertyChangedBase
 
     public virtual Dac70SettingDefinition Definition { get; }
 
+    public abstract string DisplayValueText { get; }
+
     public byte[] GetPayload()
     {
         var payload = new byte[64];

@@ -23,7 +23,7 @@ public sealed class SizeSettingValue : Dac70SettingValue<SizeSettingDefinition>
                     $"Horizontal size must be between {Definition.Minimum} and {Definition.Maximum}.");
             }
 
-            SetProperty(ref _horizontal, value);
+            SetProperty(ref _horizontal, value, () => RaisePropertyChanged(nameof(DisplayValueText)));
         }
     }
 
@@ -39,9 +39,11 @@ public sealed class SizeSettingValue : Dac70SettingValue<SizeSettingDefinition>
                     $"Vertical size must be between {Definition.Minimum} and {Definition.Maximum}.");
             }
 
-            SetProperty(ref _vertical, value);
+            SetProperty(ref _vertical, value, () => RaisePropertyChanged(nameof(DisplayValueText)));
         }
     }
+
+    public override string DisplayValueText => $"{Horizontal}, {Vertical}";
 
     protected override int ValueByteCount => 6;
 

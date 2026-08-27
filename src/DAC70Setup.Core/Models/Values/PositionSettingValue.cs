@@ -24,7 +24,7 @@ public sealed class PositionSettingValue : Dac70SettingValue<PositionSettingDefi
                     $"Horizontal position must be between {Definition.HorizontalMinimum} and {Definition.HorizontalMaximum}.");
             }
 
-            SetProperty(ref _horizontal, value);
+            SetProperty(ref _horizontal, value, () => RaisePropertyChanged(nameof(DisplayValueText)));
         }
     }
 
@@ -40,9 +40,11 @@ public sealed class PositionSettingValue : Dac70SettingValue<PositionSettingDefi
                     $"Vertical position must be between {Definition.VerticalMinimum} and {Definition.VerticalMaximum}.");
             }
 
-            SetProperty(ref _vertical, value);
+            SetProperty(ref _vertical, value, () => RaisePropertyChanged(nameof(DisplayValueText)));
         }
     }
+
+    public override string DisplayValueText => $"{Horizontal}, {Vertical}";
 
     protected override int ValueByteCount => 6;
 

@@ -13,8 +13,10 @@ public sealed class RangeSettingValue : Dac70SettingValue<RangeSettingDefinition
     public byte Value
     {
         get => _value;
-        set => SetProperty(ref _value, value);
+        set => SetProperty(ref _value, value, () => RaisePropertyChanged(nameof(DisplayValueText)));
     }
+
+    public override string DisplayValueText => Value.ToString();
 
     protected override int ValueByteCount => 1;
 
