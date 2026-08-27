@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
+             x:Class="DAC70Setup.BL.Controls.SliderEntryEditor"
+             x:Name="Root">
+    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" BindingContext="{x:Reference Root}"
+          x:DataType="controls:SliderEntryEditor">
+        <Slider Grid.Column="0" Minimum="{Binding Minimum}" Maximum="{Binding Maximum}" Value="{Binding Value}"/>
+        <Entry x:Name="ValueEntry" Grid.Column="1" WidthRequest="60" Keyboard="Numeric"
+               Completed="OnValueEntryCompleted" Unfocused="OnValueEntryUnfocused"/>
+    </Grid>
+</ContentView>
