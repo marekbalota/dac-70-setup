@@ -1,4 +1,5 @@
-﻿using DAC70Setup.Core.Models;
+﻿using DAC70Setup.BL.Models;
+using DAC70Setup.Core.Models.Values;
 
 namespace DAC70Setup.BL.Services;
 

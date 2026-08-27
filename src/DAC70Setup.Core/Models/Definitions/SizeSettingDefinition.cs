@@ -1,4 +1,5 @@
-﻿using DAC70Setup.Core.Models.Values;
+﻿using DAC70Setup.Core.Models.Protocol;
+using DAC70Setup.Core.Models.Values;
 
 namespace DAC70Setup.Core.Models.Definitions;
 

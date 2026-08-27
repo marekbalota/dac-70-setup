@@ -1,12 +1,13 @@
 ﻿using DAC70Setup.Core.Models;
+using DAC70Setup.Core.Models.Protocol;
 
 namespace DAC70Setup.Core.Interfaces;
 
 public interface IConfigurationRepository
 {
-    Task<IReadOnlyList<Configuration>> GetAllAsync();
+    Task<IReadOnlyList<ConfigurationDto>> GetAllAsync();
 
-    Task AddConfigurationAsync(Configuration configuration);
+    Task AddConfigurationAsync(Guid id, string name, DateTime created);
 
     Task DeleteConfigurationAsync(Guid id);
 }

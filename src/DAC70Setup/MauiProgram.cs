@@ -10,6 +10,7 @@ using DAC70Setup.BL.Features.Main.Resources;
 using DAC70Setup.BL.Features.SelectedConfiguration;
 using DAC70Setup.BL.Features.SelectedConfiguration.Resources;
 using DAC70Setup.BL.Features.Settings;
+using DAC70Setup.BL.Mappers;
 using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Resources;
 using DAC70Setup.BL.Services;
@@ -63,6 +64,8 @@ public static class MauiProgram
 
         string databasePath = Path.Combine(FileSystem.AppDataDirectory, "dac70setup.db3");
         containerRegistry.RegisterInstance<IConfigurationRepository>(new ConfigurationRepository(databasePath));
+        containerRegistry.RegisterSingleton<SettingMapper>();
+        containerRegistry.RegisterSingleton<ConfigurationMapper>();
         containerRegistry.RegisterSingleton<IConfigurationsService, ConfigurationsService>();
 
         containerRegistry.RegisterSingleton<INavigationUri, NavigationUri>();

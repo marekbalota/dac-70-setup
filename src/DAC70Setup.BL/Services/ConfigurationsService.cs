@@ -1,6 +1,7 @@
-﻿using DAC70Setup.BL.Models;
+﻿using DAC70Setup.BL.Mappers;
+using DAC70Setup.BL.Models;
 using DAC70Setup.Core.Interfaces;
-using DAC70Setup.Core.Models;
+using DAC70Setup.Core.Models.Values;
 
 namespace DAC70Setup.BL.Services;
 
@@ -10,11 +11,15 @@ public class ConfigurationsService : IConfigurationsService
 
     private readonly DataModel _dataModel;
     private readonly IConfigurationRepository _repository;
+    private readonly ConfigurationMapper _configurationMapper;
 
-    public ConfigurationsService(DataModel dataModel, IConfigurationRepository repository)
+    public ConfigurationsService(DataModel dataModel,
+        IConfigurationRepository repository,
+        ConfigurationMapper configurationMapper)
     {
         _dataModel = dataModel;
         _repository = repository;
+        _configurationMapper = configurationMapper;
     }
 
     public async Task InitializeAsync()
@@ -24,7 +29,7 @@ public class ConfigurationsService : IConfigurationsService
         _dataModel.Configurations.Clear();
         foreach (var configuration in configurations)
         {
-            _dataModel.Configurations.Add(configuration);
+            _dataModel.Configurations.Add(_configurationMapper.Map(configuration));
         }
 
         string storedId = Preferences.Default.Get(SelectedConfigurationIdKey, string.Empty);
@@ -37,7 +42,7 @@ public class ConfigurationsService : IConfigurationsService
     public async Task CreateNewConfiguration(string name)
     {
         var configuration = new Configuration(name, DateTime.Now);
-        await _repository.AddConfigurationAsync(configuration);
+        await _repository.AddConfigurationAsync(configuration.Id, configuration.Name, configuration.Created);
         _dataModel.Configurations.Add(configuration);
     }
 

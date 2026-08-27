@@ -1,7 +1,8 @@
 ﻿using System.Collections.ObjectModel;
+using DAC70Setup.Core;
 using DAC70Setup.Core.Models.Values;
 
-namespace DAC70Setup.Core.Models;
+namespace DAC70Setup.BL.Models;
 
 public class Configuration : NotifyPropertyChangedBase
 {

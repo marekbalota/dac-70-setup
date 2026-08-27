@@ -1,8 +1,6 @@
 ﻿using DAC70Setup.Core.Interfaces;
 using DAC70Setup.Core.Models;
-using DAC70Setup.Core.Models.Definitions;
 using DAC70Setup.Core.Models.Protocol;
-using DAC70Setup.Core.Models.Values;
 using SQLite;
 
 namespace DAC70Setup.Data;
@@ -26,7 +24,7 @@ public class ConfigurationRepository : IConfigurationRepository
         return connection;
     }
 
-    public async Task<IReadOnlyList<Configuration>> GetAllAsync()
+    public async Task<IReadOnlyList<ConfigurationDto>> GetAllAsync()
     {
         var connection = await _connection.Value;
 
@@ -39,40 +37,32 @@ public class ConfigurationRepository : IConfigurationRepository
             settingRows.AddRange(transaction.Table<SettingRow>());
         });
 
-        Dictionary<Guid, List<SettingRow>> settingsByConfig = settingRows
-            .GroupBy(s => s.ConfigId)
-            .ToDictionary(g => g.Key, g => g.ToList());
+        Dictionary<Guid, List<SettingDto>> settingsByConfig = configRows
+            .ToDictionary(row => row.Id, _ => new List<SettingDto>());
 
-        var result = new List<Configuration>();
-        foreach (var row in configRows)
+        foreach (var row in settingRows)
         {
-            var configuration = new Configuration(row.Id, row.Name, row.Created);
-
-            if (settingsByConfig.TryGetValue(row.Id, out List<SettingRow>? settings))
+            if (settingsByConfig.TryGetValue(row.ConfigId, out List<SettingDto>? settings))
             {
-                foreach (var setting in settings)
-                {
-                    var key = new SettingKey((MessageType)setting.MessageType, setting.SettingId);
-                    Dac70SettingValue value = Dac70SettingCatalog.Get(key).CreateValue(setting.ValueBytes);
-                    configuration.Settings.Add(value);
-                }
+                var key = new SettingKey((MessageType)row.MessageType, row.SettingId);
+                settings.Add(new SettingDto(key, row.ValueBytes));
             }
-
-            result.Add(configuration);
         }
 
-        return result;
+        return configRows
+            .Select(row => new ConfigurationDto(row.Id, row.Name, row.Created, settingsByConfig[row.Id]))
+            .ToList();
     }
 
-    public async Task AddConfigurationAsync(Configuration configuration)
+    public async Task AddConfigurationAsync(Guid id, string name, DateTime created)
     {
         var connection = await _connection.Value;
 
         await connection.InsertAsync(new ConfigurationRow
         {
-            Id = configuration.Id,
-            Name = configuration.Name,
-            Created = configuration.Created
+            Id = id,
+            Name = name,
+            Created = created
         });
     }
 

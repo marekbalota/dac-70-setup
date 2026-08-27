@@ -140,4 +140,9 @@ public static class Dac70SettingCatalog
 
         return definition;
     }
+
+    public static bool TryGet(SettingKey key, out Dac70SettingDefinition? definition)
+    {
+        return _definitions.TryGetValue(key, out definition);
+    }
 }
