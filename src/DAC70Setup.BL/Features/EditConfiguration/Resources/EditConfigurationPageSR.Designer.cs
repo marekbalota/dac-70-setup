@@ -61,11 +61,56 @@ namespace DAC70Setup.BL.Features.EditConfiguration.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string DeleteSettingsConfirmAccept {
+            get {
+                return ResourceManager.GetString("DeleteSettingsConfirmAccept", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string DeleteSettingsConfirmCancel {
+            get {
+                return ResourceManager.GetString("DeleteSettingsConfirmCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete {0} setting(s)?.
+        /// </summary>
+        public static string DeleteSettingsConfirmMessage {
+            get {
+                return ResourceManager.GetString("DeleteSettingsConfirmMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete settings.
+        /// </summary>
+        public static string DeleteSettingsConfirmTitle {
+            get {
+                return ResourceManager.GetString("DeleteSettingsConfirmTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit.
         /// </summary>
         public static string EditConfigurationTitle {
             get {
                 return ResourceManager.GetString("EditConfigurationTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This configuration has no settings yet..
+        /// </summary>
+        public static string NoSettingsInConfiguration {
+            get {
+                return ResourceManager.GetString("NoSettingsInConfiguration", resourceCulture);
             }
         }
     }
