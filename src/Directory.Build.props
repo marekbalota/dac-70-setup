@@ -1,0 +1,107 @@
+﻿<Project>
+
+  <!--
+    Solution-wide build settings.
+
+    This file only holds settings that are safe for *every* project (Core, Data, BL, app head).
+    Platform- and publish-specific tuning (AOT, trimming, runtime identifiers, packaging)
+    lives in the app head: DAC70Setup\DAC70Setup.csproj.
+  -->
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+
+    <!--
+      The app ships Czech and English RESX resources, so invariant globalization mode
+      must stay off. Turning it on strips ICU data and breaks CultureInfo/RESX fallback.
+    -->
+    <InvariantGlobalization>false</InvariantGlobalization>
+
+    <!--
+      Lets Visual Studio skip projects that are already up to date. Noticeable on a
+      four-project solution where three of them multi-target four platforms.
+    -->
+    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+
+    <!--
+      Report XAML bindings that could not be compiled (missing or wrong x:DataType).
+      Uncompiled bindings are reflection-based, which is exactly what trimming removes,
+      so this is the earliest possible warning that a Release build will misbehave.
+      Set TreatWarningsAsErrors alongside it to make these hard failures.
+    -->
+    <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
+  </PropertyGroup>
+
+  <!-- ======================================================================
+       Debug: optimise for inner-loop speed and debuggability.
+       ====================================================================== -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <Optimize>false</Optimize>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+
+    <!--
+      Stated explicitly rather than relying on defaults, so that no Release-only
+      size/startup optimisation can ever leak into a Debug build and cost inner-loop time.
+    -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <PublishAot>false</PublishAot>
+
+    <!-- .NET Hot Reload and XAML Hot Reload need the metadata updater. -->
+    <MetadataUpdaterSupport>true</MetadataUpdaterSupport>
+  </PropertyGroup>
+
+  <!-- ======================================================================
+       Release: optimise for size and startup.
+       ====================================================================== -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <Optimize>true</Optimize>
+
+    <!--
+      Keep portable PDBs. DebugType=portable together with DebugSymbols=true does NOT
+      make the Android package debuggable (that requires DebugType to be empty or Full),
+      but it is what makes a stack trace off a test device readable.
+    -->
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+
+    <!--
+      BCL trimming feature switches. Each removes framework code this app never reaches.
+      None of them changes observable behaviour here, which is the bar for splitting a
+      switch by configuration at all.
+
+      These matter on Windows, which is not trimmed. On Android they are redundant:
+      PublishTrimmed=true makes the SDK apply the same switches by itself (verified by
+      diffing the generated runtimeconfig.json with and without this file). Stating them
+      here keeps Release consistent across platforms rather than depending on which
+      platform happens to trim.
+    -->
+    <EventSourceSupport>false</EventSourceSupport>
+    <MetricsSupport>false</MetricsSupport>
+    <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+    <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+    <XmlResolverIsNetworkingEnabledByDefault>false</XmlResolverIsNetworkingEnabledByDefault>
+    <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
+    <EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
+
+    <!-- The app makes no HTTP calls; drop the managed handler on Android/iOS. -->
+    <UseNativeHttpHandler>true</UseNativeHttpHandler>
+
+    <!--
+      Deliberately NOT set:
+        InvariantGlobalization - would break the cs/en localisation. See the note on the
+                                 explicit false above.
+        StackTraceSupport      - removing it strips the stack trace from every exception,
+                                 which makes a crash off a test device undiagnosable.
+
+      Worth knowing: UseSystemResourceKeys is NOT set here, but trimming turns it on by
+      itself, so on Android Release the BCL's own exception messages are already reduced
+      to bare resource ids (e.g. "Arg_NullReferenceException"). Your own exception
+      messages are unaffected. To get the full framework messages back in Release:
+        <UseSystemResourceKeys>false</UseSystemResourceKeys>
+    -->
+  </PropertyGroup>
+
+</Project>
