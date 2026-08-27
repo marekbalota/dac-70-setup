@@ -12,4 +12,8 @@ public interface IConfigurationsService
     Task DeleteConfiguration(Configuration configuration);
 
     void SelectConfiguration(Configuration configuration);
+
+    Task SaveSettingAsync(Configuration configuration, Dac70SettingValue value);
+
+    Task DeleteSettingsAsync(Configuration configuration, IReadOnlyList<Dac70SettingValue> values);
 }

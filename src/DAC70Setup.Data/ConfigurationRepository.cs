@@ -76,4 +76,48 @@ public class ConfigurationRepository : IConfigurationRepository
             transaction.Delete<ConfigurationRow>(id);
         });
     }
+
+    public async Task UpsertSettingAsync(Guid configId, SettingKey key, byte[] valueBytes)
+    {
+        var connection = await _connection.Value;
+        byte messageType = (byte)key.Type;
+        byte settingId = key.Id;
+
+        await connection.RunInTransactionAsync(transaction =>
+        {
+            SettingRow? existing = transaction.Table<SettingRow>()
+                .FirstOrDefault(s => s.ConfigId == configId && s.MessageType == messageType && s.SettingId == settingId);
+
+            if (existing != null)
+            {
+                existing.ValueBytes = valueBytes;
+                transaction.Update(existing);
+            }
+            else
+            {
+                transaction.Insert(new SettingRow
+                {
+                    ConfigId = configId,
+                    MessageType = messageType,
+                    SettingId = settingId,
+                    ValueBytes = valueBytes
+                });
+            }
+        });
+    }
+
+    public async Task DeleteSettingsAsync(Guid configId, IEnumerable<SettingKey> keys)
+    {
+        var connection = await _connection.Value;
+        var keySet = keys.ToHashSet();
+
+        await connection.RunInTransactionAsync(transaction =>
+        {
+            foreach (var key in keySet)
+            {
+                transaction.Table<SettingRow>().Delete(s =>
+                    s.ConfigId == configId && s.MessageType == (byte)key.Type && s.SettingId == key.Id);
+            }
+        });
+    }
 }

@@ -63,4 +63,37 @@ public class ConfigurationsService : IConfigurationsService
         _dataModel.SelectedConfiguration = configuration;
         Preferences.Default.Set(SelectedConfigurationIdKey, configuration.Id.ToString());
     }
+
+    public async Task SaveSettingAsync(Configuration configuration, Dac70SettingValue value)
+    {
+        var valueBytes = value.GetValueBytes();
+
+        await _repository.UpsertSettingAsync(configuration.Id, value.Definition.Key, valueBytes);
+
+        Dac70SettingValue? existing = configuration.Settings.FirstOrDefault(s => s.Definition.Key == value.Definition.Key);
+
+        if (existing != null)
+        {
+            existing.SetValueBytes(valueBytes);
+        }
+        else
+        {
+            configuration.Settings.Add(value.Definition.CreateValue(valueBytes));
+        }
+    }
+
+    public async Task DeleteSettingsAsync(Configuration configuration, IReadOnlyList<Dac70SettingValue> values)
+    {
+        var keys = values.Select(v => v.Definition.Key).ToHashSet();
+
+        await _repository.DeleteSettingsAsync(configuration.Id, keys);
+
+        for (int i = configuration.Settings.Count - 1; i >= 0; i--)
+        {
+            if (keys.Contains(configuration.Settings[i].Definition.Key))
+            {
+                configuration.Settings.RemoveAt(i);
+            }
+        }
+    }
 }

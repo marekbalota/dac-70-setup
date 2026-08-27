@@ -10,4 +10,8 @@ public interface IConfigurationRepository
     Task AddConfigurationAsync(Guid id, string name, DateTime created);
 
     Task DeleteConfigurationAsync(Guid id);
+
+    Task UpsertSettingAsync(Guid configId, SettingKey key, byte[] valueBytes);
+
+    Task DeleteSettingsAsync(Guid configId, IEnumerable<SettingKey> keys);
 }
