@@ -43,6 +43,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Features\AddSetting\Resources\AddSettingPageSR.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AddSettingPageSR.resx</DependentUpon>
+    </Compile>
     <Compile Update="Features\ConfigurationsLanding\Resources\ConfigurationsLandingPageSR.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -81,6 +86,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Features\AddSetting\Resources\AddSettingPageSR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AddSettingPageSR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Features\ConfigurationsLanding\Resources\ConfigurationsLandingPageSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ConfigurationsLandingPageSR.Designer.cs</LastGenOutput>
