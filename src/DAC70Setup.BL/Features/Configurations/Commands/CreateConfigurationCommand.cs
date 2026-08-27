@@ -18,8 +18,13 @@ public class CreateConfigurationCommand : ActiveCommandBase<ConfigurationsPageVi
         _configurationsService = configurationsService;
         _pageDialogService = pageDialogService;
         _localizationResourceManager = localizationResourceManager;
+    }
 
-        ObserveProperties(nameof(ViewModel.IsBusy));
+    protected override void OnViewModelSet()
+    {
+        base.OnViewModelSet();
+
+        ObserveProperty(() => ViewModel.IsBusy);
     }
 
     protected override bool CanExecute(object? parameter)

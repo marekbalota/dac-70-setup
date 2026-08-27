@@ -14,8 +14,14 @@ public class SelectConfigurationCommand : ActiveCommandBase<ConfigurationsPageVi
     {
         _configurationsService = configurationsService;
         _navigationService = navigationService;
+    }
 
-        ObserveProperties(nameof(ViewModel.IsBusy), nameof(ViewModel.SelectedConfiguration));
+    protected override void OnViewModelSet()
+    {
+        base.OnViewModelSet();
+
+        ObserveProperty(() => ViewModel.IsBusy);
+        ObserveProperty(() => ViewModel.SelectedConfiguration);
     }
 
     protected override bool CanExecute(object? parameter)

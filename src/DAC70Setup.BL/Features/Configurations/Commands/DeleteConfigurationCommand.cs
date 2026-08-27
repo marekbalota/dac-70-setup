@@ -18,8 +18,14 @@ public class DeleteConfigurationCommand : ActiveCommandBase<ConfigurationsPageVi
         _configurationsService = configurationsService;
         _pageDialogService = pageDialogService;
         _localizationResourceManager = localizationResourceManager;
+    }
 
-        ObserveProperties(nameof(ViewModel.IsBusy), nameof(ViewModel.SelectedConfiguration));
+    protected override void OnViewModelSet()
+    {
+        base.OnViewModelSet();
+
+        ObserveProperty(() => ViewModel.IsBusy);
+        ObserveProperty(() => ViewModel.SelectedConfiguration);
     }
 
     protected override bool CanExecute(object? parameter)

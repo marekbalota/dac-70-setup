@@ -19,9 +19,9 @@ public abstract class ActiveCommandBase<TModel> : CommandBase<TModel>
         IsActive = ViewModel.IsActive;
     }
 
-    protected override void OnDestroy()
+    protected override void OnViewModelUnset()
     {
-        base.OnDestroy();
+        base.OnViewModelUnset();
 
         ViewModel.IsActiveChanged -= OnIsActiveChanged;
     }
