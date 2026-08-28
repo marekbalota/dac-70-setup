@@ -37,6 +37,11 @@ public static class MauiProgram
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("Font_Awesome_7_Free-Solid-900.otf", "FA-S");
+                fonts.AddFont("IBMPlexSans-Regular.ttf", "PlexSans");
+                fonts.AddFont("IBMPlexSans-Medium.ttf", "PlexSansMedium");
+                fonts.AddFont("IBMPlexSans-SemiBold.ttf", "PlexSansSemiBold");
+                fonts.AddFont("IBMPlexMono-Regular.ttf", "PlexMono");
+                fonts.AddFont("IBMPlexMono-Medium.ttf", "PlexMonoMedium");
             })
             .UseLocalizationResourceManager(localization =>
             {
