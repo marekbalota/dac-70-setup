@@ -4,7 +4,9 @@ namespace DAC70Setup.BL.Services.Navigation;
 
 public interface INavigationUri
 {
-    INavigationBuilder CreateConfigurationsNavigationBuilder();
+    INavigationBuilder CreateRootNavigationBuilder();
 
-    INavigationBuilder CreateSettingsNavigationBuilder();
+    INavigationBuilder CreateRelativeConfigurationsNavigationBuilder();
+
+    INavigationBuilder CreateRelativeSettingsNavigationBuilder();
 }

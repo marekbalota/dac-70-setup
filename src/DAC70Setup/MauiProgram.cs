@@ -109,6 +109,6 @@ public static class MauiProgram
     {
         var navigationUri = containerProvider.Resolve<INavigationUri>();
 
-        return navigationService.NavigateAsync(navigationUri.CreateConfigurationsNavigationBuilder().UseAbsoluteNavigation().Uri);
+        return navigationService.NavigateAsync(navigationUri.CreateRootNavigationBuilder().Uri);
     }
 }

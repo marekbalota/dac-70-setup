@@ -2,12 +2,13 @@
 
 public class FlyoutNavigationItem : BindableBase
 {
-    public FlyoutNavigationItem(string name, string description, string icon, Uri navigateTo)
+    public FlyoutNavigationItem(string name, string description, string icon, Uri navigateTo, bool isCurrent = false)
     {
         NameKey = name;
         DescriptionKey = description;
         Icon = icon;
         NavigateTo = navigateTo;
+        IsCurrent = isCurrent;
     }
 
     private string _nameKey;
@@ -36,5 +37,12 @@ public class FlyoutNavigationItem : BindableBase
     {
         get => _navigateTo;
         set => SetProperty(ref _navigateTo, value);
+    }
+
+    private bool _isCurrent;
+    public bool IsCurrent
+    {
+        get => _isCurrent;
+        set => SetProperty(ref _isCurrent, value);
     }
 }

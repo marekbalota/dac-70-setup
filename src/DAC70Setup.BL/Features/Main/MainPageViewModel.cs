@@ -18,9 +18,18 @@ public class MainPageViewModel : ViewModelBase
         _navigationService = navigationService;
         _navigationUri = navigationUri;
 
-        ItemSelectedCommand = new DelegateCommand(async () =>
+        NavigateCommand = new DelegateCommand<FlyoutNavigationItem>(async item =>
         {
-            await _navigationService.NavigateAsync(SelectedItem?.NavigateTo);
+            var result = await _navigationService.NavigateAsync(item.NavigateTo);
+            if (!result.Success)
+            {
+                return;
+            }
+
+            foreach (var navigationItem in NavigationItems)
+            {
+                navigationItem.IsCurrent = ReferenceEquals(navigationItem, item);
+            }
         });
 
         NavigationItems = GetNavigationItems().ToArray();
@@ -33,18 +42,11 @@ public class MainPageViewModel : ViewModelBase
         set => SetProperty(ref _navigationItems, value);
     }
 
-    private FlyoutNavigationItem? _selectedItem;
-    public FlyoutNavigationItem? SelectedItem
-    {
-        get => _selectedItem;
-        set => SetProperty(ref _selectedItem, value);
-    }
-
-    public DelegateCommand ItemSelectedCommand { get; }
+    public DelegateCommand<FlyoutNavigationItem> NavigateCommand { get; }
 
     private IEnumerable<FlyoutNavigationItem> GetNavigationItems()
     {
-        yield return new FlyoutNavigationItem(nameof(MainPageSR.Configurations), nameof(MainPageSR.ConfigurationsDesc), AwesomeSolidIconFont.Toolbox, _navigationUri.CreateConfigurationsNavigationBuilder().UseAbsoluteNavigation().Uri);
-        yield return new FlyoutNavigationItem(nameof(MainPageSR.Settings), nameof(MainPageSR.SettingsDesc), AwesomeSolidIconFont.Gear, _navigationUri.CreateSettingsNavigationBuilder().UseAbsoluteNavigation().Uri);
+        yield return new FlyoutNavigationItem(nameof(MainPageSR.Configurations), nameof(MainPageSR.ConfigurationsDesc), AwesomeSolidIconFont.Toolbox, _navigationUri.CreateRelativeConfigurationsNavigationBuilder().Uri, isCurrent: true);
+        yield return new FlyoutNavigationItem(nameof(MainPageSR.Settings), nameof(MainPageSR.SettingsDesc), AwesomeSolidIconFont.Gear, _navigationUri.CreateRelativeSettingsNavigationBuilder().Uri);
     }
 }

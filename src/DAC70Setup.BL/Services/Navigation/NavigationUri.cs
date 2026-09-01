@@ -16,10 +16,28 @@ public class NavigationUri : INavigationUri
         _navigationService = navigationService;
     }
 
-    public INavigationBuilder CreateConfigurationsNavigationBuilder()
+    public INavigationBuilder CreateRootNavigationBuilder()
+    {
+        return CreateConfigurationsNavigationBuilder(_navigationService.CreateBuilder()
+            .AddSegment(nameof(MainPage)))
+            .UseAbsoluteNavigation();
+    }
+
+    public INavigationBuilder CreateRelativeConfigurationsNavigationBuilder()
+    {
+        return CreateConfigurationsNavigationBuilder(_navigationService.CreateBuilder());
+    }
+
+    public INavigationBuilder CreateRelativeSettingsNavigationBuilder()
     {
         return _navigationService.CreateBuilder()
-            .AddSegment(nameof(MainPage))
+            .AddNavigationPage()
+            .AddSegment(nameof(SettingsPage));
+    }
+
+    private static INavigationBuilder CreateConfigurationsNavigationBuilder(INavigationBuilder builder)
+    {
+        return builder
             .AddNavigationPage()
             .AddTabbedSegment(nameof(ConfigurationsLandingPage), config =>
             {
@@ -27,13 +45,5 @@ public class NavigationUri : INavigationUri
                 config.CreateTab<EditConfigurationPage>();
                 config.CreateTab<ConfigurationsPage>();
             });
-    }
-
-    public INavigationBuilder CreateSettingsNavigationBuilder()
-    {
-        return _navigationService.CreateBuilder()
-            .AddSegment(nameof(MainPage))
-            .AddNavigationPage()
-            .AddSegment(nameof(SettingsPage));
     }
 }

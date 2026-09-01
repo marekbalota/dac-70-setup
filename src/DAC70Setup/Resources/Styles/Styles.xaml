@@ -35,9 +35,9 @@
 
     <Style x:Key="PageTitle" TargetType="Label">
         <Setter Property="FontFamily" Value="PlexSansSemiBold" />
-        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontSize" Value="19" />
         <Setter Property="TextColor"
-                Value="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+                Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
     </Style>
 
     <Style x:Key="CardTitle" TargetType="Label">

@@ -8,26 +8,64 @@
             x:DataType="local:MainPageViewModel"
             Title="MainPage">
     <FlyoutPage.Flyout>
-        <ContentPage Title="Menu">
-            <StackLayout>
-                <StackLayout Padding="20" Margin="0" Spacing="5" BackgroundColor="Gray">
-                    <Label Text="DAC-70 Setup" FontSize="Title"/>
-                </StackLayout>
+        <ContentPage Title="Menu" x:Name="FlyoutRoot">
+            <Grid RowDefinitions="Auto,*">
+                <VerticalStackLayout Grid.Row="0" Padding="20,26,20,18"
+                                     Background="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}">
+                    <Label Text="DAC-70 Setup" Style="{StaticResource PageTitle}" />
+                </VerticalStackLayout>
 
-                <CollectionView ItemsSource="{Binding NavigationItems, Mode=OneTime}" Margin="0" SelectionMode="Single" SelectionChangedCommand="{Binding ItemSelectedCommand, Mode=OneTime}" SelectedItem="{Binding SelectedItem}">
+                <CollectionView Grid.Row="1" ItemsSource="{Binding NavigationItems, Mode=OneTime}"
+                                SelectionMode="None" Margin="8,10">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="3" />
+                    </CollectionView.ItemsLayout>
+
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:FlyoutNavigationItem">
-                            <HorizontalStackLayout>
-                                <Label FontFamily="FA-S" Text="{Binding Icon, Mode=OneTime}" VerticalOptions="Center" Margin="5,0,0,0" WidthRequest="45" MinimumWidthRequest="45" VerticalTextAlignment="Center" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
-                                <StackLayout Margin="0,5,10,5" Spacing ="2">
-                                    <Label Text="{localization:TranslateBinding NameKey, TranslateValue=True}" FontAttributes="Bold"  HorizontalOptions="Start" HorizontalTextAlignment="Start" FontSize="Subtitle"/>
-                                    <Label Text="{localization:TranslateBinding DescriptionKey, TranslateValue=True}"  HorizontalOptions="Start" HorizontalTextAlignment="Start" FontSize="Micro"/>
-                                </StackLayout>
-                            </HorizontalStackLayout>
+                            <ContentView x:Name="FlyoutItem" Padding="0,11,12,11">
+                                <ContentView.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                            Command="{Binding Source={x:Reference FlyoutRoot}, Path=BindingContext.NavigateCommand}"
+                                            CommandParameter="{Binding Source={x:Reference FlyoutItem}, Path=BindingContext}" />
+                                </ContentView.GestureRecognizers>
+
+                                <Grid ColumnDefinitions="3,Auto,*">
+                                    <BoxView Grid.Column="0" WidthRequest="3" HeightRequest="22" CornerRadius="2" HorizontalOptions="Start"
+                                             VerticalOptions="Center" IsVisible="{Binding IsCurrent}"
+                                             Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+
+                                    <Label Grid.Column="1" FontFamily="FA-S" FontSize="17" WidthRequest="24"
+                                           Margin="9,0,0,0" Text="{Binding Icon, Mode=OneTime}"
+                                           HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsCurrent}" Value="True">
+                                                <Setter Property="TextColor"
+                                                        Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+
+                                    <VerticalStackLayout Grid.Column="2" Spacing="1" Margin="12,0,0,0">
+                                        <Label Text="{localization:TranslateBinding NameKey, TranslateValue=True}"
+                                               Style="{StaticResource CardTitle}">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsCurrent}" Value="True">
+                                                    <Setter Property="TextColor"
+                                                            Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                        <Label Text="{localization:TranslateBinding DescriptionKey, TranslateValue=True}"
+                                               Style="{StaticResource CardCaption}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </ContentView>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-            </StackLayout>
+            </Grid>
         </ContentPage>
     </FlyoutPage.Flyout>
 </FlyoutPage>
