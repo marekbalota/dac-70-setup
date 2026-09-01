@@ -1,7 +1,9 @@
 ﻿using DAC70Setup.BL.Features.Configurations.Commands;
+using DAC70Setup.BL.Features.SelectedConfiguration;
 using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Models.Commands;
 using DAC70Setup.BL.Models.ViewModels;
+using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Commands;
 
 namespace DAC70Setup.BL.Features.Configurations;
@@ -9,15 +11,21 @@ namespace DAC70Setup.BL.Features.Configurations;
 public class ConfigurationsPageViewModel : TabViewModelBase
 {
     private readonly IApplicationCommands _applicationCommands;
+    private readonly IConfigurationsService _configurationsService;
+    private readonly INavigationService _navigationService;
 
     public ConfigurationsPageViewModel(DataModel model,
         IApplicationCommands applicationCommands,
         CreateConfigurationCommand createConfigurationCommand,
         DeleteConfigurationCommand deleteConfigurationCommand,
-        SelectConfigurationCommand selectConfigurationCommand)
+        SelectConfigurationCommand selectConfigurationCommand,
+        IConfigurationsService configurationsService,
+        INavigationService navigationService)
     {
         Model = model;
         _applicationCommands = applicationCommands;
+        _configurationsService = configurationsService;
+        _navigationService = navigationService;
 
         CreateConfigurationCommand = createConfigurationCommand;
         DeleteConfigurationCommand = deleteConfigurationCommand;
@@ -26,6 +34,12 @@ public class ConfigurationsPageViewModel : TabViewModelBase
         _applicationCommands.SelectCommand.RegisterCommand(SelectConfigurationCommand);
         _applicationCommands.RemoveCommand.RegisterCommand(DeleteConfigurationCommand);
         _applicationCommands.AddCommand.RegisterCommand(CreateConfigurationCommand);
+
+        OpenConfigurationCommand = new DelegateCommand<Configuration>(async configuration =>
+        {
+            _configurationsService.SelectConfiguration(configuration);
+            await _navigationService.SelectTabAsync(nameof(SelectedConfigurationPage));
+        });
     }
 
     public DataModel Model { get; }
@@ -42,6 +56,8 @@ public class ConfigurationsPageViewModel : TabViewModelBase
     public CommandBase DeleteConfigurationCommand { get; }
 
     public CommandBase SelectConfigurationCommand { get; }
+
+    public DelegateCommand<Configuration> OpenConfigurationCommand { get; }
 
     protected override async Task InitializeAsyncInt(INavigationParameters parameters)
     {

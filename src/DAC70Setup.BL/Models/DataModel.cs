@@ -15,6 +15,15 @@ public class DataModel : BindableBase
     public Configuration? SelectedConfiguration
     {
         get => _selectedConfiguration;
-        set => SetProperty(ref _selectedConfiguration, value);
+        set
+        {
+            Configuration? previous = _selectedConfiguration;
+
+            if (SetProperty(ref _selectedConfiguration, value))
+            {
+                previous?.IsActive = false;
+                value?.IsActive = true;
+            }
+        }
     }
 }
