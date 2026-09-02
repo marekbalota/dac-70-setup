@@ -37,13 +37,8 @@ public class Configuration : NotifyPropertyChangedBase
         set => SetProperty(ref _isActive, value);
     }
 
-    public string DateCreatedText => Created.ToString("d");
-
-    public string TimeCreatedText => Created.ToString("t");
-
+    // TODO: this needs to support translation
     public string SettingsCountText => $"{Settings.Count} settings";
-
-    public string CreatedText => $"{DateCreatedText} · {TimeCreatedText}";
 
     public ObservableCollection<Dac70SettingValue> Settings { get; } = new ObservableCollection<Dac70SettingValue>();
 }

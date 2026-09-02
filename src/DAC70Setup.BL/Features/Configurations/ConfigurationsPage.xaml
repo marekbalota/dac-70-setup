@@ -98,9 +98,9 @@
                                 </VerticalStackLayout>
 
                                 <VerticalStackLayout Grid.Column="2" VerticalOptions="Start">
-                                    <Label Text="{Binding DateCreatedText}" Style="{StaticResource Timestamp}"
+                                    <Label Text="{Binding Created, StringFormat='{0:d}'}" Style="{StaticResource Timestamp}"
                                            HorizontalTextAlignment="End" />
-                                    <Label Text="{Binding TimeCreatedText}" Style="{StaticResource Timestamp}"
+                                    <Label Text="{Binding Created, StringFormat='{0:t}'}" Style="{StaticResource Timestamp}"
                                            HorizontalTextAlignment="End" />
                                 </VerticalStackLayout>
                             </Grid>
