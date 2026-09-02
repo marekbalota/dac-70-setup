@@ -62,11 +62,29 @@ namespace DAC70Setup.BL.Features.SelectedConfiguration.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Export to file.
+        /// </summary>
+        public static string ExportToFile {
+            get {
+                return ResourceManager.GetString("ExportToFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Operations.
         /// </summary>
         public static string SelectedConfigurationTitle {
             get {
                 return ResourceManager.GetString("SelectedConfigurationTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send to device.
+        /// </summary>
+        public static string SendToDevice {
+            get {
+                return ResourceManager.GetString("SendToDevice", resourceCulture);
             }
         }
     }

@@ -61,6 +61,15 @@ namespace DAC70Setup.BL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Download from device.
+        /// </summary>
+        public static string DownloadFromDevice {
+            get {
+                return ResourceManager.GetString("DownloadFromDevice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Go to configurations.
         /// </summary>
         public static string GoToConfigurations {

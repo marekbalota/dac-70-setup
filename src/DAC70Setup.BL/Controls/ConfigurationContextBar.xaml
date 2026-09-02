@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
+             x:Class="DAC70Setup.BL.Controls.ConfigurationContextBar"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}">
+
+    <ContentView.ControlTemplate>
+        <ControlTemplate x:DataType="controls:ConfigurationContextBar">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="9" Padding="15,8">
+
+                <Ellipse Grid.Column="0" WidthRequest="7" HeightRequest="7" VerticalOptions="Center"
+                         Fill="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+
+                <Label Grid.Column="1" Text="{TemplateBinding ConfigurationName}"
+                       Style="{StaticResource ContextBarTitle}" />
+
+                <ContentPresenter Grid.Column="2" />
+            </Grid>
+        </ControlTemplate>
+    </ContentView.ControlTemplate>
+</ContentView>

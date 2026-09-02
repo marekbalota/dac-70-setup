@@ -15,9 +15,24 @@ public class SelectedConfigurationPageViewModel : TabViewModelBase
 
         GoToConfigurationsCommand = new DelegateCommand(async () =>
             await _navigationService.SelectTabAsync(nameof(ConfigurationsPage)));
+
+        // TODO: write the selected configuration to the connected device.
+        SendToDeviceCommand = new DelegateCommand(() => { });
+
+        // TODO: save the selected configuration to a file the user picks.
+        ExportConfigurationCommand = new DelegateCommand(() => { });
+
+        // TODO: read the device's current configuration into a new configuration.
+        DownloadFromDeviceCommand = new DelegateCommand(() => { });
     }
 
     public DataModel Model { get; }
 
     public DelegateCommand GoToConfigurationsCommand { get; }
+
+    public DelegateCommand SendToDeviceCommand { get; }
+
+    public DelegateCommand ExportConfigurationCommand { get; }
+
+    public DelegateCommand DownloadFromDeviceCommand { get; }
 }

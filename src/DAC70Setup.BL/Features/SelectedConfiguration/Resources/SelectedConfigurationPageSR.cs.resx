@@ -120,4 +120,10 @@
   <data name="SelectedConfigurationTitle" xml:space="preserve">
     <value>Operace</value>
   </data>
+  <data name="SendToDevice" xml:space="preserve">
+    <value>Odeslat na zařízení</value>
+  </data>
+  <data name="ExportToFile" xml:space="preserve">
+    <value>Exportovat do souboru</value>
+  </data>
 </root>
