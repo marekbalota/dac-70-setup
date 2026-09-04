@@ -61,6 +61,24 @@ namespace DAC70Setup.BL.Features.EditConfiguration.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string CancelSelection {
+            get {
+                return ResourceManager.GetString("CancelSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string DeleteSelection {
+            get {
+                return ResourceManager.GetString("DeleteSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
         public static string DeleteSettingsConfirmAccept {
@@ -113,5 +131,24 @@ namespace DAC70Setup.BL.Features.EditConfiguration.Resources {
                 return ResourceManager.GetString("NoSettingsInConfiguration", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None selected.
+        /// </summary>
+        public static string NoSettingsSelected {
+            get {
+                return ResourceManager.GetString("NoSettingsSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} selected.
+        /// </summary>
+        public static string SelectedSettingsCount {
+            get {
+                return ResourceManager.GetString("SelectedSettingsCount", resourceCulture);
+            }
+        }
+        
     }
 }

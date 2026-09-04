@@ -3,12 +3,15 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using DAC70Setup.BL.Features.Configurations;
 using DAC70Setup.BL.Features.EditConfiguration.Commands;
+using DAC70Setup.BL.Features.EditConfiguration.Resources;
+using DAC70Setup.BL.Features.EditSetting;
 using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Models.Commands;
 using DAC70Setup.BL.Models.ViewModels;
+using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Commands;
-using DAC70Setup.Core.Models.Definitions;
 using DAC70Setup.Core.Models.Values;
+using LocalizationResourceManager.Maui;
 
 namespace DAC70Setup.BL.Features.EditConfiguration;
 
@@ -16,31 +19,103 @@ public class EditConfigurationPageViewModel : TabViewModelBase
 {
     private readonly INavigationService _navigationService;
     private readonly IApplicationCommands _applicationCommands;
+    private readonly IConfigurationsService _configurationsService;
+    private readonly IPageDialogService _pageDialogService;
+    private readonly ILocalizationResourceManager _localizationResourceManager;
 
     private Configuration? _observedConfiguration;
 
     public EditConfigurationPageViewModel(DataModel model,
         INavigationService navigationService,
         IApplicationCommands applicationCommands,
+        IConfigurationsService configurationsService,
+        IPageDialogService pageDialogService,
+        ILocalizationResourceManager localizationResourceManager,
         AddSettingCommand addSettingCommand,
-        DeleteSettingCommand deleteSettingCommand,
-        SelectSettingCommand selectSettingCommand)
+        BeginSelectionCommand beginSelectionCommand)
     {
         Model = model;
         _navigationService = navigationService;
         _applicationCommands = applicationCommands;
+        _configurationsService = configurationsService;
+        _pageDialogService = pageDialogService;
+        _localizationResourceManager = localizationResourceManager;
 
         GoToConfigurationsCommand = new DelegateCommand(async () =>
             await _navigationService.SelectTabAsync(nameof(ConfigurationsPage)));
 
+        OpenSettingCommand = new DelegateCommand<Dac70SettingValue>(async setting =>
+        {
+            IsBusy = true;
+            try
+            {
+                var configuration = Model.SelectedConfiguration;
+                if (configuration == null)
+                {
+                    return;
+                }
+
+                var parameters = new NavigationParameters
+                {
+                    { EditSettingNavigationParameters.Configuration, configuration },
+                    { EditSettingNavigationParameters.SettingValue, setting }
+                };
+
+                await _navigationService.NavigateAsync(nameof(EditSettingPage), parameters);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }, _ => !IsBusy)
+            .ObservesProperty(() => IsBusy);
+
+        DeleteSelectionCommand = new DelegateCommand(async () =>
+        {
+            IsBusy = true;
+            try
+            {
+                var configuration = Model.SelectedConfiguration;
+                var settings = SelectedSettings.ToList();
+
+                if (configuration == null || settings.Count == 0)
+                {
+                    return;
+                }
+
+                bool confirmed = await _pageDialogService.DisplayAlertAsync(
+                    _localizationResourceManager[nameof(EditConfigurationPageSR.DeleteSettingsConfirmTitle)],
+                    _localizationResourceManager[nameof(EditConfigurationPageSR.DeleteSettingsConfirmMessage), settings.Count],
+                    _localizationResourceManager[nameof(EditConfigurationPageSR.DeleteSettingsConfirmAccept)],
+                    _localizationResourceManager[nameof(EditConfigurationPageSR.DeleteSettingsConfirmCancel)]);
+
+                if (!confirmed)
+                {
+                    return;
+                }
+
+                await _configurationsService.DeleteSettingsAsync(configuration, settings);
+
+                IsSelecting = false;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }, () => !IsBusy && IsSelecting && SelectedSettings.Count > 0)
+            .ObservesProperty(() => IsBusy)
+            .ObservesProperty(() => IsSelecting);
+
+        // TODO: read the device's current configuration into a new configuration.
+        DownloadFromDeviceCommand = new DelegateCommand(() => { });
+
         AddSettingCommand = addSettingCommand;
-        DeleteSettingCommand = deleteSettingCommand;
-        SelectSettingCommand = selectSettingCommand;
+        BeginSelectionCommand = beginSelectionCommand;
 
         _applicationCommands.AddCommand.RegisterCommand(AddSettingCommand);
-        _applicationCommands.RemoveCommand.RegisterCommand(DeleteSettingCommand);
-        _applicationCommands.SelectCommand.RegisterCommand(SelectSettingCommand);
+        _applicationCommands.RemoveCommand.RegisterCommand(BeginSelectionCommand);
 
+        SelectedSettings.CollectionChanged += OnSelectedSettingsChanged;
         Model.PropertyChanged += OnModelPropertyChanged;
 
         ObserveSelectedConfiguration();
@@ -50,15 +125,36 @@ public class EditConfigurationPageViewModel : TabViewModelBase
 
     public DelegateCommand GoToConfigurationsCommand { get; }
 
+    public DelegateCommand DownloadFromDeviceCommand { get; }
+
+    public DelegateCommand<Dac70SettingValue> OpenSettingCommand { get; }
+
+    public DelegateCommand DeleteSelectionCommand { get; }
+
     public CommandBase AddSettingCommand { get; }
 
-    public CommandBase DeleteSettingCommand { get; }
+    public CommandBase BeginSelectionCommand { get; }
 
-    public CommandBase SelectSettingCommand { get; }
+    public ObservableCollection<Dac70SettingValue> SelectedSettings { get; } = [];
 
-    public ObservableCollection<SettingValueGroup> SettingGroups { get; } = [];
+    private bool _isSelecting;
+    public bool IsSelecting
+    {
+        get => _isSelecting;
+        set => SetProperty(ref _isSelecting, value);
+    }
 
-    public ObservableCollection<object> SelectedSettings { get; } = [];
+    /// <summary>
+    /// Guards the toolbar's remove button: there is nothing to pick from an
+    /// empty configuration. The list draws its own empty message.
+    /// </summary>
+    public bool HasNoSettings => Model.SelectedConfiguration == null
+        || Model.SelectedConfiguration.Settings.Count == 0;
+
+    private void OnSelectedSettingsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        DeleteSelectionCommand.RaiseCanExecuteChanged();
+    }
 
     private void OnModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -82,67 +178,14 @@ public class EditConfigurationPageViewModel : TabViewModelBase
             _observedConfiguration.Settings.CollectionChanged += OnSettingsCollectionChanged;
         }
 
-        SelectedSettings.Clear();
+        IsSelecting = false;
 
-        SyncSettingGroups();
+        RaisePropertyChanged(nameof(HasNoSettings));
     }
 
     private void OnSettingsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        SyncSettingGroups();
-    }
-
-    private void SyncSettingGroups()
-    {
-        var settings = Model.SelectedConfiguration?.Settings ?? [];
-
-        List<IGrouping<PanelType, Dac70SettingValue>> groups = settings
-            .GroupBy(s => s.Definition.Panel)
-            .OrderBy(g => g.Key)
-            .ToList();
-
-        for (int i = SettingGroups.Count - 1; i >= 0; i--)
-        {
-            if (groups.All(g => g.Key != SettingGroups[i].Panel))
-            {
-                SettingGroups.RemoveAt(i);
-            }
-        }
-
-        for (int i = 0; i < groups.Count; i++)
-        {
-            var group = SettingGroups.FirstOrDefault(g => g.Panel == groups[i].Key);
-
-            if (group == null)
-            {
-                SettingGroups.Insert(i, new SettingValueGroup(groups[i].Key, groups[i]));
-            }
-            else
-            {
-                SyncGroupValues(group, groups[i]);
-            }
-        }
-    }
-
-    private static void SyncGroupValues(SettingValueGroup group, IEnumerable<Dac70SettingValue> values)
-    {
-        var target = values.ToList();
-
-        for (int i = group.Count - 1; i >= 0; i--)
-        {
-            if (!target.Contains(group[i]))
-            {
-                group.RemoveAt(i);
-            }
-        }
-
-        for (int i = 0; i < target.Count; i++)
-        {
-            if (!group.Contains(target[i]))
-            {
-                group.Insert(i, target[i]);
-            }
-        }
+        RaisePropertyChanged(nameof(HasNoSettings));
     }
 
     protected override async Task InitializeAsyncInt(INavigationParameters parameters)
@@ -150,8 +193,7 @@ public class EditConfigurationPageViewModel : TabViewModelBase
         await base.InitializeAsyncInt(parameters);
 
         AddSettingCommand.Initialize(this);
-        DeleteSettingCommand.Initialize(this);
-        SelectSettingCommand.Initialize(this);
+        BeginSelectionCommand.Initialize(this);
     }
 
     protected override void OnDestroy()
@@ -159,6 +201,7 @@ public class EditConfigurationPageViewModel : TabViewModelBase
         base.OnDestroy();
 
         Model.PropertyChanged -= OnModelPropertyChanged;
+        SelectedSettings.CollectionChanged -= OnSelectedSettingsChanged;
 
         if (_observedConfiguration != null)
         {
@@ -167,11 +210,9 @@ public class EditConfigurationPageViewModel : TabViewModelBase
         }
 
         _applicationCommands.AddCommand.UnregisterCommand(AddSettingCommand);
-        _applicationCommands.RemoveCommand.UnregisterCommand(DeleteSettingCommand);
-        _applicationCommands.SelectCommand.UnregisterCommand(SelectSettingCommand);
+        _applicationCommands.RemoveCommand.UnregisterCommand(BeginSelectionCommand);
 
         AddSettingCommand.Destroy();
-        DeleteSettingCommand.Destroy();
-        SelectSettingCommand.Destroy();
+        BeginSelectionCommand.Destroy();
     }
 }

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
+             xmlns:selection="clr-namespace:DAC70Setup.BL.Features.EditConfiguration.Controls"
+             xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
+             xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="DAC70Setup.BL.Features.EditConfiguration.Controls.SettingSelectionView"
+             x:Name="Root">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- CollectionView.EmptyView is not rendered while IsGrouped is true,
+             so the empty message is a sibling of the list rather than its own. -->
+        <VerticalStackLayout Grid.Row="0" Spacing="6" Padding="10" HorizontalOptions="Center" VerticalOptions="Center"
+                             IsVisible="{Binding IsEmpty, Source={x:Reference Root}, x:DataType={x:Type selection:SettingSelectionView}}">
+            <Label Text="{x:Static fontAwesome:AwesomeSolidIconFont.Sliders}" FontFamily="FA-S" FontSize="34" HorizontalOptions="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}" />
+            <Label Text="{localization:Translate NoSettingsInConfiguration}"
+                   Style="{StaticResource EmptyStateTitle}" />
+        </VerticalStackLayout>
+
+        <CollectionView Grid.Row="0" x:Name="Inner" SelectionMode="None" IsGrouped="True" Margin="0,4,0,0"
+                        IsVisible="{Binding IsEmpty, Source={x:Reference Root}, x:DataType={x:Type selection:SettingSelectionView}, Converter={toolkit:InvertedBoolConverter}}">
+            <CollectionView.GroupHeaderTemplate>
+                <DataTemplate x:DataType="selection:SettingValueGroup">
+                    <VerticalStackLayout>
+                        <Label Text="{Binding Panel}" Style="{StaticResource GroupHeader}" />
+                        <BoxView Style="{StaticResource RowDivider}" />
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.GroupHeaderTemplate>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="selection:SettingValueItem">
+                    <controls:SettingRow Name="{Binding Value.Definition.Name}" Value="{Binding Value.DisplayValueText}" IsSelected="{Binding IsSelected}"
+                                         IsSelecting="{Binding IsSelectionMode, Source={x:Reference Root}, x:DataType={x:Type selection:SettingSelectionView}}">
+                        <controls:SettingRow.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding PressCommand, Source={x:Reference Root}, x:DataType={x:Type selection:SettingSelectionView}}"
+                                                  CommandParameter="{Binding .}" />
+                        </controls:SettingRow.GestureRecognizers>
+                    </controls:SettingRow>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="9" Padding="8,8,15,8"
+              IsVisible="{Binding IsSelectionMode, Source={x:Reference Root}, x:DataType={x:Type selection:SettingSelectionView}}"
+              Background="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}">
+
+            <Button Grid.Column="0" Text="{x:Static fontAwesome:AwesomeSolidIconFont.Xmark}"
+                    Command="{Binding CancelCommand, Source={x:Reference Root}, x:DataType={x:Type selection:SettingSelectionView}}"
+                    SemanticProperties.Description="{localization:Translate CancelSelection}" FontFamily="FA-S" FontSize="17"
+                    Padding="0" MinimumWidthRequest="40" MinimumHeightRequest="40" Background="Transparent"
+                    TextColor="{AppThemeBinding Light={StaticResource OnPrimaryContainerLight}, Dark={StaticResource OnPrimaryContainerDark}}" />
+
+            <Label Grid.Column="1" Text="{Binding SelectionText, Source={x:Reference Root}, x:DataType={x:Type selection:SettingSelectionView}}"
+                   Style="{StaticResource ContextBarTitle}" />
+
+            <Button Grid.Column="2" Text="{localization:Translate DeleteSelection}"
+                    Command="{Binding DeleteCommand, Source={x:Reference Root}, x:DataType={x:Type selection:SettingSelectionView}}"
+                    Style="{StaticResource DestructiveButton}" FontSize="13" Padding="14,6" Margin="0,3" MinimumHeightRequest="34" />
+        </Grid>
+    </Grid>
+</ContentView>

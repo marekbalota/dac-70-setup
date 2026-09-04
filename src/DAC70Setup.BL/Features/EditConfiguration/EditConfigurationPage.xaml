@@ -2,11 +2,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:DAC70Setup.BL.Features.EditConfiguration"
-             xmlns:models="clr-namespace:DAC70Setup.BL.Models"
-             xmlns:values="clr-namespace:DAC70Setup.Core.Models.Values;assembly=DAC70Setup.Core"
              xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
+             xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
+             xmlns:selection="clr-namespace:DAC70Setup.BL.Features.EditConfiguration.Controls"
              x:Class="DAC70Setup.BL.Features.EditConfiguration.EditConfigurationPage"
              x:DataType="local:EditConfigurationPageViewModel"
              Title="{localization:Translate EditConfigurationTitle}">
@@ -16,44 +16,22 @@
     </ContentPage.IconImageSource>
 
     <Grid>
-        <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20"
-                     IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNullConverter}}">
-            <Label Text="{localization:Translate NoConfigurationSelected}" HorizontalOptions="Center"/>
-            <Button Text="{localization:Translate GoToConfigurations}" Command="{Binding GoToConfigurationsCommand}"/>
-        </StackLayout>
+        <controls:NoConfigurationSelectedView GoToConfigurationsCommand="{Binding GoToConfigurationsCommand}"
+                DownloadFromDeviceCommand="{Binding DownloadFromDeviceCommand}"
+                IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNullConverter}}" />
 
-        <Grid RowDefinitions="Auto,*" Margin="20" RowSpacing="10"
-              IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
-            <StackLayout Grid.Row="0" Spacing="10">
-                <Label Text="{Binding Model.SelectedConfiguration.Name}" FontSize="Title"/>
-                <Label Text="{Binding Model.SelectedConfiguration.DateCreatedText}"/>
-            </StackLayout>
+        <Grid RowDefinitions="Auto,*" IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
+            <controls:ConfigurationContextBar Grid.Row="0" ConfigurationName="{Binding Model.SelectedConfiguration.Name}">
+                <Label Text="{Binding Model.SelectedConfiguration.Created, StringFormat='{0:d} · {0:t}'}"
+                       Style="{StaticResource ContextBarValue}" />
+            </controls:ConfigurationContextBar>
 
-            <CollectionView Grid.Row="1" ItemsSource="{Binding SettingGroups}" SelectedItems="{Binding SelectedSettings}"
-                            SelectionMode="Multiple" IsGrouped="True">
-                <CollectionView.EmptyView>
-                    <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                        <Label Text="{localization:Translate NoSettingsInConfiguration}"/>
-                    </StackLayout>
-                </CollectionView.EmptyView>
-
-                <CollectionView.GroupHeaderTemplate>
-                    <DataTemplate x:DataType="models:SettingValueGroup">
-                        <Label Text="{Binding Panel}" FontAttributes="Bold" Margin="0,10,0,0"/>
-                    </DataTemplate>
-                </CollectionView.GroupHeaderTemplate>
-
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="values:Dac70SettingValue">
-                        <Border Margin="0,5">
-                            <Grid RowDefinitions="*,*" Margin="10">
-                                <Label Grid.Row="0" Text="{Binding Definition.Name}"/>
-                                <Label Grid.Row="1" Text="{Binding DisplayValueText}" FontSize="Caption"/>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+            <selection:SettingSelectionView Grid.Row="1"
+                    ItemsSource="{Binding Model.SelectedConfiguration.Settings}"
+                    SelectedItems="{Binding SelectedSettings}"
+                    IsSelectionMode="{Binding IsSelecting}"
+                    ItemPressedCommand="{Binding OpenSettingCommand}"
+                    DeleteCommand="{Binding DeleteSelectionCommand}" />
         </Grid>
     </Grid>
 </ContentPage>

@@ -18,12 +18,13 @@ public class AddSettingCommand : ActiveCommandBase<EditConfigurationPageViewMode
         base.OnViewModelSet();
 
         ObserveProperty(() => ViewModel.IsBusy);
+        ObserveProperty(() => ViewModel.IsSelecting);
         ObserveProperty(() => ViewModel.Model.SelectedConfiguration);
     }
 
     protected override bool CanExecute(object? parameter)
     {
-        return !ViewModel.IsBusy && ViewModel.Model.SelectedConfiguration != null;
+        return !ViewModel.IsBusy && !ViewModel.IsSelecting && ViewModel.Model.SelectedConfiguration != null;
     }
 
     protected override async void Execute(object? parameter)
