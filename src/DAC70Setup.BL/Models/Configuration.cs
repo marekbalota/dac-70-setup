@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using DAC70Setup.Core;
+using DAC70Setup.Core.Models.Definitions;
 using DAC70Setup.Core.Models.Values;
 
 namespace DAC70Setup.BL.Models;
@@ -16,7 +17,11 @@ public class Configuration : NotifyPropertyChangedBase
         Id = id;
         _name = name;
         Created = created;
-        Settings.CollectionChanged += (_, _) => RaisePropertyChanged(nameof(SettingsCountText));
+        Settings.CollectionChanged += (_, _) =>
+        {
+            RaisePropertyChanged(nameof(SettingsCountText));
+            RaisePropertyChanged(nameof(HasAvailableSettings));
+        };
     }
 
     public Guid Id { get; }
@@ -41,4 +46,13 @@ public class Configuration : NotifyPropertyChangedBase
     public string SettingsCountText => $"{Settings.Count} settings";
 
     public ObservableCollection<Dac70SettingValue> Settings { get; } = new ObservableCollection<Dac70SettingValue>();
+
+    public bool HasAvailableSettings => GetAvailableDefinitions().Any();
+
+    public IEnumerable<Dac70SettingDefinition> GetAvailableDefinitions()
+    {
+        var existingKeys = Settings.Select(s => s.Definition.Key).ToHashSet();
+
+        return Dac70SettingCatalog.All.Where(d => !existingKeys.Contains(d.Key));
+    }
 }

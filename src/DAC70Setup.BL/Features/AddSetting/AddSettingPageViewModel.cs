@@ -9,24 +9,51 @@ public class AddSettingPageViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;
 
-    private Configuration _configuration = null!;
-
     public AddSettingPageViewModel(INavigationService navigationService)
     {
         _navigationService = navigationService;
 
-        SelectDefinitionCommand = new DelegateCommand<Dac70SettingDefinition>(
-            async definition => await SelectDefinitionAsync(definition),
-            _ => !IsBusy)
+        SelectDefinitionCommand = new DelegateCommand<Dac70SettingDefinition>(async definition =>
+        {
+            IsBusy = true;
+            try
+            {
+                if (Configuration == null)
+                {
+                    return;
+                }
+
+                var parameters = new NavigationParameters
+                {
+                    { EditSettingNavigationParameters.Configuration, Configuration },
+                    { EditSettingNavigationParameters.SettingDefinition, definition }
+                };
+
+                await _navigationService.NavigateAsync(nameof(EditSettingPage), parameters);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }, _ => !IsBusy)
             .ObservesProperty(() => IsBusy);
+    }
+
+    private Configuration? _configuration;
+    public Configuration? Configuration
+    {
+        get => _configuration;
+        private set => SetProperty(ref _configuration, value);
     }
 
     private IReadOnlyList<SettingDefinitionGroup> _availableSettings = [];
     public IReadOnlyList<SettingDefinitionGroup> AvailableSettings
     {
         get => _availableSettings;
-        private set => SetProperty(ref _availableSettings, value);
+        private set => SetProperty(ref _availableSettings, value, () => RaisePropertyChanged(nameof(IsEmpty)));
     }
+
+    public bool IsEmpty => _availableSettings.Count == 0;
 
     public DelegateCommand<Dac70SettingDefinition> SelectDefinitionCommand { get; }
 
@@ -34,39 +61,11 @@ public class AddSettingPageViewModel : ViewModelBase
     {
         await base.InitializeAsyncInt(parameters);
 
-        _configuration = parameters.GetValue<Configuration>(EditSettingNavigationParameters.Configuration);
-    }
+        Configuration = parameters.GetValue<Configuration>(EditSettingNavigationParameters.Configuration);
 
-    protected override async Task OnNavigatedToInt(INavigationParameters parameters)
-    {
-        await base.OnNavigatedToInt(parameters);
-
-        var existingKeys = _configuration.Settings.Select(s => s.Definition.Key).ToHashSet();
-
-        AvailableSettings = Dac70SettingCatalog.All
-            .Where(d => !existingKeys.Contains(d.Key))
+        AvailableSettings = Configuration.GetAvailableDefinitions()
             .GroupBy(d => d.Panel)
             .Select(g => new SettingDefinitionGroup(g.Key, g))
             .ToList();
-    }
-
-    private async Task SelectDefinitionAsync(Dac70SettingDefinition definition)
-    {
-        IsBusy = true;
-
-        try
-        {
-            var parameters = new NavigationParameters
-            {
-                { EditSettingNavigationParameters.Configuration, _configuration },
-                { EditSettingNavigationParameters.SettingDefinition, definition }
-            };
-
-            await _navigationService.NavigateAsync(nameof(EditSettingPage), parameters);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
     }
 }
