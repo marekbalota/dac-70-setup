@@ -3,57 +3,73 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:DAC70Setup.BL.Features.EditSetting"
              xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
+             xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
              xmlns:selectors="clr-namespace:DAC70Setup.BL.Selectors"
-             xmlns:definitions="clr-namespace:DAC70Setup.Core.Models.Definitions;assembly=DAC70Setup.Core"
              xmlns:values="clr-namespace:DAC70Setup.Core.Models.Values;assembly=DAC70Setup.Core"
              xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="DAC70Setup.BL.Features.EditSetting.EditSettingPage"
              x:DataType="local:EditSettingPageViewModel"
-             Title="{Binding PageTitle}">
+             HideSoftInputOnTapped="True"
+             Title="{Binding SettingName}">
 
     <ContentPage.Resources>
         <DataTemplate x:Key="EnumEditorTemplate">
-            <Picker x:DataType="values:EnumSettingValue" Margin="20"
-                    ItemsSource="{Binding Definition.Options}"
-                    ItemDisplayBinding="{Binding Name, x:DataType=definitions:EnumOption}"
-                    SelectedItem="{Binding SelectedOption}"/>
+            <controls:OptionListEditor x:DataType="values:EnumSettingValue"
+                    Options="{Binding Definition.Options}"
+                    SelectedOption="{Binding SelectedOption}" />
         </DataTemplate>
 
         <DataTemplate x:Key="RangeEditorTemplate">
-            <controls:SliderEntryEditor x:DataType="values:RangeSettingValue" Margin="20"
-                    Minimum="{Binding Definition.Minimum}"
-                    Maximum="{Binding Definition.Maximum}"
-                    Value="{Binding Value}"/>
+            <ScrollView x:DataType="values:RangeSettingValue">
+                <VerticalStackLayout Padding="15,16" Spacing="12">
+                    <controls:SliderEntryEditor Name="{Binding Definition.Name}"
+                            Minimum="{Binding Definition.Minimum}"
+                            Maximum="{Binding Definition.Maximum}"
+                            Value="{Binding Value}" />
+
+                    <Label Text="{localization:Translate EditSettingEntryHint}" Padding="3,0"
+                           Style="{StaticResource CardCaption}" FontSize="12" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </ScrollView>
         </DataTemplate>
 
         <DataTemplate x:Key="PositionEditorTemplate">
-            <StackLayout x:DataType="values:PositionSettingValue" Margin="20" Spacing="10">
-                <Label Text="{localization:Translate EditSettingHorizontal}"/>
-                <controls:SliderEntryEditor
-                        Minimum="{Binding Definition.HorizontalMinimum}"
-                        Maximum="{Binding Definition.HorizontalMaximum}"
-                        Value="{Binding Horizontal}"/>
-                <Label Text="{localization:Translate EditSettingVertical}"/>
-                <controls:SliderEntryEditor
-                        Minimum="{Binding Definition.VerticalMinimum}"
-                        Maximum="{Binding Definition.VerticalMaximum}"
-                        Value="{Binding Vertical}"/>
-            </StackLayout>
+            <ScrollView x:DataType="values:PositionSettingValue">
+                <VerticalStackLayout Padding="15,16" Spacing="12">
+                    <controls:SliderEntryEditor Name="{localization:Translate EditSettingHorizontal}"
+                            Minimum="{Binding Definition.HorizontalMinimum}"
+                            Maximum="{Binding Definition.HorizontalMaximum}"
+                            Value="{Binding Horizontal}" />
+
+                    <controls:SliderEntryEditor Name="{localization:Translate EditSettingVertical}"
+                            Minimum="{Binding Definition.VerticalMinimum}"
+                            Maximum="{Binding Definition.VerticalMaximum}"
+                            Value="{Binding Vertical}" />
+
+                    <Label Text="{localization:Translate EditSettingEntryHint}" Padding="3,0"
+                           Style="{StaticResource CardCaption}" FontSize="12" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </ScrollView>
         </DataTemplate>
 
         <DataTemplate x:Key="SizeEditorTemplate">
-            <StackLayout x:DataType="values:SizeSettingValue" Margin="20" Spacing="10">
-                <Label Text="{localization:Translate EditSettingHorizontal}"/>
-                <controls:SliderEntryEditor
-                        Minimum="{Binding Definition.Minimum}"
-                        Maximum="{Binding Definition.Maximum}"
-                        Value="{Binding Horizontal}"/>
-                <Label Text="{localization:Translate EditSettingVertical}"/>
-                <controls:SliderEntryEditor
-                        Minimum="{Binding Definition.Minimum}"
-                        Maximum="{Binding Definition.Maximum}"
-                        Value="{Binding Vertical}"/>
-            </StackLayout>
+            <ScrollView x:DataType="values:SizeSettingValue">
+                <VerticalStackLayout Padding="15,16" Spacing="12">
+                    <controls:SliderEntryEditor Name="{localization:Translate EditSettingWidth}"
+                            Minimum="{Binding Definition.Minimum}"
+                            Maximum="{Binding Definition.Maximum}"
+                            Value="{Binding Horizontal}" />
+
+                    <controls:SliderEntryEditor Name="{localization:Translate EditSettingHeight}"
+                            Minimum="{Binding Definition.Minimum}"
+                            Maximum="{Binding Definition.Maximum}"
+                            Value="{Binding Vertical}" />
+
+                    <Label Text="{localization:Translate EditSettingEntryHint}" Padding="3,0"
+                           Style="{StaticResource CardCaption}" FontSize="12" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </ScrollView>
         </DataTemplate>
 
         <selectors:ValueEditorTemplateSelector x:Key="ValueEditorTemplateSelector"
@@ -63,15 +79,62 @@
                 SizeTemplate="{StaticResource SizeEditorTemplate}"/>
     </ContentPage.Resources>
 
-    <StackLayout Margin="20" Spacing="20">
-        <Label Text="{Binding SettingName}" FontSize="Title"/>
+    <Grid RowDefinitions="Auto,*,Auto" Background="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+        <VerticalStackLayout Grid.Row="0" Spacing="0">
+            <controls:ConfigurationContextBar ConfigurationName="{Binding Configuration.Name}">
+                <Label Text="{Binding Configuration.Created, StringFormat='{0:d} · {0:t}'}"
+                       Style="{StaticResource ContextBarValue}" />
+            </controls:ConfigurationContextBar>
 
-        <controls:TemplatedContentView Item="{Binding WorkingValue}"
-                     ItemTemplateSelector="{StaticResource ValueEditorTemplateSelector}"/>
+            <BoxView Style="{StaticResource RowDivider}" />
+        </VerticalStackLayout>
 
-        <StackLayout Orientation="Horizontal" Spacing="20" HorizontalOptions="End">
-            <Button Text="{localization:Translate EditSettingCancel}" Command="{Binding CancelCommand}"/>
-            <Button Text="{localization:Translate EditSettingSave}" Command="{Binding SaveCommand}"/>
-        </StackLayout>
-    </StackLayout>
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+            <Border Grid.Row="0" Margin="15,15,15,0" Padding="12" StrokeThickness="1" StrokeShape="RoundRectangle 12"
+                    IsVisible="{Binding DependencyNoticeText, Converter={toolkit:IsStringNotNullOrEmptyConverter}}"
+                    Stroke="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
+                    Background="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}">
+                <Border.Triggers>
+                    <DataTrigger TargetType="Border" Binding="{Binding IsDependencyUnmet}" Value="True">
+                        <Setter Property="Stroke"
+                                Value="{AppThemeBinding Light={StaticResource WarningLight}, Dark={StaticResource WarningDark}}" />
+                        <Setter Property="Background"
+                                Value="{AppThemeBinding Light={StaticResource WarningContainerLight}, Dark={StaticResource WarningContainerDark}}" />
+                    </DataTrigger>
+                </Border.Triggers>
+
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                    <Label Grid.Column="0" FontFamily="FA-S" FontSize="14" Margin="0,1,0,0"
+                           Text="{x:Static fontAwesome:AwesomeSolidIconFont.CircleInfo}"
+                           TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsDependencyUnmet}" Value="True">
+                                <Setter Property="Text"
+                                        Value="{x:Static fontAwesome:AwesomeSolidIconFont.TriangleExclamation}" />
+                                <Setter Property="TextColor"
+                                        Value="{AppThemeBinding Light={StaticResource WarningLight}, Dark={StaticResource WarningDark}}" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+
+                    <Label Grid.Column="1" Text="{Binding DependencyNoticeText}" FontSize="13" />
+                </Grid>
+            </Border>
+
+            <controls:TemplatedContentView Grid.Row="1" Item="{Binding WorkingValue}"
+                    ItemTemplateSelector="{StaticResource ValueEditorTemplateSelector}" />
+        </Grid>
+
+        <VerticalStackLayout Grid.Row="2" Spacing="0">
+            <BoxView Style="{StaticResource RowDivider}" />
+
+            <Grid ColumnDefinitions="*,2*" ColumnSpacing="10" Padding="15,12"
+                  Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+                <Button Grid.Column="0" Text="{localization:Translate EditSettingCancel}"
+                        Command="{Binding CancelCommand}" Style="{StaticResource SecondaryButton}" />
+                <Button Grid.Column="1" Text="{localization:Translate EditSettingSave}"
+                        Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" />
+            </Grid>
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>

@@ -117,14 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="EditSettingAddTitle" xml:space="preserve">
-    <value>Add setting</value>
-  </data>
   <data name="EditSettingCancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="EditSettingEditTitle" xml:space="preserve">
-    <value>Edit setting</value>
+  <data name="EditSettingDependencyConflict" xml:space="preserve">
+    <value>This setting will have no effect: it applies only when {0} is set to {1}, but this configuration sets {0} to {2}.</value>
+  </data>
+  <data name="EditSettingDependencyInfo" xml:space="preserve">
+    <value>Applies only when {0} is set to {1}.</value>
+  </data>
+  <data name="EditSettingEntryHint" xml:space="preserve">
+    <value>Tap the value to type it.</value>
+  </data>
+  <data name="EditSettingHeight" xml:space="preserve">
+    <value>Height</value>
   </data>
   <data name="EditSettingHorizontal" xml:space="preserve">
     <value>Horizontal</value>
@@ -134,5 +140,8 @@
   </data>
   <data name="EditSettingVertical" xml:space="preserve">
     <value>Vertical</value>
+  </data>
+  <data name="EditSettingWidth" xml:space="preserve">
+    <value>Width</value>
   </data>
 </root>

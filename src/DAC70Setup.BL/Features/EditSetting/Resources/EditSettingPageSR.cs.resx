@@ -117,14 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="EditSettingAddTitle" xml:space="preserve">
-    <value>Přidat nastavení</value>
-  </data>
   <data name="EditSettingCancel" xml:space="preserve">
     <value>Zrušit</value>
   </data>
-  <data name="EditSettingEditTitle" xml:space="preserve">
-    <value>Upravit nastavení</value>
+  <data name="EditSettingDependencyConflict" xml:space="preserve">
+    <value>Toto nastavení se neprojeví: funguje pouze tehdy, když je {0} nastaveno na {1}, ale tato konfigurace nastavuje {0} na {2}.</value>
+  </data>
+  <data name="EditSettingDependencyInfo" xml:space="preserve">
+    <value>Projeví se pouze tehdy, když je {0} nastaveno na {1}.</value>
+  </data>
+  <data name="EditSettingEntryHint" xml:space="preserve">
+    <value>Klepnutím na hodnotu ji zadáte z klávesnice.</value>
+  </data>
+  <data name="EditSettingHeight" xml:space="preserve">
+    <value>Výška</value>
   </data>
   <data name="EditSettingHorizontal" xml:space="preserve">
     <value>Vodorovně</value>
@@ -134,5 +140,8 @@
   </data>
   <data name="EditSettingVertical" xml:space="preserve">
     <value>Svisle</value>
+  </data>
+  <data name="EditSettingWidth" xml:space="preserve">
+    <value>Šířka</value>
   </data>
 </root>

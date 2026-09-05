@@ -14,9 +14,6 @@ public class EditSettingPageViewModel : ViewModelBase
     private readonly INavigationService _navigationService;
     private readonly ILocalizationResourceManager _localizationResourceManager;
 
-    private Configuration _configuration = null!;
-    private Dac70SettingValue? _existingValue;
-
     public EditSettingPageViewModel(IConfigurationsService configurationsService,
         INavigationService navigationService,
         ILocalizationResourceManager localizationResourceManager)
@@ -25,9 +22,34 @@ public class EditSettingPageViewModel : ViewModelBase
         _navigationService = navigationService;
         _localizationResourceManager = localizationResourceManager;
 
-        SaveCommand = new DelegateCommand(async () => await SaveAsync(), () => !IsBusy)
+        SaveCommand = new DelegateCommand(async () =>
+        {
+            IsBusy = true;
+            try
+            {
+                await _configurationsService.SaveSettingAsync(Configuration!, WorkingValue);
+
+                await _navigationService.GoBackToRootAsync();
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }, () => !IsBusy)
             .ObservesProperty(() => IsBusy);
-        CancelCommand = new DelegateCommand(async () => await CancelAsync(), () => !IsBusy)
+
+        CancelCommand = new DelegateCommand(async () =>
+        {
+            IsBusy = true;
+            try
+            {
+                await _navigationService.GoBackAsync();
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }, () => !IsBusy)
             .ObservesProperty(() => IsBusy);
     }
 
@@ -40,11 +62,25 @@ public class EditSettingPageViewModel : ViewModelBase
 
     public string SettingName => _workingValue?.Definition.Name ?? string.Empty;
 
-    private string _pageTitle = string.Empty;
-    public string PageTitle
+    private Configuration? _configuration;
+    public Configuration? Configuration
     {
-        get => _pageTitle;
-        private set => SetProperty(ref _pageTitle, value);
+        get => _configuration;
+        private set => SetProperty(ref _configuration, value);
+    }
+
+    private string? _dependencyNoticeText;
+    public string? DependencyNoticeText
+    {
+        get => _dependencyNoticeText;
+        private set => SetProperty(ref _dependencyNoticeText, value);
+    }
+
+    private bool _isDependencyUnmet;
+    public bool IsDependencyUnmet
+    {
+        get => _isDependencyUnmet;
+        private set => SetProperty(ref _isDependencyUnmet, value);
     }
 
     public DelegateCommand SaveCommand { get; }
@@ -55,11 +91,11 @@ public class EditSettingPageViewModel : ViewModelBase
     {
         await base.InitializeAsyncInt(parameters);
 
-        _configuration = parameters.GetValue<Configuration>(EditSettingNavigationParameters.Configuration);
+        Configuration = parameters.GetValue<Configuration>(EditSettingNavigationParameters.Configuration);
 
-        if (parameters.TryGetValue(EditSettingNavigationParameters.SettingValue, out _existingValue) && _existingValue is not null)
+        if (parameters.TryGetValue(EditSettingNavigationParameters.SettingValue, out Dac70SettingValue? existingValue) && existingValue is not null)
         {
-            WorkingValue = _existingValue.Definition.CreateValue(_existingValue.GetValueBytes());
+            WorkingValue = existingValue.Definition.CreateValue(existingValue.GetValueBytes());
         }
         else
         {
@@ -67,38 +103,40 @@ public class EditSettingPageViewModel : ViewModelBase
             WorkingValue = definition.CreateValue();
         }
 
-        PageTitle = _existingValue != null
-            ? _localizationResourceManager[nameof(EditSettingPageSR.EditSettingEditTitle)]
-            : _localizationResourceManager[nameof(EditSettingPageSR.EditSettingAddTitle)];
+        EvaluateDependency();
     }
 
-    private async Task SaveAsync()
+    private void EvaluateDependency()
     {
-        IsBusy = true;
+        SettingDependency? dependency = WorkingValue.Definition.Dependency;
 
-        try
+        if (dependency is null)
         {
-            await _configurationsService.SaveSettingAsync(_configuration, WorkingValue);
+            IsDependencyUnmet = false;
+            DependencyNoticeText = null;
 
-            await _navigationService.GoBackToRootAsync();
+            return;
         }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
 
-    private async Task CancelAsync()
-    {
-        IsBusy = true;
+        string requiredSetting = dependency.RequiredSetting.Name;
+        string requiredOption = dependency.RequiredOption.Name;
 
-        try
+        Dac70SettingValue? required = Configuration!.Settings
+            .FirstOrDefault(setting => setting.Definition.Key == dependency.RequiredSetting.Key);
+
+        if (required is EnumSettingValue enumValue && enumValue.SelectedOption != dependency.RequiredOption)
         {
-            await _navigationService.GoBackAsync();
+            IsDependencyUnmet = true;
+            DependencyNoticeText = string.Format(
+                _localizationResourceManager[nameof(EditSettingPageSR.EditSettingDependencyConflict)],
+                requiredSetting, requiredOption, enumValue.SelectedOption.Name);
         }
-        finally
+        else
         {
-            IsBusy = false;
+            IsDependencyUnmet = false;
+            DependencyNoticeText = string.Format(
+                _localizationResourceManager[nameof(EditSettingPageSR.EditSettingDependencyInfo)],
+                requiredSetting, requiredOption);
         }
     }
 }

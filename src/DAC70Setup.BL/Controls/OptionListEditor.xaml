@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
+             xmlns:definitions="clr-namespace:DAC70Setup.Core.Models.Definitions;assembly=DAC70Setup.Core"
+             xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
+             x:Class="DAC70Setup.BL.Controls.OptionListEditor"
+             x:Name="Root">
+
+    <CollectionView x:Name="OptionsView" SelectionMode="Single"
+                    ItemsSource="{Binding Options, Source={x:Reference Root}, x:DataType=controls:OptionListEditor}"
+                    SelectedItem="{Binding SelectedOption, Source={x:Reference Root}, x:DataType=controls:OptionListEditor}">
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="definitions:EnumOption">
+                <Grid RowDefinitions="Auto,1" Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroupList>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="Selected">
+                                    <VisualState.Setters>
+                                        <Setter Property="Background"
+                                                Value="{AppThemeBinding Light={StaticResource SurfaceRaisedLight}, Dark={StaticResource SurfaceRaisedDark}}" />
+                                        <Setter TargetName="OptionName" Property="Label.FontFamily" Value="PlexSansSemiBold" />
+                                        <Setter TargetName="OptionName" Property="Label.TextColor"
+                                                Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                        <Setter TargetName="Check" Property="Label.IsVisible" Value="True" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateGroupList>
+                    </VisualStateManager.VisualStateGroups>
+
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Style="{StaticResource RowContent}">
+                        <Label x:Name="OptionName" Grid.Column="0" Text="{Binding Name}"
+                               Style="{StaticResource RowLabel}" />
+
+                        <Label x:Name="Check" Grid.Column="1" Margin="11,0,0,0" FontFamily="FA-S" FontSize="14"
+                               Text="{x:Static fontAwesome:AwesomeSolidIconFont.Check}"
+                               VerticalTextAlignment="Center" IsVisible="False"
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                    </Grid>
+
+                    <BoxView Grid.Row="1" Style="{StaticResource RowDivider}" />
+                </Grid>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+</ContentView>

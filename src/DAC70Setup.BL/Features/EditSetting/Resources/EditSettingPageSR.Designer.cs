@@ -10,8 +10,8 @@
 
 namespace DAC70Setup.BL.Features.EditSetting.Resources {
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -23,15 +23,15 @@ namespace DAC70Setup.BL.Features.EditSetting.Resources {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class EditSettingPageSR {
-        
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal EditSettingPageSR() {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
@@ -45,7 +45,7 @@ namespace DAC70Setup.BL.Features.EditSetting.Resources {
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
@@ -59,16 +59,7 @@ namespace DAC70Setup.BL.Features.EditSetting.Resources {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Add setting.
-        /// </summary>
-        public static string EditSettingAddTitle {
-            get {
-                return ResourceManager.GetString("EditSettingAddTitle", resourceCulture);
-            }
-        }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
@@ -77,16 +68,43 @@ namespace DAC70Setup.BL.Features.EditSetting.Resources {
                 return ResourceManager.GetString("EditSettingCancel", resourceCulture);
             }
         }
-        
+
         /// <summary>
-        ///   Looks up a localized string similar to Edit setting.
+        ///   Looks up a localized string similar to This setting will have no effect: it applies only when {0} is set to {1}, but this configuration sets {0} to {2}..
         /// </summary>
-        public static string EditSettingEditTitle {
+        public static string EditSettingDependencyConflict {
             get {
-                return ResourceManager.GetString("EditSettingEditTitle", resourceCulture);
+                return ResourceManager.GetString("EditSettingDependencyConflict", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Applies only when {0} is set to {1}..
+        /// </summary>
+        public static string EditSettingDependencyInfo {
+            get {
+                return ResourceManager.GetString("EditSettingDependencyInfo", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Tap the value to type it..
+        /// </summary>
+        public static string EditSettingEntryHint {
+            get {
+                return ResourceManager.GetString("EditSettingEntryHint", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Height.
+        /// </summary>
+        public static string EditSettingHeight {
+            get {
+                return ResourceManager.GetString("EditSettingHeight", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Horizontal.
         /// </summary>
@@ -95,7 +113,7 @@ namespace DAC70Setup.BL.Features.EditSetting.Resources {
                 return ResourceManager.GetString("EditSettingHorizontal", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
@@ -104,13 +122,22 @@ namespace DAC70Setup.BL.Features.EditSetting.Resources {
                 return ResourceManager.GetString("EditSettingSave", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Vertical.
         /// </summary>
         public static string EditSettingVertical {
             get {
                 return ResourceManager.GetString("EditSettingVertical", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Width.
+        /// </summary>
+        public static string EditSettingWidth {
+            get {
+                return ResourceManager.GetString("EditSettingWidth", resourceCulture);
             }
         }
     }

@@ -18,6 +18,8 @@ public abstract class Dac70SettingDefinition
 
     public string Name { get; }
 
+    public virtual SettingDependency? Dependency => null;
+
     public abstract Dac70SettingValue CreateValue();
 
     public Dac70SettingValue CreateValue(ReadOnlySpan<byte> valueBytes)

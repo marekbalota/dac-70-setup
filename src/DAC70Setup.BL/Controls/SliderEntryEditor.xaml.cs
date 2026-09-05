@@ -12,6 +12,9 @@ public partial class SliderEntryEditor : ContentView
     public static readonly BindableProperty MaximumProperty = BindableProperty.Create(
         nameof(Maximum), typeof(int), typeof(SliderEntryEditor), 100, propertyChanged: OnRangeChanged);
 
+    public static readonly BindableProperty NameProperty = BindableProperty.Create(
+        nameof(Name), typeof(string), typeof(SliderEntryEditor), string.Empty);
+
     public SliderEntryEditor()
     {
         InitializeComponent();
@@ -37,6 +40,12 @@ public partial class SliderEntryEditor : ContentView
         set => SetValue(MaximumProperty, value);
     }
 
+    public string Name
+    {
+        get => (string)GetValue(NameProperty);
+        set => SetValue(NameProperty, value);
+    }
+
     private static object CoerceValue(BindableObject bindable, object value)
     {
         var editor = (SliderEntryEditor)bindable;
@@ -57,11 +66,7 @@ public partial class SliderEntryEditor : ContentView
     private void OnValueEntryCompleted(object? sender, EventArgs e)
     {
         CommitEntryText();
-    }
-
-    private void OnValueEntryUnfocused(object? sender, FocusEventArgs e)
-    {
-        CommitEntryText();
+        ValueEntry.Unfocus();
     }
 
     private void CommitEntryText()

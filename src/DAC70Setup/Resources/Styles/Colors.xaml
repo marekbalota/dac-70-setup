@@ -40,4 +40,10 @@
 
     <Color x:Key="ErrorLight">#C0332F</Color>
     <Color x:Key="ErrorDark">#FF6B63</Color>
+
+    <Color x:Key="WarningLight">#9A5B00</Color>
+    <Color x:Key="WarningDark">#E3A44A</Color>
+
+    <Color x:Key="WarningContainerLight">#FBEBD2</Color>
+    <Color x:Key="WarningContainerDark">#33260F</Color>
 </ResourceDictionary>
