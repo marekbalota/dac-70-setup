@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DAC70Setup.BL.Features.Settings.Controls"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="DAC70Setup.BL.Features.Settings.Controls.SettingsRow">
+
+    <ContentView.Resources>
+        <toolkit:IsStringNotNullOrEmptyConverter x:Key="IsStringNotNullOrEmptyConverter" />
+        <toolkit:IsNotNullConverter x:Key="IsNotNullConverter" />
+    </ContentView.Resources>
+
+    <ContentView.ControlTemplate>
+        <ControlTemplate x:DataType="controls:SettingsRow">
+            <Grid RowDefinitions="Auto,1">
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Style="{StaticResource RowContent}">
+                    <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
+                        <Label Text="{TemplateBinding Name}" Style="{StaticResource RowLabel}" />
+                        <Label Text="{TemplateBinding Caption}" Style="{StaticResource CardCaption}"
+                               FontSize="12" IsVisible="{TemplateBinding Caption, Converter={StaticResource IsStringNotNullOrEmptyConverter}}" />
+                    </VerticalStackLayout>
+
+                    <Label Grid.Column="1" Margin="11,0,0,0" Text="{TemplateBinding Value}" Style="{StaticResource ValueText}"
+                           IsVisible="{TemplateBinding Value, Converter={StaticResource IsStringNotNullOrEmptyConverter}}" />
+
+                    <ContentPresenter Grid.Column="2" Margin="11,0,0,0" VerticalOptions="Center"
+                                      IsVisible="{TemplateBinding Content, Converter={StaticResource IsNotNullConverter}}" />
+                </Grid>
+
+                <BoxView Grid.Row="1" Style="{StaticResource RowDivider}"/>
+            </Grid>
+        </ControlTemplate>
+    </ContentView.ControlTemplate>
+</ContentView>

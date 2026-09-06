@@ -1,10 +1,13 @@
-﻿namespace DAC70Setup
+﻿using DAC70Setup.BL.Features.Settings;
+
+namespace DAC70Setup;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public App()
     {
-        public App()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+
+        UserAppTheme = AppThemePreference.Current;
     }
 }

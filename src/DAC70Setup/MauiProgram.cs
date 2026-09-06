@@ -14,6 +14,7 @@ using DAC70Setup.BL.Features.Main.Resources;
 using DAC70Setup.BL.Features.SelectedConfiguration;
 using DAC70Setup.BL.Features.SelectedConfiguration.Resources;
 using DAC70Setup.BL.Features.Settings;
+using DAC70Setup.BL.Features.Settings.Resources;
 using DAC70Setup.BL.Mappers;
 using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Resources;
@@ -53,6 +54,7 @@ public static class MauiProgram
                 localization.AddResource(ConfigurationsPageSR.ResourceManager);
                 localization.AddResource(AddSettingPageSR.ResourceManager);
                 localization.AddResource(EditSettingPageSR.ResourceManager);
+                localization.AddResource(SettingsPageSR.ResourceManager);
                 localization.RestoreLatestCulture(true);
             })
             .UsePrism(prism =>

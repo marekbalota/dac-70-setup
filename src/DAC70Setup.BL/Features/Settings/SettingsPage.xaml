@@ -2,14 +2,95 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:DAC70Setup.BL.Features.Settings"
+             xmlns:settings="clr-namespace:DAC70Setup.BL.Features.Settings.Controls"
+             xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
              x:Class="DAC70Setup.BL.Features.Settings.SettingsPage"
+             x:Name="PageRoot"
              x:DataType="local:SettingsPageViewModel"
-             Title="SettingsPage">
+             Title="{localization:Translate SettingsTitle}">
 
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <ContentPage.Resources>
+        <toolkit:IsStringNotNullOrEmptyConverter x:Key="IsStringNotNullOrEmptyConverter" />
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout>
+
+            <Label Text="{localization:Translate Appearance}" Style="{StaticResource GroupHeader}" />
+            <BoxView Style="{StaticResource RowDivider}" />
+
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Themes}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="local:ThemeOption">
+                        <Grid RowDefinitions="Auto,1">
+                            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="11" Style="{StaticResource RowContent}"
+                                  Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectThemeCommand, Source={RelativeSource AncestorType={x:Type local:SettingsPageViewModel}}, x:DataType=local:SettingsPageViewModel}"
+                                                          CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+                                
+                                <Grid.Triggers>
+                                    <DataTrigger TargetType="Grid" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="Background"
+                                                Value="{AppThemeBinding Light={StaticResource SurfaceRaisedLight}, Dark={StaticResource SurfaceRaisedDark}}" />
+                                    </DataTrigger>
+                                </Grid.Triggers>
+
+                                <Label Grid.Column="0" Text="{Binding Glyph}" FontFamily="FA-S" FontSize="15"
+                                       WidthRequest="20" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="TextColor"
+                                                    Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                    <Label Text="{Binding Name.Localized}" Style="{StaticResource RowLabel}">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="FontFamily" Value="PlexSansSemiBold" />
+                                                <Setter Property="TextColor"
+                                                        Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+
+                                    <Label Text="{Binding Hint.Localized}" Style="{StaticResource CardCaption}" FontSize="12"
+                                           IsVisible="{Binding Hint.Localized, Converter={StaticResource IsStringNotNullOrEmptyConverter}}" />
+                                </VerticalStackLayout>
+
+                                <Label Grid.Column="2" FontFamily="FA-S" FontSize="14" Text="{x:Static fontAwesome:AwesomeSolidIconFont.Check}"
+                                       VerticalTextAlignment="Center" IsVisible="{Binding IsSelected}"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                            </Grid>
+
+                            <BoxView Grid.Row="1" Style="{StaticResource RowDivider}" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <Label Text="{localization:Translate Language}" Style="{StaticResource GroupHeader}" />
+            <BoxView Style="{StaticResource RowDivider}" />
+
+            <settings:SettingsRow Name="{localization:Translate Language}">
+                <Picker ItemsSource="{Binding Languages}" ItemDisplayBinding="{Binding Name, x:DataType=local:LanguageOption}"
+                        SelectedItem="{Binding SelectedLanguage}" VerticalOptions="Center" />
+            </settings:SettingsRow>
+
+            <Label Text="{localization:Translate About}" Style="{StaticResource GroupHeader}" />
+            <BoxView Style="{StaticResource RowDivider}" />
+
+            <settings:SettingsRow Name="{localization:Translate Version}" Value="{Binding VersionText}" />
+            <settings:SettingsRow Name="{localization:Translate Author}" Value="{Binding AuthorText}" />
+            <settings:SettingsRow Name="{localization:Translate Licenses}" Caption="{Binding LicensesText}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

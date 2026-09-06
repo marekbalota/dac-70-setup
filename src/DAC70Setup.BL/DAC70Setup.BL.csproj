@@ -31,6 +31,7 @@
     <PackageReference Include="CommunityToolkit.Maui" Version="15.0.0" />
     <PackageReference Include="LocalizationResourceManager.Maui" Version="1.2.6" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.90" />
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.90" />
     <PackageReference Include="Prism.DryIoc.Maui" Version="9.0.537" />
     <PackageReference Include="Prism.Maui" Version="9.0.537" />
   </ItemGroup>
@@ -78,6 +79,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>SelectedConfigurationPageSR.resx</DependentUpon>
     </Compile>
+    <Compile Update="Features\Settings\Resources\SettingsPageSR.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SettingsPageSR.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\GeneralSR.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -113,6 +119,10 @@
     <EmbeddedResource Update="Features\SelectedConfiguration\Resources\SelectedConfigurationPageSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>SelectedConfigurationPageSR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Features\Settings\Resources\SettingsPageSR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SettingsPageSR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\GeneralSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
