@@ -5,6 +5,4 @@ public static class EditSettingNavigationParameters
     public const string Configuration = "Configuration";
 
     public const string SettingValue = "SettingValue";
-
-    public const string SettingDefinition = "SettingDefinition";
 }

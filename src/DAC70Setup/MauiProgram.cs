@@ -1,6 +1,4 @@
 ﻿using CommunityToolkit.Maui;
-using DAC70Setup.BL.Features.AddSetting;
-using DAC70Setup.BL.Features.AddSetting.Resources;
 using DAC70Setup.BL.Features.Configurations;
 using DAC70Setup.BL.Features.Configurations.Resources;
 using DAC70Setup.BL.Features.ConfigurationsLanding;
@@ -52,7 +50,6 @@ public static class MauiProgram
                 localization.AddResource(SelectedConfigurationPageSR.ResourceManager);
                 localization.AddResource(EditConfigurationPageSR.ResourceManager);
                 localization.AddResource(ConfigurationsPageSR.ResourceManager);
-                localization.AddResource(AddSettingPageSR.ResourceManager);
                 localization.AddResource(EditSettingPageSR.ResourceManager);
                 localization.AddResource(SettingsPageSR.ResourceManager);
                 localization.RestoreLatestCulture(true);
@@ -94,7 +91,6 @@ public static class MauiProgram
         containerRegistry.RegisterForNavigation<EditConfigurationPage, EditConfigurationPageViewModel>();
         containerRegistry.RegisterForNavigation<ConfigurationsPage, ConfigurationsPageViewModel>();
         containerRegistry.RegisterForNavigation<SettingsPage, SettingsPageViewModel>();
-        containerRegistry.RegisterForNavigation<AddSettingPage, AddSettingPageViewModel>();
         containerRegistry.RegisterForNavigation<EditSettingPage, EditSettingPageViewModel>();
     }
 

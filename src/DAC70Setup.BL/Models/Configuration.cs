@@ -20,7 +20,6 @@ public class Configuration : NotifyPropertyChangedBase
         Settings.CollectionChanged += (_, _) =>
         {
             RaisePropertyChanged(nameof(SettingsCountText));
-            RaisePropertyChanged(nameof(HasAvailableSettings));
         };
     }
 
@@ -47,12 +46,11 @@ public class Configuration : NotifyPropertyChangedBase
 
     public ObservableCollection<Dac70SettingValue> Settings { get; } = new ObservableCollection<Dac70SettingValue>();
 
-    public bool HasAvailableSettings => GetAvailableDefinitions().Any();
-
-    public IEnumerable<Dac70SettingDefinition> GetAvailableDefinitions()
+    public IEnumerable<Dac70SettingValue> GetDisplaySettings()
     {
-        var existingKeys = Settings.Select(s => s.Definition.Key).ToHashSet();
+        var existing = Settings.ToDictionary(s => s.Definition.Key);
 
-        return Dac70SettingCatalog.All.Where(d => !existingKeys.Contains(d.Key));
+        return Dac70SettingCatalog.All.Select(definition =>
+            existing.TryGetValue(definition.Key, out Dac70SettingValue? value) ? value : definition.CreateValue());
     }
 }

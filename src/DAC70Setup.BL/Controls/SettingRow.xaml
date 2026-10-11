@@ -2,7 +2,6 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
-             xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="DAC70Setup.BL.Controls.SettingRow"
              Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
@@ -11,43 +10,19 @@
         <toolkit:IsStringNotNullOrEmptyConverter x:Key="IsStringNotNullOrEmptyConverter" />
     </ContentView.Resources>
 
-    <ContentView.Triggers>
-        <DataTrigger TargetType="controls:SettingRow" Binding="{Binding IsSelected, Source={RelativeSource Self}}" Value="True">
-            <Setter Property="Background"
-                    Value="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}" />
-        </DataTrigger>
-    </ContentView.Triggers>
-
     <ContentView.ControlTemplate>
         <ControlTemplate x:DataType="controls:SettingRow">
             <Grid RowDefinitions="Auto,1">
-                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Style="{StaticResource RowContent}">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Style="{StaticResource RowContent}">
                     <Border Grid.Column="0" WidthRequest="18" HeightRequest="18" Margin="0,0,11,0" StrokeShape="RoundRectangle 4"
-                            VerticalOptions="Center" IsVisible="{TemplateBinding IsSelecting}" StrokeThickness="1.5"
-                            Stroke="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}">
-                        <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{TemplateBinding IsSelected}" Value="True">
-                                <Setter Property="Background"
-                                        Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
-                                <Setter Property="Stroke"
-                                        Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
-                            </DataTrigger>
-                        </Border.Triggers>
-
-                        <Label Text="{x:Static fontAwesome:AwesomeSolidIconFont.Check}" FontFamily="FA-S" FontSize="11"
-                               IsVisible="{TemplateBinding IsSelected}" HorizontalOptions="Center" VerticalOptions="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
-                    </Border>
+                            VerticalOptions="Center" StrokeThickness="1.5"
+                            Stroke="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}" />
 
                     <Label Grid.Column="1" Text="{TemplateBinding Name}" Style="{StaticResource RowLabel}"
                            VerticalOptions="Center" />
 
                     <Label Grid.Column="2" Margin="11,0,0,0" Text="{TemplateBinding Value}" Style="{StaticResource ValueText}"
                            IsVisible="{TemplateBinding Value, Converter={StaticResource IsStringNotNullOrEmptyConverter}}" />
-
-                    <Label Grid.Column="3" Margin="11,0,0,0" Text="{x:Static fontAwesome:AwesomeSolidIconFont.ChevronRight}"
-                           FontFamily="FA-S" FontSize="12" VerticalTextAlignment="Center" IsVisible="{TemplateBinding HasChevron}"
-                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}" />
                 </Grid>
 
                 <BoxView Grid.Row="1" Style="{StaticResource RowDivider}" />

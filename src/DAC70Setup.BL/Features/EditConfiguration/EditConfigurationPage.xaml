@@ -7,6 +7,7 @@
              xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
              xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
              xmlns:selection="clr-namespace:DAC70Setup.BL.Features.EditConfiguration.Controls"
+             xmlns:values="clr-namespace:DAC70Setup.Core.Models.Values;assembly=DAC70Setup.Core"
              x:Class="DAC70Setup.BL.Features.EditConfiguration.EditConfigurationPage"
              x:DataType="local:EditConfigurationPageViewModel"
              Title="{localization:Translate EditConfigurationTitle}">
@@ -26,12 +27,28 @@
                        Style="{StaticResource ContextBarValue}" />
             </controls:ConfigurationContextBar>
 
-            <selection:SettingSelectionView Grid.Row="1"
-                    ItemsSource="{Binding Model.SelectedConfiguration.Settings}"
-                    SelectedItems="{Binding SelectedSettings}"
-                    IsSelectionMode="{Binding IsSelecting}"
-                    ItemPressedCommand="{Binding OpenSettingCommand}"
-                    DeleteCommand="{Binding DeleteSelectionCommand}" />
+            <CollectionView Grid.Row="1" ItemsSource="{Binding Settings}" IsGrouped="True" SelectionMode="None" Margin="0,4,0,0">
+                <CollectionView.GroupHeaderTemplate>
+                    <DataTemplate x:DataType="selection:SettingValueGroup">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Panel}" Style="{StaticResource GroupHeader}" />
+                            <BoxView Style="{StaticResource RowDivider}" />
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.GroupHeaderTemplate>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="values:Dac70SettingValue">
+                        <controls:SettingRow Name="{Binding Definition.Name}" Value="{Binding DisplayValueText}">
+                            <controls:SettingRow.GestureRecognizers>
+                                <TapGestureRecognizer
+                                        Command="{Binding OpenSettingCommand, Source={RelativeSource AncestorType={x:Type local:EditConfigurationPageViewModel}}}"
+                                        CommandParameter="{Binding .}" />
+                            </controls:SettingRow.GestureRecognizers>
+                        </controls:SettingRow>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
         </Grid>
     </Grid>
 </ContentPage>

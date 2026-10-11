@@ -13,5 +13,5 @@ public interface IConfigurationRepository
 
     Task UpsertSettingAsync(Guid configId, SettingKey key, byte[] valueBytes);
 
-    Task DeleteSettingsAsync(Guid configId, IEnumerable<SettingKey> keys);
+    Task DeleteSettingAsync(Guid configId, SettingKey key);
 }

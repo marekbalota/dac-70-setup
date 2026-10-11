@@ -93,15 +93,8 @@ public class EditSettingPageViewModel : ViewModelBase
 
         Configuration = parameters.GetValue<Configuration>(EditSettingNavigationParameters.Configuration);
 
-        if (parameters.TryGetValue(EditSettingNavigationParameters.SettingValue, out Dac70SettingValue? existingValue) && existingValue is not null)
-        {
-            WorkingValue = existingValue.Definition.CreateValue(existingValue.GetValueBytes());
-        }
-        else
-        {
-            var definition = parameters.GetValue<Dac70SettingDefinition>(EditSettingNavigationParameters.SettingDefinition);
-            WorkingValue = definition.CreateValue();
-        }
+        var settingValue = parameters.GetValue<Dac70SettingValue>(EditSettingNavigationParameters.SettingValue);
+        WorkingValue = settingValue.Definition.CreateValue(settingValue.GetValueBytes());
 
         EvaluateDependency();
     }

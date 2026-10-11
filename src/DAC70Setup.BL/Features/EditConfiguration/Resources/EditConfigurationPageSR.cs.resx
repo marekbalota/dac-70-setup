@@ -120,31 +120,4 @@
   <data name="EditConfigurationTitle" xml:space="preserve">
     <value>Editace</value>
   </data>
-  <data name="NoSettingsInConfiguration" xml:space="preserve">
-    <value>Tato konfigurace zatím neobsahuje žádná nastavení.</value>
-  </data>
-  <data name="DeleteSettingsConfirmTitle" xml:space="preserve">
-    <value>Smazat nastavení</value>
-  </data>
-  <data name="DeleteSettingsConfirmMessage" xml:space="preserve">
-    <value>Opravdu chcete smazat {0} nastavení?</value>
-  </data>
-  <data name="DeleteSettingsConfirmAccept" xml:space="preserve">
-    <value>Smazat</value>
-  </data>
-  <data name="DeleteSettingsConfirmCancel" xml:space="preserve">
-    <value>Zrušit</value>
-  </data>
-  <data name="CancelSelection" xml:space="preserve">
-    <value>Zrušit</value>
-  </data>
-  <data name="DeleteSelection" xml:space="preserve">
-    <value>Smazat</value>
-  </data>
-  <data name="NoSettingsSelected" xml:space="preserve">
-    <value>Nic nevybráno</value>
-  </data>
-  <data name="SelectedSettingsCount" xml:space="preserve">
-    <value>Vybráno: {0}</value>
-  </data>
 </root>

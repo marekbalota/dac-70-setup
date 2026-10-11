@@ -106,18 +106,11 @@ public class ConfigurationRepository : IConfigurationRepository
         });
     }
 
-    public async Task DeleteSettingsAsync(Guid configId, IEnumerable<SettingKey> keys)
+    public async Task DeleteSettingAsync(Guid configId, SettingKey key)
     {
         var connection = await _connection.Value;
-        var keySet = keys.ToHashSet();
 
-        await connection.RunInTransactionAsync(transaction =>
-        {
-            foreach (var key in keySet)
-            {
-                transaction.Table<SettingRow>().Delete(s =>
-                    s.ConfigId == configId && s.MessageType == (byte)key.Type && s.SettingId == key.Id);
-            }
-        });
+        await connection.Table<SettingRow>().DeleteAsync(s =>
+            s.ConfigId == configId && s.MessageType == (byte)key.Type && s.SettingId == key.Id);
     }
 }

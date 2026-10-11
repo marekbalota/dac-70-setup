@@ -82,18 +82,10 @@ public class ConfigurationsService : IConfigurationsService
         }
     }
 
-    public async Task DeleteSettingsAsync(Configuration configuration, IReadOnlyList<Dac70SettingValue> values)
+    public async Task DeleteSettingAsync(Configuration configuration, Dac70SettingValue value)
     {
-        var keys = values.Select(v => v.Definition.Key).ToHashSet();
+        await _repository.DeleteSettingAsync(configuration.Id, value.Definition.Key);
 
-        await _repository.DeleteSettingsAsync(configuration.Id, keys);
-
-        for (int i = configuration.Settings.Count - 1; i >= 0; i--)
-        {
-            if (keys.Contains(configuration.Settings[i].Definition.Key))
-            {
-                configuration.Settings.RemoveAt(i);
-            }
-        }
+        configuration.Settings.Remove(value);
     }
 }
