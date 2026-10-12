@@ -21,6 +21,7 @@ using DAC70Setup.BL.Services.Commands;
 using DAC70Setup.BL.Services.Navigation;
 using DAC70Setup.Core.Interfaces;
 using DAC70Setup.Data;
+using DAC70Setup.Transport.Usb;
 using LocalizationResourceManager.Maui;
 using Microsoft.Extensions.Logging;
 
@@ -77,6 +78,8 @@ public static class MauiProgram
         containerRegistry.RegisterSingleton<SettingMapper>();
         containerRegistry.RegisterSingleton<ConfigurationMapper>();
         containerRegistry.RegisterSingleton<IConfigurationsService, ConfigurationsService>();
+
+        containerRegistry.RegisterSingleton<IDac70Transport, UsbTransport>();
 
         containerRegistry.RegisterSingleton<INavigationUri, NavigationUri>();
         containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
