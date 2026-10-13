@@ -25,11 +25,10 @@ internal class HidSharpConnection : IDac70Connection
 
     public Task WriteReportAsync(ReadOnlyMemory<byte> report, CancellationToken cancellationToken)
     {
-        if (report.Length != Dac70UsbIdentity.ReportLength || report.Length + 1 > _outputReportLength)
+        if (report.Length != Dac70UsbIdentity.ReportLength)
         {
             throw new ArgumentException(
-                $"Expected a {Dac70UsbIdentity.ReportLength}-byte report for a {_outputReportLength}-byte HID buffer, got {report.Length}.",
-                nameof(report));
+                $"Expected a {Dac70UsbIdentity.ReportLength}-byte report, got {report.Length}.", nameof(report));
         }
 
         var buffer = new byte[_outputReportLength];

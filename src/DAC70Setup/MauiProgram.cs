@@ -18,6 +18,7 @@ using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Resources;
 using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Commands;
+using DAC70Setup.BL.Services.Device;
 using DAC70Setup.BL.Services.Navigation;
 using DAC70Setup.Core.Interfaces;
 using DAC70Setup.Data;
@@ -80,6 +81,7 @@ public static class MauiProgram
         containerRegistry.RegisterSingleton<IConfigurationsService, ConfigurationsService>();
 
         containerRegistry.RegisterSingleton<IDac70Transport, UsbTransport>();
+        containerRegistry.RegisterSingleton<DeviceConnectionService>();
 
         containerRegistry.RegisterSingleton<INavigationUri, NavigationUri>();
         containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
@@ -104,6 +106,9 @@ public static class MauiProgram
         // Prism invokes this on the UI thread and then blocks that thread on the CreateWindow task
         // (onStart.Wait()), so awaiting here would deadlock.
         Task.Run(configurationsService.InitializeAsync).GetAwaiter().GetResult();
+
+        var deviceConnectionService = containerProvider.Resolve<DeviceConnectionService>();
+        MainThread.BeginInvokeOnMainThread(() => _ = deviceConnectionService.RefreshDevicesAsync());
     }
 
     private static Task InitialView(IContainerProvider containerProvider, INavigationService navigationService)

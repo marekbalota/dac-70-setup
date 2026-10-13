@@ -55,9 +55,17 @@ public partial class UsbTransport
             throw new IOException("The DAC-70 is no longer connected.");
         }
 
+        bool hadPermission = Manager.HasPermission(usbDevice);
+
         if (!await UsbPermissionRequest.RequestAsync(ApplicationContext, Manager, usbDevice, cancellationToken))
         {
             throw new Dac70PermissionDeniedException();
+        }
+
+        if (!hadPermission)
+        {
+            // Android shows the serial number only after permission is granted.
+            RaiseDevicesChanged();
         }
 
         return new AndroidUsbConnection(Manager, usbDevice);

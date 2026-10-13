@@ -1,4 +1,5 @@
 ﻿using Android.Hardware.Usb;
+using DAC70Setup.Core.Exceptions;
 using DAC70Setup.Core.Interfaces;
 using DAC70Setup.Core.Models.Protocol;
 
@@ -20,7 +21,17 @@ internal class AndroidUsbConnection : IDac70Connection
         _outEndpoint = FindEndpoint(_usbInterface, Dac70UsbIdentity.OutEndpointAddress);
         _inEndpoint = FindEndpoint(_usbInterface, Dac70UsbIdentity.InEndpointAddress);
 
-        var connection = manager.OpenDevice(device);
+        UsbDeviceConnection? connection;
+
+        try
+        {
+            connection = manager.OpenDevice(device);
+        }
+        catch (Java.Lang.SecurityException)
+        {
+            throw new Dac70PermissionDeniedException();
+        }
+
         if (connection == null)
         {
             throw new IOException("Android could not open the DAC-70.");

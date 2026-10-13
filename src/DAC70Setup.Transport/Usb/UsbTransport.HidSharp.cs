@@ -47,6 +47,11 @@ public partial class UsbTransport
                 throw new IOException("The DAC-70 is no longer connected.");
             }
 
+            if (hidDevice.GetMaxOutputReportLength() < Dac70UsbIdentity.ReportLength + 1)
+            {
+                throw new IOException("The DAC-70 reports an unexpected report size.");
+            }
+
             if (!hidDevice.TryOpen(out HidStream stream))
             {
                 throw new IOException("The DAC-70 could not be opened.");

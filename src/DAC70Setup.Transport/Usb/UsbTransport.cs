@@ -15,6 +15,8 @@ public partial class UsbTransport : IDac70Transport
         StartWatching();
     }
 
+    public string Id => "usb";
+
     public string DisplayName => "USB";
 
     public event EventHandler? DevicesChanged;

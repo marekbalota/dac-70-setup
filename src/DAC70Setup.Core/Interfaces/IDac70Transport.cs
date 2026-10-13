@@ -4,6 +4,8 @@ namespace DAC70Setup.Core.Interfaces;
 
 public interface IDac70Transport
 {
+    string Id { get; }
+
     string DisplayName { get; }
 
     bool IsSupported { get; }
