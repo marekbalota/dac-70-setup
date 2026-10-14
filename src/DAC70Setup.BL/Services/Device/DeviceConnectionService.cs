@@ -1,4 +1,5 @@
-﻿using DAC70Setup.BL.Models;
+﻿using System.Collections.ObjectModel;
+using DAC70Setup.BL.Models;
 using DAC70Setup.Core.Exceptions;
 using DAC70Setup.Core.Interfaces;
 using DAC70Setup.Core.Models;
@@ -14,12 +15,12 @@ public class DeviceConnectionService : BindableBase
 
     private CancellationTokenSource? _transferCancellation;
 
-    private Dac70Device? _lostDevice;
-    private bool _lostDeviceWasAlone;
+    private AttachedDevice? _lostDevice;
 
     public DeviceConnectionService(IEnumerable<IDac70Transport> transports)
     {
         Transports = transports.Where(transport => transport.IsSupported).ToList();
+        Devices = new ReadOnlyObservableCollection<AttachedDevice>(_devices);
 
         string savedId = Preferences.Default.Get(SelectedTransportIdKey, string.Empty);
         _selectedTransport = Transports.FirstOrDefault(transport => transport.Id == savedId)
@@ -42,18 +43,30 @@ public class DeviceConnectionService : BindableBase
         private set => SetProperty(ref _selectedTransport, value);
     }
 
-    private IReadOnlyList<Dac70Device> _devices = [];
-    public IReadOnlyList<Dac70Device> Devices
-    {
-        get => _devices;
-        private set => SetProperty(ref _devices, value);
-    }
+    private readonly ObservableCollection<AttachedDevice> _devices = [];
+    public ReadOnlyObservableCollection<AttachedDevice> Devices { get; }
 
-    private Dac70Device? _selectedDevice;
-    public Dac70Device? SelectedDevice
+    private AttachedDevice? _selectedDevice;
+    public AttachedDevice? SelectedDevice
     {
         get => _selectedDevice;
-        private set => SetProperty(ref _selectedDevice, value);
+        private set
+        {
+            var previous = _selectedDevice;
+
+            if (SetProperty(ref _selectedDevice, value))
+            {
+                if (previous != null)
+                {
+                    previous.IsSelected = false;
+                }
+
+                if (value != null)
+                {
+                    value.IsSelected = true;
+                }
+            }
+        }
     }
 
     private DeviceState _state;
@@ -107,10 +120,9 @@ public class DeviceConnectionService : BindableBase
             transport.DevicesChanged += OnDevicesChanged;
             Preferences.Default.Set(SelectedTransportIdKey, transport.Id);
 
-            Devices = [];
             SelectedDevice = null;
             _lostDevice = null;
-            _lostDeviceWasAlone = false;
+            _devices.Clear();
             Progress = null;
             State = DeviceState.Disconnected;
 
@@ -122,7 +134,7 @@ public class DeviceConnectionService : BindableBase
         }
     }
 
-    public async Task SelectDeviceAsync(Dac70Device device)
+    public async Task SelectDeviceAsync(AttachedDevice device)
     {
         await _semaphore.WaitAsync();
         try
@@ -148,7 +160,7 @@ public class DeviceConnectionService : BindableBase
             if (SelectedTransport is { } transport && SelectedDevice is { } device
                 && CanSend && values.Count > 0)
             {
-                await SendConfigurationAsyncInt(transport, device, values);
+                await SendConfigurationAsyncInt(transport, device.Device, values);
             }
         }
         finally
@@ -159,12 +171,11 @@ public class DeviceConnectionService : BindableBase
 
     private async Task RefreshDevicesAsyncInt(IDac70Transport transport)
     {
-        Devices = await transport.DiscoverAsync(CancellationToken.None).ToListAsync();
+        UpdateDevices(await transport.DiscoverAsync(CancellationToken.None).ToListAsync());
 
         if (SelectedDevice != null)
         {
-            var sameDevice = FindSameDevice(SelectedDevice);
-
+            var sameDevice = _devices.FirstOrDefault(row => IsSameDevice(row.Device, SelectedDevice.Device));
             if (sameDevice != null)
             {
                 SelectedDevice = sameDevice;
@@ -172,7 +183,6 @@ public class DeviceConnectionService : BindableBase
             }
 
             _lostDevice = SelectedDevice;
-            _lostDeviceWasAlone = Devices.Count == 0;
             SelectedDevice = null;
 
             if (State != DeviceState.SendInterrupted)
@@ -186,15 +196,10 @@ public class DeviceConnectionService : BindableBase
 
         if (_lostDevice != null)
         {
-            var returnedDevice = FindSameDevice(_lostDevice);
-
+            var returnedDevice = _devices.FirstOrDefault(row => IsSameDevice(row.Device, _lostDevice.Device));
             if (returnedDevice != null)
             {
                 await SelectDeviceAsyncInt(transport, returnedDevice);
-            }
-            else if (_lostDeviceWasAlone && Devices.Count == 1)
-            {
-                await SelectDeviceAsyncInt(transport, Devices[0]);
             }
 
             return;
@@ -252,8 +257,8 @@ public class DeviceConnectionService : BindableBase
             if (Progress?.Completed > 0)
             {
                 State = DeviceState.SendCancelled;
-        }
             }
+        }
         catch (IOException)
         {
             State = DeviceState.SendInterrupted;
@@ -279,10 +284,10 @@ public class DeviceConnectionService : BindableBase
         }
     }
 
-    private async Task SelectDeviceAsyncInt(IDac70Transport transport, Dac70Device device)
+    private async Task SelectDeviceAsyncInt(IDac70Transport transport, AttachedDevice device)
     {
-        // A selection queued behind a transport switch or devices refresh can carry a stale record.
-        var currentDevice = FindSameDevice(device);
+        // A selection queued behind a transport switch or devices refresh can carry a row that is gone.
+        var currentDevice = _devices.FirstOrDefault(row => IsSameDevice(row.Device, device.Device));
         if (currentDevice == null)
         {
             return;
@@ -292,7 +297,7 @@ public class DeviceConnectionService : BindableBase
 
         try
         {
-            var connection = await transport.ConnectAsync(currentDevice, CancellationToken.None);
+            var connection = await transport.ConnectAsync(currentDevice.Device, CancellationToken.None);
             await connection.DisposeAsync();
 
             state = DeviceState.Ready;
@@ -317,14 +322,61 @@ public class DeviceConnectionService : BindableBase
         _transferCancellation?.Cancel();
     }
 
+    private void UpdateDevices(IReadOnlyList<Dac70Device> discovered)
+    {
+        var reserved = _lostDevice ?? SelectedDevice;
+
+        for (int i = _devices.Count - 1; i >= 0; i--)
+        {
+            if (!discovered.Any(device => IsSameConnection(_devices[i].Device, device)))
+            {
+                _devices.RemoveAt(i);
+            }
+        }
+
+        foreach (var device in discovered)
+        {
+            if (_devices.FirstOrDefault(row => IsSameConnection(row.Device, device)) is { } existing)
+            {
+                existing.Device = device;
+                continue;
+            }
+
+            int number = reserved != null && IsSameDevice(reserved.Device, device) ? reserved.Number : GetFreeNumber(reserved);
+            int index = _devices.TakeWhile(row => row.Number < number).Count();
+            _devices.Insert(index, new AttachedDevice(device, number));
+        }
+
+        RaisePropertyChanged(nameof(Devices));
+    }
+
+    private int GetFreeNumber(AttachedDevice? reserved)
+    {
+        int number = 1;
+
+        while (_devices.Any(row => row.Number == number) || reserved?.Number == number)
+        {
+            number++;
+        }
+
+        return number;
+    }
+
+    private static bool IsSameConnection(Dac70Device first, Dac70Device second)
+    {
+        return first.Id == second.Id
+            && (first.SerialNumber == null || second.SerialNumber == null || first.SerialNumber == second.SerialNumber);
+    }
+
+    private static bool IsSameDevice(Dac70Device first, Dac70Device second)
+    {
+        return first.SerialNumber != null && second.SerialNumber != null
+            ? first.SerialNumber == second.SerialNumber
+            : first.Id == second.Id;
+    }
+
     private void OnDevicesChanged(object? sender, EventArgs e)
     {
         MainThread.BeginInvokeOnMainThread(() => _ = RefreshDevicesAsync());
-    }
-
-    private Dac70Device? FindSameDevice(Dac70Device device)
-    {
-        return Devices.FirstOrDefault(candidate => candidate.Id == device.Id)
-            ?? Devices.FirstOrDefault(candidate => device.SerialNumber != null && candidate.SerialNumber == device.SerialNumber);
     }
 }
