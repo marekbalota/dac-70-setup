@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DAC70Setup.BL.Controls.DeviceStatus"
+             xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
+             xmlns:core="clr-namespace:DAC70Setup.Core.Interfaces;assembly=DAC70Setup.Core"
+             xmlns:device="clr-namespace:DAC70Setup.BL.Services.Device"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
+             x:Class="DAC70Setup.BL.Controls.DeviceStatus.DeviceStatusBar">
+
+    <ContentView.ControlTemplate>
+        <ControlTemplate x:DataType="local:DeviceStatusBar">
+            <Grid RowDefinitions="Auto,*">
+                <VerticalStackLayout Grid.Row="0" x:DataType="local:DeviceStatusBarViewModel"
+                                     BindingContext="{Binding Status, Source={RelativeSource TemplatedParent}, x:DataType=local:DeviceStatusBar}"
+                                     Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="6" Padding="15,10,10,10">
+                        <Ellipse Grid.Column="0" WidthRequest="9" HeightRequest="9" VerticalOptions="Center"
+                                 Fill="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}">
+                            <Ellipse.Triggers>
+                                <DataTrigger TargetType="Ellipse" Binding="{Binding Severity}" Value="{x:Static local:DeviceStatusSeverity.Info}">
+                                    <Setter Property="Fill" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Ellipse" Binding="{Binding Severity}" Value="{x:Static local:DeviceStatusSeverity.Success}">
+                                    <Setter Property="Fill" Value="{AppThemeBinding Light={StaticResource SuccessLight}, Dark={StaticResource SuccessDark}}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Ellipse" Binding="{Binding Severity}" Value="{x:Static local:DeviceStatusSeverity.Warning}">
+                                    <Setter Property="Fill" Value="{AppThemeBinding Light={StaticResource WarningLight}, Dark={StaticResource WarningDark}}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Ellipse" Binding="{Binding Severity}" Value="{x:Static local:DeviceStatusSeverity.Error}">
+                                    <Setter Property="Fill" Value="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}" />
+                                </DataTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                            <Label Text="{Binding Title.Localized}" Style="{StaticResource RowLabel}" FontSize="14" />
+                            <Label Text="{Binding Detail.Localized}" Style="{StaticResource CardCaption}" FontSize="12" />
+                        </VerticalStackLayout>
+
+                        <Label Grid.Column="2" Text="{Binding ActionText.Localized}" IsVisible="{Binding ActionText, Converter={toolkit:IsNotNullConverter}}"
+                               FontFamily="PlexSansSemiBold" FontSize="13" VerticalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ActionCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+
+                        <Grid Grid.Column="3" WidthRequest="44" HeightRequest="44" VerticalOptions="Center" IsVisible="{Binding IsPickerAvailable}">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnListToggleTapped" />
+                            </Grid.GestureRecognizers>
+
+                            <Grid.Triggers>
+                                <DataTrigger TargetType="Grid" Binding="{Binding IsPickerEnabled}" Value="False">
+                                    <Setter Property="Opacity" Value="0.4" />
+                                </DataTrigger>
+                            </Grid.Triggers>
+
+                            <Border WidthRequest="34" HeightRequest="34" StrokeThickness="0" StrokeShape="RoundRectangle 17"
+                                    Background="{AppThemeBinding Light={StaticResource SurfaceRaisedLight}, Dark={StaticResource SurfaceRaisedDark}}">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsChoiceRequired}" Value="True">
+                                        <Setter Property="Background"
+                                                Value="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+
+                                <Label x:Name="ListArrow" FontFamily="FA-S" FontSize="13" Text="{x:Static fontAwesome:AwesomeSolidIconFont.ChevronDown}"
+                                       HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsChoiceRequired}" Value="True">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+                        </Grid>
+
+                        <ProgressBar Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                                     Progress="{Binding ProgressValue}" IsVisible="{Binding IsProgressVisible}"
+                                     ProgressColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                    </Grid>
+
+                    <BoxView Style="{StaticResource RowDivider}" />
+                </VerticalStackLayout>
+
+                <ContentPresenter Grid.Row="1" />
+
+                <Grid x:Name="OptionOverlay" Grid.Row="1" RowDefinitions="Auto,*" IsVisible="False" x:DataType="local:DeviceStatusBarViewModel"
+                      BindingContext="{Binding Status, Source={RelativeSource TemplatedParent}, x:DataType=local:DeviceStatusBar}">
+                    <BoxView Grid.Row="1" Color="{AppThemeBinding Light={StaticResource ScrimLight}, Dark={StaticResource ScrimDark}}">
+                        <BoxView.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnScrimTapped" />
+                        </BoxView.GestureRecognizers>
+                    </BoxView>
+
+                    <VerticalStackLayout Grid.Row="0" Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+                        <Grid RowDefinitions="Auto,1" IsVisible="{Binding HasTransportChoice}">
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="11" Style="{StaticResource RowContent}">
+                                <Label Grid.Column="0" Text="{localization:Translate DeviceTransport}" Style="{StaticResource RowLabel}" />
+                                <Picker Grid.Column="1" ItemsSource="{Binding Transports}"
+                                        ItemDisplayBinding="{Binding DisplayName, x:DataType=core:IDac70Transport}"
+                                        SelectedItem="{Binding SelectedTransport}" VerticalOptions="Center" />
+                            </Grid>
+
+                            <BoxView Grid.Row="1" Style="{StaticResource RowDivider}" />
+                        </Grid>
+
+                        <CollectionView x:Name="OptionList" ItemsSource="{Binding Devices}" SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="device:AttachedDevice">
+                                    <Grid RowDefinitions="56,1">
+                                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="11" Padding="15,0">
+                                            <Grid.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding SelectDeviceCommand, Source={RelativeSource AncestorType={x:Type local:DeviceStatusBarViewModel}}, x:DataType=local:DeviceStatusBarViewModel}"
+                                                                      CommandParameter="{Binding .}" Tapped="OnOptionTapped" />
+                                            </Grid.GestureRecognizers>
+
+                                            <Grid.Triggers>
+                                                <DataTrigger TargetType="Grid" Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter Property="Background"
+                                                            Value="{AppThemeBinding Light={StaticResource SurfaceRaisedLight}, Dark={StaticResource SurfaceRaisedDark}}" />
+                                                </DataTrigger>
+                                            </Grid.Triggers>
+
+                                            <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
+                                                <Label Text="{Binding Number, StringFormat='DAC-70 · {0}'}" Style="{StaticResource RowLabel}">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Value="False"
+                                                                     Binding="{Binding IsNumberShown, Source={RelativeSource AncestorType={x:Type local:DeviceStatusBarViewModel}}, x:DataType=local:DeviceStatusBarViewModel}">
+                                                            <Setter Property="Text" Value="DAC-70" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                                <Label Text="{localization:TranslateBinding Device.SerialNumber, TranslateFormat=DeviceSerial, TargetNullText=DeviceNoSerial}"
+                                                       Style="{StaticResource CardCaption}" FontSize="12" />
+                                            </VerticalStackLayout>
+
+                                            <Label Grid.Column="1" FontFamily="FA-S" FontSize="14" Text="{x:Static fontAwesome:AwesomeSolidIconFont.Check}"
+                                                   VerticalTextAlignment="Center" IsVisible="{Binding IsSelected}"
+                                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                        </Grid>
+
+                                        <BoxView Grid.Row="1" Style="{StaticResource RowDivider}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Grid>
+            </Grid>
+        </ControlTemplate>
+    </ContentView.ControlTemplate>
+</ContentView>

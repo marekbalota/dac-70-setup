@@ -46,4 +46,7 @@
 
     <Color x:Key="WarningContainerLight">#FBEBD2</Color>
     <Color x:Key="WarningContainerDark">#33260F</Color>
+
+    <Color x:Key="ScrimLight">#5212161C</Color>
+    <Color x:Key="ScrimDark">#8C000000</Color>
 </ResourceDictionary>

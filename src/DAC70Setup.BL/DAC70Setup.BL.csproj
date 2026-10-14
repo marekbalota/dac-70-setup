@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AsyncAwaitBestPractices" Version="10.0.0" />
     <PackageReference Include="CommunityToolkit.Maui" Version="15.0.0" />
     <PackageReference Include="LocalizationResourceManager.Maui" Version="1.2.6" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.90" />
@@ -44,6 +45,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\DeviceStatus\Resources\DeviceStatusBarSR.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeviceStatusBarSR.resx</DependentUpon>
+    </Compile>
     <Compile Update="Features\ConfigurationsLanding\Resources\ConfigurationsLandingPageSR.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -87,6 +93,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Controls\DeviceStatus\Resources\DeviceStatusBarSR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>DeviceStatusBarSR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Features\ConfigurationsLanding\Resources\ConfigurationsLandingPageSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ConfigurationsLandingPageSR.Designer.cs</LastGenOutput>

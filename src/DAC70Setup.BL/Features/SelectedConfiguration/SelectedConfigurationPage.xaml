@@ -6,6 +6,7 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
              xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
+             xmlns:deviceStatus="clr-namespace:DAC70Setup.BL.Controls.DeviceStatus"
              x:Class="DAC70Setup.BL.Features.SelectedConfiguration.SelectedConfigurationPage"
              x:DataType="local:SelectedConfigurationPageViewModel"
              Title="{localization:Translate SelectedConfigurationTitle}">
@@ -25,34 +26,36 @@
                        Style="{StaticResource ContextBarValue}" />
             </controls:ConfigurationContextBar>
 
-            <VerticalStackLayout Grid.Row="1" Spacing="12" Padding="15,18">
-                <Button Text="{localization:Translate SendToDevice}" Command="{Binding SendToDeviceCommand}"
-                        Style="{StaticResource PrimaryButton}" ContentLayout="Left,10">
-                    <Button.ImageSource>
-                        <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.ArrowUpFromBracket}"
-                                         Color="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
-                    </Button.ImageSource>
-                </Button>
+            <deviceStatus:DeviceStatusBar Grid.Row="1" Status="{Binding DeviceStatus}">
+                <VerticalStackLayout Spacing="12" Padding="15,18">
+                    <Button Text="{localization:Translate SendToDevice}" Command="{Binding SendToDeviceCommand}"
+                            Style="{StaticResource PrimaryButton}" ContentLayout="Left,10">
+                        <Button.ImageSource>
+                            <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.ArrowUpFromBracket}"
+                                             Color="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+                        </Button.ImageSource>
+                    </Button>
 
-                <Button Text="{localization:Translate ExportToFile}" Command="{Binding ExportConfigurationCommand}"
-                        Style="{StaticResource SecondaryButton}" ContentLayout="Left,10">
-                    <Button.ImageSource>
-                        <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.FileExport}"
-                                         Color="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
-                    </Button.ImageSource>
-                </Button>
+                    <Button Text="{localization:Translate ExportToFile}" Command="{Binding ExportConfigurationCommand}"
+                            Style="{StaticResource SecondaryButton}" ContentLayout="Left,10">
+                        <Button.ImageSource>
+                            <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.FileExport}"
+                                             Color="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+                        </Button.ImageSource>
+                    </Button>
 
-                <BoxView HeightRequest="1" Margin="0,6"
-                         Color="{AppThemeBinding Light={StaticResource OutlineLight}, Dark={StaticResource OutlineDark}}" />
+                    <BoxView HeightRequest="1" Margin="0,6"
+                             Color="{AppThemeBinding Light={StaticResource OutlineLight}, Dark={StaticResource OutlineDark}}" />
 
-                <Button Text="{localization:Translate DownloadFromDevice}" Command="{Binding DownloadFromDeviceCommand}"
-                        Style="{StaticResource SecondaryButton}" ContentLayout="Left,10">
-                    <Button.ImageSource>
-                        <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Download}"
-                                         Color="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
-                    </Button.ImageSource>
-                </Button>
-            </VerticalStackLayout>
+                    <Button Text="{localization:Translate DownloadFromDevice}" Command="{Binding DownloadFromDeviceCommand}"
+                            Style="{StaticResource SecondaryButton}" ContentLayout="Left,10">
+                        <Button.ImageSource>
+                            <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Download}"
+                                             Color="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+                        </Button.ImageSource>
+                    </Button>
+                </VerticalStackLayout>
+            </deviceStatus:DeviceStatusBar>
         </Grid>
     </Grid>
 </ContentPage>
