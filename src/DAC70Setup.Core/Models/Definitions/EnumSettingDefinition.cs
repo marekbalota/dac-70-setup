@@ -25,8 +25,18 @@ public sealed class EnumSettingDefinition : Dac70SettingDefinition
 
     internal int ValueOffset { get; }
 
+    public override bool IsReadable => Key.Type == MessageType.C0;
+
     public override Dac70SettingValue CreateValue()
     {
         return new EnumSettingValue(this);
+    }
+
+    protected override ReadOnlySpan<byte> GetValueBytesFromReadResponse(ReadOnlySpan<byte> response)
+    {
+        var valueBytes = Template.ToArray();
+        valueBytes[ValueOffset] = response[2];
+
+        return valueBytes;
     }
 }

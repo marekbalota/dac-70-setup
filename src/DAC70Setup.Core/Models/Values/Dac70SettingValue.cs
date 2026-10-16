@@ -1,4 +1,5 @@
 ﻿using DAC70Setup.Core.Models.Definitions;
+using DAC70Setup.Core.Models.Protocol;
 
 namespace DAC70Setup.Core.Models.Values;
 
@@ -15,7 +16,7 @@ public abstract class Dac70SettingValue : NotifyPropertyChangedBase
 
     public byte[] GetPayload()
     {
-        var payload = new byte[64];
+        var payload = new byte[Dac70UsbIdentity.ReportLength];
         payload[0] = 0x13;
         payload[1] = 0x3E;
         payload[2] = (byte)Definition.Key.Type;

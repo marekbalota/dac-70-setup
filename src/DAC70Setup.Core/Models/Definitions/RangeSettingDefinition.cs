@@ -17,8 +17,17 @@ public sealed class RangeSettingDefinition : Dac70SettingDefinition
 
     public int Maximum { get; }
 
+    public override bool IsReadable => true;
+
+    public override byte ReadRequestId => 0x02;
+
     public override Dac70SettingValue CreateValue()
     {
         return new RangeSettingValue(this);
+    }
+
+    protected override ReadOnlySpan<byte> GetValueBytesFromReadResponse(ReadOnlySpan<byte> response)
+    {
+        return response.Slice(Key.Id, 1);
     }
 }
