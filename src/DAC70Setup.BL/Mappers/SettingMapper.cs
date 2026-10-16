@@ -22,4 +22,9 @@ public class SettingMapper
             return null;
         }
     }
+
+    public SettingDto Map(Dac70SettingValue value)
+    {
+        return new SettingDto(value.Definition.Key, value.GetValueBytes());
+    }
 }

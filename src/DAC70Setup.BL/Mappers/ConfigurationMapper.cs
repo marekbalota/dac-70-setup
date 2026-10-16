@@ -29,4 +29,13 @@ public class ConfigurationMapper
 
         return configuration;
     }
+
+    public ConfigurationDto Map(Configuration configuration)
+    {
+        var settings = configuration.Settings
+            .Select(_settingMapper.Map)
+            .ToList();
+
+        return new ConfigurationDto(configuration.Id, configuration.Name, configuration.Created, settings);
+    }
 }

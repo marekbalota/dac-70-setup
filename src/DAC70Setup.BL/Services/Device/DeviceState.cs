@@ -9,6 +9,7 @@ public enum DeviceState
     PermissionRequired,
     Ready,
     Sending,
+    Syncing,
     SendCancelled,
     ConnectionFailed,
     SendInterrupted

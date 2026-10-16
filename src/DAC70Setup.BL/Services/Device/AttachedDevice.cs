@@ -19,6 +19,8 @@ public class AttachedDevice : BindableBase
 
     public int Number { get; }
 
+    public DeviceSnapshot Snapshot { get; } = new();
+
     private bool _isSelected;
     public bool IsSelected
     {

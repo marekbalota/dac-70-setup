@@ -7,11 +7,11 @@ public interface IConfigurationRepository
 {
     Task<IReadOnlyList<ConfigurationDto>> GetAllAsync();
 
-    Task AddConfigurationAsync(Guid id, string name, DateTime created);
+    Task AddConfigurationAsync(ConfigurationDto configuration);
 
     Task DeleteConfigurationAsync(Guid id);
 
-    Task UpsertSettingAsync(Guid configId, SettingKey key, byte[] valueBytes);
+    Task UpsertSettingsAsync(Guid configId, IReadOnlyList<SettingDto> settings);
 
     Task DeleteSettingAsync(Guid configId, SettingKey key);
 }

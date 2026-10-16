@@ -9,11 +9,15 @@ public interface IConfigurationsService
 
     Task CreateNewConfiguration(string name);
 
+    Task CreateNewConfiguration(string name, IEnumerable<Dac70SettingValue> values);
+
     Task DeleteConfiguration(Configuration configuration);
 
     void SelectConfiguration(Configuration configuration);
 
     Task SaveSettingAsync(Configuration configuration, Dac70SettingValue value);
+
+    Task SaveSettingsAsync(Configuration configuration, IEnumerable<Dac70SettingValue> values);
 
     Task DeleteSettingAsync(Configuration configuration, Dac70SettingValue value);
 }

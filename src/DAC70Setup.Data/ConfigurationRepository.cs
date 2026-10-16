@@ -54,15 +54,23 @@ public class ConfigurationRepository : IConfigurationRepository
             .ToList();
     }
 
-    public async Task AddConfigurationAsync(Guid id, string name, DateTime created)
+    public async Task AddConfigurationAsync(ConfigurationDto configuration)
     {
         var connection = await _connection.Value;
 
-        await connection.InsertAsync(new ConfigurationRow
+        await connection.RunInTransactionAsync(transaction =>
         {
-            Id = id,
-            Name = name,
-            Created = created
+            transaction.Insert(new ConfigurationRow
+            {
+                Id = configuration.Id,
+                Name = configuration.Name,
+                Created = configuration.Created
+            });
+
+            foreach (var setting in configuration.Settings)
+            {
+                UpsertSetting(transaction, configuration.Id, setting);
+            }
         });
     }
 
@@ -77,33 +85,42 @@ public class ConfigurationRepository : IConfigurationRepository
         });
     }
 
-    public async Task UpsertSettingAsync(Guid configId, SettingKey key, byte[] valueBytes)
+    public async Task UpsertSettingsAsync(Guid configId, IReadOnlyList<SettingDto> settings)
     {
         var connection = await _connection.Value;
-        byte messageType = (byte)key.Type;
-        byte settingId = key.Id;
 
         await connection.RunInTransactionAsync(transaction =>
         {
-            SettingRow? existing = transaction.Table<SettingRow>()
-                .FirstOrDefault(s => s.ConfigId == configId && s.MessageType == messageType && s.SettingId == settingId);
-
-            if (existing != null)
+            foreach (var setting in settings)
             {
-                existing.ValueBytes = valueBytes;
-                transaction.Update(existing);
-            }
-            else
-            {
-                transaction.Insert(new SettingRow
-                {
-                    ConfigId = configId,
-                    MessageType = messageType,
-                    SettingId = settingId,
-                    ValueBytes = valueBytes
-                });
+                UpsertSetting(transaction, configId, setting);
             }
         });
+    }
+
+    private static void UpsertSetting(SQLiteConnection transaction, Guid configId, SettingDto setting)
+    {
+        byte messageType = (byte)setting.Key.Type;
+        byte settingId = setting.Key.Id;
+
+        SettingRow? existing = transaction.Table<SettingRow>()
+            .FirstOrDefault(s => s.ConfigId == configId && s.MessageType == messageType && s.SettingId == settingId);
+
+        if (existing != null)
+        {
+            existing.ValueBytes = setting.ValueBytes;
+            transaction.Update(existing);
+        }
+        else
+        {
+            transaction.Insert(new SettingRow
+            {
+                ConfigId = configId,
+                MessageType = messageType,
+                SettingId = settingId,
+                ValueBytes = setting.ValueBytes
+            });
+        }
     }
 
     public async Task DeleteSettingAsync(Guid configId, SettingKey key)

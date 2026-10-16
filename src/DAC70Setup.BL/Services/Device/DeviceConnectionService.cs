@@ -3,6 +3,7 @@ using DAC70Setup.BL.Models;
 using DAC70Setup.Core.Exceptions;
 using DAC70Setup.Core.Interfaces;
 using DAC70Setup.Core.Models;
+using DAC70Setup.Core.Models.Definitions;
 using DAC70Setup.Core.Models.Values;
 
 namespace DAC70Setup.BL.Services.Device;
@@ -11,11 +12,13 @@ public class DeviceConnectionService : BindableBase
 {
     private const string SelectedTransportIdKey = "SelectedTransportId";
 
+    private const int ReplyTimeoutMilliseconds = 3000;
+    private const int SkippedReports = 10;
+    private const int ComparedReplyBytes = 8;
+
     private readonly SemaphoreSlim _semaphore = new(1, 1);
 
     private CancellationTokenSource? _transferCancellation;
-
-    private AttachedDevice? _lostDevice;
 
     public DeviceConnectionService(IEnumerable<IDac70Transport> transports)
     {
@@ -121,7 +124,6 @@ public class DeviceConnectionService : BindableBase
             Preferences.Default.Set(SelectedTransportIdKey, transport.Id);
 
             SelectedDevice = null;
-            _lostDevice = null;
             _devices.Clear();
             Progress = null;
             State = DeviceState.Disconnected;
@@ -150,18 +152,40 @@ public class DeviceConnectionService : BindableBase
         }
     }
 
-    public async Task SendConfigurationAsync(Configuration configuration)
+    public Task SendConfigurationAsync(Configuration configuration)
     {
-        var values = configuration.Settings.ToList();
+        return SendValuesAsync(configuration.Settings.ToList());
+    }
 
+    public async Task SendValuesAsync(IReadOnlyList<Dac70SettingValue> values)
+    {
         await _semaphore.WaitAsync();
         try
         {
             if (SelectedTransport is { } transport && SelectedDevice is { } device
                 && CanSend && values.Count > 0)
             {
-                await SendConfigurationAsyncInt(transport, device.Device, values);
+                await SendValuesAsyncInt(transport, device, values);
             }
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+
+    /// <returns>True when every readable setting was read, false when the sync did not run or stopped early.</returns>
+    public async Task<bool> SyncAsync()
+    {
+        await _semaphore.WaitAsync();
+        try
+        {
+            if (SelectedTransport is { } transport && SelectedDevice is { } device && CanSend)
+            {
+                return await SyncAsyncInt(transport, device);
+            }
+
+            return false;
         }
         finally
         {
@@ -171,18 +195,15 @@ public class DeviceConnectionService : BindableBase
 
     private async Task RefreshDevicesAsyncInt(IDac70Transport transport)
     {
-        UpdateDevices(await transport.DiscoverAsync(CancellationToken.None).ToListAsync());
+        bool isDeviceAdded = UpdateDevices(await transport.DiscoverAsync(CancellationToken.None).ToListAsync());
 
         if (SelectedDevice != null)
         {
-            var sameDevice = _devices.FirstOrDefault(row => IsSameDevice(row.Device, SelectedDevice.Device));
-            if (sameDevice != null)
+            if (_devices.Contains(SelectedDevice))
             {
-                SelectedDevice = sameDevice;
                 return;
             }
 
-            _lostDevice = SelectedDevice;
             SelectedDevice = null;
 
             if (State != DeviceState.SendInterrupted)
@@ -194,14 +215,8 @@ public class DeviceConnectionService : BindableBase
             return;
         }
 
-        if (_lostDevice != null)
+        if (State is DeviceState.SelectionLost or DeviceState.SendInterrupted && !isDeviceAdded)
         {
-            var returnedDevice = _devices.FirstOrDefault(row => IsSameDevice(row.Device, _lostDevice.Device));
-            if (returnedDevice != null)
-            {
-                await SelectDeviceAsyncInt(transport, returnedDevice);
-            }
-
             return;
         }
 
@@ -219,11 +234,12 @@ public class DeviceConnectionService : BindableBase
         }
     }
 
-    private async Task SendConfigurationAsyncInt(IDac70Transport transport, Dac70Device device, List<Dac70SettingValue> values)
+    private async Task SendValuesAsyncInt(IDac70Transport transport, AttachedDevice device, IReadOnlyList<Dac70SettingValue> values)
     {
         using var transferCancellation = new CancellationTokenSource();
         _transferCancellation = transferCancellation;
 
+        var snapshot = device.Snapshot;
         IDac70Connection? connection = null;
 
         try
@@ -233,7 +249,7 @@ public class DeviceConnectionService : BindableBase
 
             try
             {
-                connection = await transport.ConnectAsync(device, transferCancellation.Token);
+                connection = await transport.ConnectAsync(device.Device, transferCancellation.Token);
             }
             catch (Dac70PermissionDeniedException)
             {
@@ -250,6 +266,7 @@ public class DeviceConnectionService : BindableBase
             {
                 Progress = new TransferProgress(i, values.Count, values[i].Definition.Name);
                 await connection.WriteReportAsync(values[i].GetPayload(), transferCancellation.Token);
+                snapshot.SetValue(values[i]);
             }
         }
         catch (OperationCanceledException)
@@ -284,11 +301,141 @@ public class DeviceConnectionService : BindableBase
         }
     }
 
+    private async Task<bool> SyncAsyncInt(IDac70Transport transport, AttachedDevice device)
+    {
+        var requests = Dac70SettingCatalog.All
+            .Where(definition => definition.IsReadable)
+            .GroupBy(definition => (definition.Key.Type, definition.ReadRequestId))
+            .Select(group => group.ToList())
+            .ToList();
+        int total = requests.Sum(request => request.Count);
+        var snapshot = device.Snapshot;
+
+        using var transferCancellation = new CancellationTokenSource();
+        _transferCancellation = transferCancellation;
+
+        IDac70Connection? connection = null;
+        bool isComplete = false;
+
+        try
+        {
+            Progress = new TransferProgress(0, total, requests[0][0].Name);
+            State = DeviceState.Syncing;
+
+            try
+            {
+                connection = await transport.ConnectAsync(device.Device, transferCancellation.Token);
+            }
+            catch (Dac70PermissionDeniedException)
+            {
+                State = DeviceState.PermissionRequired;
+                return false;
+            }
+            catch (IOException)
+            {
+                State = DeviceState.ConnectionFailed;
+                return false;
+            }
+
+            byte[]? previousReply = null;
+            int completed = 0;
+
+            foreach (var request in requests)
+            {
+                Progress = new TransferProgress(completed, total, request[0].Name);
+                await connection.WriteReportAsync(request[0].GetReadPayload(), transferCancellation.Token);
+
+                var reply = await ReadReplyAsync(connection, previousReply, transferCancellation.Token);
+                completed += request.Count;
+
+                if (reply == null)
+                {
+                    continue;
+                }
+
+                previousReply = reply;
+
+                foreach (var definition in request)
+                {
+                    if (definition.CreateValueFromReadResponse(reply) is { } value)
+                    {
+                        snapshot.SetValue(value);
+                    }
+                }
+            }
+
+            snapshot.CompleteFullSync(DateTime.Now);
+            isComplete = true;
+        }
+        catch (OperationCanceledException)
+        {
+            // Values read so far stay in the snapshot
+        }
+        catch (IOException)
+        {
+            State = DeviceState.ConnectionFailed;
+        }
+        finally
+        {
+            if (connection != null)
+            {
+                await connection.DisposeAsync();
+            }
+
+            _transferCancellation = null;
+
+            if (State == DeviceState.Syncing)
+            {
+                State = DeviceState.Ready;
+            }
+
+            Progress = null;
+        }
+
+        return isComplete;
+    }
+
+    private static async Task<byte[]?> ReadReplyAsync(IDac70Connection connection, byte[]? previousReply, CancellationToken cancellationToken)
+    {
+        using var replyCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        replyCancellation.CancelAfter(ReplyTimeoutMilliseconds);
+
+        byte[]? reply = null;
+        int count = 0;
+
+        try
+        {
+            while (true)
+            {
+                var report = await connection.ReadReportAsync(replyCancellation.Token);
+                count++;
+
+                if (previousReply == null && count < SkippedReports)
+                {
+                    continue;
+                }
+
+                if (previousReply != null && report.AsSpan(0, ComparedReplyBytes).SequenceEqual(previousReply.AsSpan(0, ComparedReplyBytes)))
+                {
+                    continue;
+                }
+
+                previousReply = report;
+                reply = report;
+            }
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            // The reply timeout exceeded
+        }
+
+        return reply;
+    }
+
     private async Task SelectDeviceAsyncInt(IDac70Transport transport, AttachedDevice device)
     {
         // A selection queued behind a transport switch or devices refresh can carry a row that is gone.
-        var currentDevice = _devices.FirstOrDefault(row => IsSameDevice(row.Device, device.Device));
-        if (currentDevice == null)
+        if (!_devices.Contains(device))
         {
             return;
         }
@@ -297,7 +444,7 @@ public class DeviceConnectionService : BindableBase
 
         try
         {
-            var connection = await transport.ConnectAsync(currentDevice.Device, CancellationToken.None);
+            var connection = await transport.ConnectAsync(device.Device, CancellationToken.None);
             await connection.DisposeAsync();
 
             state = DeviceState.Ready;
@@ -311,8 +458,7 @@ public class DeviceConnectionService : BindableBase
             state = DeviceState.ConnectionFailed;
         }
 
-        SelectedDevice = currentDevice;
-        _lostDevice = null;
+        SelectedDevice = device;
         Progress = null;
         State = state;
     }
@@ -322,13 +468,13 @@ public class DeviceConnectionService : BindableBase
         _transferCancellation?.Cancel();
     }
 
-    private void UpdateDevices(IReadOnlyList<Dac70Device> discovered)
+    private bool UpdateDevices(IReadOnlyList<Dac70Device> discovered)
     {
-        var reserved = _lostDevice ?? SelectedDevice;
+        bool isDeviceAdded = false;
 
         for (int i = _devices.Count - 1; i >= 0; i--)
         {
-            if (!discovered.Any(device => IsSameConnection(_devices[i].Device, device)))
+            if (!discovered.Any(device => device.Id == _devices[i].Device.Id))
             {
                 _devices.RemoveAt(i);
             }
@@ -336,43 +482,33 @@ public class DeviceConnectionService : BindableBase
 
         foreach (var device in discovered)
         {
-            if (_devices.FirstOrDefault(row => IsSameConnection(row.Device, device)) is { } existing)
+            if (_devices.FirstOrDefault(row => row.Device.Id == device.Id) is { } existing)
             {
                 existing.Device = device;
                 continue;
             }
 
-            int number = reserved != null && IsSameDevice(reserved.Device, device) ? reserved.Number : GetFreeNumber(reserved);
+            int number = GetFreeNumber();
             int index = _devices.TakeWhile(row => row.Number < number).Count();
             _devices.Insert(index, new AttachedDevice(device, number));
+            isDeviceAdded = true;
         }
 
         RaisePropertyChanged(nameof(Devices));
+
+        return isDeviceAdded;
     }
 
-    private int GetFreeNumber(AttachedDevice? reserved)
+    private int GetFreeNumber()
     {
         int number = 1;
 
-        while (_devices.Any(row => row.Number == number) || reserved?.Number == number)
+        while (_devices.Any(row => row.Number == number))
         {
             number++;
         }
 
         return number;
-    }
-
-    private static bool IsSameConnection(Dac70Device first, Dac70Device second)
-    {
-        return first.Id == second.Id
-            && (first.SerialNumber == null || second.SerialNumber == null || first.SerialNumber == second.SerialNumber);
-    }
-
-    private static bool IsSameDevice(Dac70Device first, Dac70Device second)
-    {
-        return first.SerialNumber != null && second.SerialNumber != null
-            ? first.SerialNumber == second.SerialNumber
-            : first.Id == second.Id;
     }
 
     private void OnDevicesChanged(object? sender, EventArgs e)

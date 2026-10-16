@@ -12,14 +12,17 @@ public class ConfigurationsService : IConfigurationsService
     private readonly DataModel _dataModel;
     private readonly IConfigurationRepository _repository;
     private readonly ConfigurationMapper _configurationMapper;
+    private readonly SettingMapper _settingMapper;
 
     public ConfigurationsService(DataModel dataModel,
         IConfigurationRepository repository,
-        ConfigurationMapper configurationMapper)
+        ConfigurationMapper configurationMapper,
+        SettingMapper settingMapper)
     {
         _dataModel = dataModel;
         _repository = repository;
         _configurationMapper = configurationMapper;
+        _settingMapper = settingMapper;
     }
 
     public async Task InitializeAsync()
@@ -39,10 +42,22 @@ public class ConfigurationsService : IConfigurationsService
         }
     }
 
-    public async Task CreateNewConfiguration(string name)
+    public Task CreateNewConfiguration(string name)
+    {
+        return CreateNewConfiguration(name, []);
+    }
+
+    public async Task CreateNewConfiguration(string name, IEnumerable<Dac70SettingValue> values)
     {
         var configuration = new Configuration(name, DateTime.Now);
-        await _repository.AddConfigurationAsync(configuration.Id, configuration.Name, configuration.Created);
+
+        foreach (var value in values)
+        {
+            configuration.Settings.Add(value.Definition.CreateValue(value.GetValueBytes()));
+        }
+
+        await _repository.AddConfigurationAsync(_configurationMapper.Map(configuration));
+
         _dataModel.Configurations.Add(configuration);
     }
 
@@ -64,21 +79,30 @@ public class ConfigurationsService : IConfigurationsService
         Preferences.Default.Set(SelectedConfigurationIdKey, configuration.Id.ToString());
     }
 
-    public async Task SaveSettingAsync(Configuration configuration, Dac70SettingValue value)
+    public Task SaveSettingAsync(Configuration configuration, Dac70SettingValue value)
     {
-        var valueBytes = value.GetValueBytes();
+        return SaveSettingsAsync(configuration, [value]);
+    }
 
-        await _repository.UpsertSettingAsync(configuration.Id, value.Definition.Key, valueBytes);
+    public async Task SaveSettingsAsync(Configuration configuration, IEnumerable<Dac70SettingValue> values)
+    {
+        var valueList = values.ToList();
 
-        Dac70SettingValue? existing = configuration.Settings.FirstOrDefault(s => s.Definition.Key == value.Definition.Key);
+        await _repository.UpsertSettingsAsync(configuration.Id, valueList.Select(_settingMapper.Map).ToList());
 
-        if (existing != null)
+        foreach (var value in valueList)
         {
-            existing.SetValueBytes(valueBytes);
-        }
-        else
-        {
-            configuration.Settings.Add(value.Definition.CreateValue(valueBytes));
+            var valueBytes = value.GetValueBytes();
+            Dac70SettingValue? existing = configuration.Settings.FirstOrDefault(s => s.Definition.Key == value.Definition.Key);
+
+            if (existing != null)
+            {
+                existing.SetValueBytes(valueBytes);
+            }
+            else
+            {
+                configuration.Settings.Add(value.Definition.CreateValue(valueBytes));
+            }
         }
     }
 
