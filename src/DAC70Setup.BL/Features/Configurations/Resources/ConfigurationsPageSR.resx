@@ -123,18 +123,6 @@
   <data name="NoExistingConfiguration" xml:space="preserve">
     <value>There is currently no existing configuration.</value>
   </data>
-  <data name="CreateConfigurationDisplayPromptTitle" xml:space="preserve">
-    <value>Create configuration</value>
-  </data>
-  <data name="CreateConfigurationDisplayPromptMessage" xml:space="preserve">
-    <value>Enter a name for the new configuration.</value>
-  </data>
-  <data name="CreateConfigurationDisplayPromptAccept" xml:space="preserve">
-    <value>Accept</value>
-  </data>
-  <data name="CreateConfigurationDisplayPromptCancel" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
   <data name="DeleteConfigurationConfirmTitle" xml:space="preserve">
     <value>Delete configuration</value>
   </data>
@@ -146,5 +134,26 @@
   </data>
   <data name="DeleteConfigurationConfirmCancel" xml:space="preserve">
     <value>Cancel</value>
+  </data>
+  <data name="NewConfigurationTitle" xml:space="preserve">
+    <value>New configuration</value>
+  </data>
+  <data name="NewConfigurationStartWith" xml:space="preserve">
+    <value>Start with</value>
+  </data>
+  <data name="NewConfigurationFromDevice" xml:space="preserve">
+    <value>Values from the device</value>
+  </data>
+  <data name="NewConfigurationEmpty" xml:space="preserve">
+    <value>Empty</value>
+  </data>
+  <data name="NewConfigurationCreate" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="NewConfigurationCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="NewConfigurationNamePrompt" xml:space="preserve">
+    <value>Enter a name for the new configuration.</value>
   </data>
 </root>

@@ -123,18 +123,6 @@
   <data name="NoExistingConfiguration" xml:space="preserve">
     <value>Zatím není vytvořena žádná konfigurace.</value>
   </data>
-  <data name="CreateConfigurationDisplayPromptTitle" xml:space="preserve">
-    <value>Vytvořit konfiguraci</value>
-  </data>
-  <data name="CreateConfigurationDisplayPromptMessage" xml:space="preserve">
-    <value>Zadejte jméno pro novou konfiguraci.</value>
-  </data>
-  <data name="CreateConfigurationDisplayPromptAccept" xml:space="preserve">
-    <value>Potvrdit</value>
-  </data>
-  <data name="CreateConfigurationDisplayPromptCancel" xml:space="preserve">
-    <value>Zrušit</value>
-  </data>
   <data name="DeleteConfigurationConfirmTitle" xml:space="preserve">
     <value>Smazat konfiguraci</value>
   </data>
@@ -146,5 +134,26 @@
   </data>
   <data name="DeleteConfigurationConfirmCancel" xml:space="preserve">
     <value>Zrušit</value>
+  </data>
+  <data name="NewConfigurationTitle" xml:space="preserve">
+    <value>Nová konfigurace</value>
+  </data>
+  <data name="NewConfigurationStartWith" xml:space="preserve">
+    <value>Začít s</value>
+  </data>
+  <data name="NewConfigurationFromDevice" xml:space="preserve">
+    <value>Hodnoty ze zařízení</value>
+  </data>
+  <data name="NewConfigurationEmpty" xml:space="preserve">
+    <value>Prázdná</value>
+  </data>
+  <data name="NewConfigurationCreate" xml:space="preserve">
+    <value>Vytvořit</value>
+  </data>
+  <data name="NewConfigurationCancel" xml:space="preserve">
+    <value>Zrušit</value>
+  </data>
+  <data name="NewConfigurationNamePrompt" xml:space="preserve">
+    <value>Zadejte jméno pro novou konfiguraci.</value>
   </data>
 </root>

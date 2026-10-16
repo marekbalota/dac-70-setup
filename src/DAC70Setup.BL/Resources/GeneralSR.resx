@@ -104,7 +104,7 @@
     <data name="GoToConfigurations" xml:space="preserve">
         <value>Go to configurations</value>
     </data>
-    <data name="DownloadFromDevice" xml:space="preserve">
-        <value>Download from device</value>
+    <data name="SynchronizeWithDevice" xml:space="preserve">
+        <value>Synchronize with device</value>
     </data>
 </root>

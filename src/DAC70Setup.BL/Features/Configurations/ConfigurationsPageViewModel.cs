@@ -1,10 +1,13 @@
-﻿using DAC70Setup.BL.Features.Configurations.Commands;
+﻿using DAC70Setup.BL.Controls.DeviceStatus;
+using DAC70Setup.BL.Features.Configurations.Commands;
 using DAC70Setup.BL.Features.SelectedConfiguration;
 using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Models.Commands;
 using DAC70Setup.BL.Models.ViewModels;
 using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Commands;
+using DAC70Setup.BL.Services.Device;
+using LocalizationResourceManager.Maui;
 
 namespace DAC70Setup.BL.Features.Configurations;
 
@@ -20,12 +23,16 @@ public class ConfigurationsPageViewModel : TabViewModelBase
         DeleteConfigurationCommand deleteConfigurationCommand,
         SelectConfigurationCommand selectConfigurationCommand,
         IConfigurationsService configurationsService,
-        INavigationService navigationService)
+        INavigationService navigationService,
+        DeviceConnectionService deviceConnectionService,
+        ILocalizationResourceManager localizationResourceManager)
     {
         Model = model;
         _applicationCommands = applicationCommands;
         _configurationsService = configurationsService;
         _navigationService = navigationService;
+
+        DeviceStatus = new DeviceStatusBarViewModel(deviceConnectionService, localizationResourceManager);
 
         CreateConfigurationCommand = createConfigurationCommand;
         DeleteConfigurationCommand = deleteConfigurationCommand;
@@ -43,6 +50,8 @@ public class ConfigurationsPageViewModel : TabViewModelBase
     }
 
     public DataModel Model { get; }
+
+    public DeviceStatusBarViewModel DeviceStatus { get; }
 
     private Configuration? _selectedConfiguration;
     public Configuration? SelectedConfiguration
@@ -75,5 +84,7 @@ public class ConfigurationsPageViewModel : TabViewModelBase
         _applicationCommands.SelectCommand.UnregisterCommand(SelectConfigurationCommand);
         _applicationCommands.RemoveCommand.UnregisterCommand(DeleteConfigurationCommand);
         _applicationCommands.AddCommand.UnregisterCommand(CreateConfigurationCommand);
+
+        DeviceStatus.Dispose();
     }
 }

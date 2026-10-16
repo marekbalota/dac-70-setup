@@ -16,13 +16,5 @@
 
         <Button Text="{localization:Translate GoToConfigurations}" Command="{Binding GoToConfigurationsCommand}"
                 Style="{StaticResource PrimaryButton}" />
-
-        <Button Text="{localization:Translate DownloadFromDevice}" Command="{Binding DownloadFromDeviceCommand}"
-                Style="{StaticResource SecondaryButton}" ContentLayout="Left,10">
-            <Button.ImageSource>
-                <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Download}"
-                                 Color="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
-            </Button.ImageSource>
-        </Button>
     </VerticalStackLayout>
 </ContentView>

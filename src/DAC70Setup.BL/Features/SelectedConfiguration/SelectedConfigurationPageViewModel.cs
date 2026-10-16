@@ -36,8 +36,10 @@ public class SelectedConfigurationPageViewModel : TabViewModelBase
         // TODO: save the selected configuration to a file the user picks.
         ExportConfigurationCommand = new DelegateCommand(() => { });
 
-        // TODO: read the device's current configuration into a new configuration.
-        DownloadFromDeviceCommand = new DelegateCommand(() => { });
+        SynchronizeWithDeviceCommand = new AsyncDelegateCommand(async () =>
+        {
+            await _deviceConnectionService.SyncAsync();
+        }, () => _deviceConnectionService.CanSend);
 
         Model.PropertyChanged += OnSendConditionsChanged;
         _deviceConnectionService.PropertyChanged += OnSendConditionsChanged;
@@ -53,11 +55,12 @@ public class SelectedConfigurationPageViewModel : TabViewModelBase
 
     public DelegateCommand ExportConfigurationCommand { get; }
 
-    public DelegateCommand DownloadFromDeviceCommand { get; }
+    public AsyncDelegateCommand SynchronizeWithDeviceCommand { get; }
 
     private void OnSendConditionsChanged(object? sender, PropertyChangedEventArgs e)
     {
         SendToDeviceCommand.RaiseCanExecuteChanged();
+        SynchronizeWithDeviceCommand.RaiseCanExecuteChanged();
     }
 
     protected override void OnDestroy()

@@ -15,19 +15,20 @@
         <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Share}"/>
     </ContentPage.IconImageSource>
 
-    <Grid>
-        <controls:NoConfigurationSelectedView GoToConfigurationsCommand="{Binding GoToConfigurationsCommand}"
-                DownloadFromDeviceCommand="{Binding DownloadFromDeviceCommand}"
-                IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNullConverter}}" />
+    <Grid RowDefinitions="Auto,*">
+        <controls:ConfigurationContextBar Grid.Row="0" ConfigurationName="{Binding Model.SelectedConfiguration.Name}"
+                                          IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
+            <Label Text="{Binding Model.SelectedConfiguration.Created, StringFormat='{0:d} · {0:t}'}"
+                   Style="{StaticResource ContextBarValue}" />
+        </controls:ConfigurationContextBar>
 
-        <Grid RowDefinitions="Auto,*" IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
-            <controls:ConfigurationContextBar Grid.Row="0" ConfigurationName="{Binding Model.SelectedConfiguration.Name}">
-                <Label Text="{Binding Model.SelectedConfiguration.Created, StringFormat='{0:d} · {0:t}'}"
-                       Style="{StaticResource ContextBarValue}" />
-            </controls:ConfigurationContextBar>
+        <deviceStatus:DeviceStatusBar Grid.Row="1" Status="{Binding DeviceStatus}">
+            <Grid>
+                <controls:NoConfigurationSelectedView GoToConfigurationsCommand="{Binding GoToConfigurationsCommand}"
+                        IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNullConverter}}" />
 
-            <deviceStatus:DeviceStatusBar Grid.Row="1" Status="{Binding DeviceStatus}">
-                <VerticalStackLayout Spacing="12" Padding="15,18">
+                <VerticalStackLayout Spacing="12" Padding="15,18"
+                                     IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
                     <Button Text="{localization:Translate SendToDevice}" Command="{Binding SendToDeviceCommand}"
                             Style="{StaticResource PrimaryButton}" ContentLayout="Left,10">
                         <Button.ImageSource>
@@ -47,15 +48,15 @@
                     <BoxView HeightRequest="1" Margin="0,6"
                              Color="{AppThemeBinding Light={StaticResource OutlineLight}, Dark={StaticResource OutlineDark}}" />
 
-                    <Button Text="{localization:Translate DownloadFromDevice}" Command="{Binding DownloadFromDeviceCommand}"
+                    <Button Text="{localization:Translate SynchronizeWithDevice}" Command="{Binding SynchronizeWithDeviceCommand}"
                             Style="{StaticResource SecondaryButton}" ContentLayout="Left,10">
                         <Button.ImageSource>
-                            <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Download}"
+                            <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.ArrowsRotate}"
                                              Color="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
                         </Button.ImageSource>
                     </Button>
                 </VerticalStackLayout>
-            </deviceStatus:DeviceStatusBar>
-        </Grid>
+            </Grid>
+        </deviceStatus:DeviceStatusBar>
     </Grid>
 </ContentPage>

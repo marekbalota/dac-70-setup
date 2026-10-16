@@ -56,9 +56,6 @@ public class EditConfigurationPageViewModel : TabViewModelBase
         }, _ => !IsBusy)
             .ObservesProperty(() => IsBusy);
 
-        // TODO: read the device's current configuration into a new configuration.
-        DownloadFromDeviceCommand = new DelegateCommand(() => { });
-
         Model.PropertyChanged += OnModelPropertyChanged;
 
         ObserveSelectedConfiguration();
@@ -69,8 +66,6 @@ public class EditConfigurationPageViewModel : TabViewModelBase
     public DeviceStatusBarViewModel DeviceStatus { get; }
 
     public DelegateCommand GoToConfigurationsCommand { get; }
-
-    public DelegateCommand DownloadFromDeviceCommand { get; }
 
     public DelegateCommand<Dac70SettingValue> OpenSettingCommand { get; }
 

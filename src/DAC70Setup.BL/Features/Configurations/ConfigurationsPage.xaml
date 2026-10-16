@@ -6,6 +6,7 @@
              xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
              xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:deviceStatus="clr-namespace:DAC70Setup.BL.Controls.DeviceStatus"
              x:Class="DAC70Setup.BL.Features.Configurations.ConfigurationsPage"
              x:Name="PageRoot"
              x:DataType="local:ConfigurationsPageViewModel"
@@ -15,99 +16,101 @@
         <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Toolbox}"/>
     </ContentPage.IconImageSource>
 
-    <CollectionView ItemsSource="{Binding Model.Configurations}" SelectedItem="{Binding SelectedConfiguration}" SelectionMode="Single">
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="WidthStates">
-                <VisualState x:Name="Narrow">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Property="ItemsLayout">
-                            <Setter.Value>
-                                <LinearItemsLayout Orientation="Vertical" ItemSpacing="0" />
-                            </Setter.Value>
-                        </Setter>
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="Wide">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="900" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Property="ItemsLayout">
-                            <Setter.Value>
-                                <GridItemsLayout Orientation="Vertical" Span="2" VerticalItemSpacing="0" HorizontalItemSpacing="0" />
-                            </Setter.Value>
-                        </Setter>
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
+    <deviceStatus:DeviceStatusBar Status="{Binding DeviceStatus}">
+        <CollectionView ItemsSource="{Binding Model.Configurations}" SelectedItem="{Binding SelectedConfiguration}" SelectionMode="Single">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="WidthStates">
+                    <VisualState x:Name="Narrow">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="0" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Property="ItemsLayout">
+                                <Setter.Value>
+                                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="0" />
+                                </Setter.Value>
+                            </Setter>
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Wide">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="900" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Property="ItemsLayout">
+                                <Setter.Value>
+                                    <GridItemsLayout Orientation="Vertical" Span="2" VerticalItemSpacing="0" HorizontalItemSpacing="0" />
+                                </Setter.Value>
+                            </Setter>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
 
-        <CollectionView.EmptyView>
-            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="5" Padding="10">
-                <Label Text="{x:Static fontAwesome:AwesomeSolidIconFont.Toolbox}" FontFamily="FA-S" FontSize="34" HorizontalOptions="Center"
-                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}" />
-                <Label Text="{localization:Translate NoExistingConfiguration}"
-                       Style="{StaticResource EmptyStateTitle}" />
-            </VerticalStackLayout>
-        </CollectionView.EmptyView>
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="5" Padding="10">
+                    <Label Text="{x:Static fontAwesome:AwesomeSolidIconFont.Toolbox}" FontFamily="FA-S" FontSize="34" HorizontalOptions="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}" />
+                    <Label Text="{localization:Translate NoExistingConfiguration}"
+                           Style="{StaticResource EmptyStateTitle}" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
 
-        <CollectionView.ItemTemplate>
-            <DataTemplate x:DataType="models:Configuration">
-                <ContentView Padding="10,8">
-                    <VisualStateManager.VisualStateGroups>
-                        <VisualStateGroup x:Name="CommonStates">
-                            <VisualState x:Name="Normal" />
-                            <VisualState x:Name="Selected">
-                                <VisualState.Setters>
-                                    <Setter TargetName="CardBorder" Property="Border.Background"
-                                            Value="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}" />
-                                    <Setter TargetName="BadgeBorder" Property="Border.Background"
-                                            Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
-                                </VisualState.Setters>
-                            </VisualState>
-                        </VisualStateGroup>
-                    </VisualStateManager.VisualStateGroups>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Configuration">
+                    <ContentView Padding="10,8">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="Selected">
+                                    <VisualState.Setters>
+                                        <Setter TargetName="CardBorder" Property="Border.Background"
+                                                Value="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}" />
+                                        <Setter TargetName="BadgeBorder" Property="Border.Background"
+                                                Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
 
-                    <Border x:Name="CardBorder" Style="{StaticResource Card}">
-                        <Border.Behaviors>
-                            <toolkit:TouchBehavior LongPressDuration="500"
-                                    LongPressCommand="{Binding Source={x:Reference PageRoot}, Path=BindingContext.OpenConfigurationCommand}"
-                                    LongPressCommandParameter="{Binding Source={x:Reference CardBorder}, Path=BindingContext}" />
-                        </Border.Behaviors>
+                        <Border x:Name="CardBorder" Style="{StaticResource Card}">
+                            <Border.Behaviors>
+                                <toolkit:TouchBehavior LongPressDuration="500"
+                                        LongPressCommand="{Binding Source={x:Reference PageRoot}, Path=BindingContext.OpenConfigurationCommand}"
+                                        LongPressCommandParameter="{Binding Source={x:Reference CardBorder}, Path=BindingContext}" />
+                            </Border.Behaviors>
 
-                        <Grid ColumnDefinitions="4,*">
-                            <BoxView Grid.Column="0" IsVisible="{Binding IsActive}"
-                                     Color="{AppThemeBinding Light={StaticResource SuccessLight}, Dark={StaticResource SuccessDark}}" />
+                            <Grid ColumnDefinitions="4,*">
+                                <BoxView Grid.Column="0" IsVisible="{Binding IsActive}"
+                                         Color="{AppThemeBinding Light={StaticResource SuccessLight}, Dark={StaticResource SuccessDark}}" />
 
-                            <Grid Grid.Column="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="11"
-                                  Padding="{OnIdiom Phone=13, Default=13, Desktop=11}">
-                                <Border x:Name="BadgeBorder" Grid.Column="0" WidthRequest="34" HeightRequest="34" StrokeThickness="0"
-                                        StrokeShape="RoundRectangle 10" VerticalOptions="Start"
-                                        Background="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}">
-                                    <Label Text="{x:Static fontAwesome:AwesomeSolidIconFont.Sliders}" FontFamily="FA-S" FontSize="15"
-                                           HorizontalOptions="Center" VerticalOptions="Center"
-                                           TextColor="{AppThemeBinding Light={StaticResource OnPrimaryContainerLight}, Dark={StaticResource OnPrimaryContainerDark}}" />
-                                </Border>
+                                <Grid Grid.Column="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="11"
+                                      Padding="{OnIdiom Phone=13, Default=13, Desktop=11}">
+                                    <Border x:Name="BadgeBorder" Grid.Column="0" WidthRequest="34" HeightRequest="34" StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 10" VerticalOptions="Start"
+                                            Background="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}">
+                                        <Label Text="{x:Static fontAwesome:AwesomeSolidIconFont.Sliders}" FontFamily="FA-S" FontSize="15"
+                                               HorizontalOptions="Center" VerticalOptions="Center"
+                                               TextColor="{AppThemeBinding Light={StaticResource OnPrimaryContainerLight}, Dark={StaticResource OnPrimaryContainerDark}}" />
+                                    </Border>
 
-                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Start">
-                                    <Label Text="{Binding Name}" Style="{StaticResource CardTitle}" />
-                                    <Label Text="{Binding SettingsCountText}" Style="{StaticResource CardCaption}" />
-                                </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Start">
+                                        <Label Text="{Binding Name}" Style="{StaticResource CardTitle}" />
+                                        <Label Text="{Binding SettingsCountText}" Style="{StaticResource CardCaption}" />
+                                    </VerticalStackLayout>
 
-                                <VerticalStackLayout Grid.Column="2" VerticalOptions="Start">
-                                    <Label Text="{Binding Created, StringFormat='{0:d}'}" Style="{StaticResource Timestamp}"
-                                           HorizontalTextAlignment="End" />
-                                    <Label Text="{Binding Created, StringFormat='{0:t}'}" Style="{StaticResource Timestamp}"
-                                           HorizontalTextAlignment="End" />
-                                </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="2" VerticalOptions="Start">
+                                        <Label Text="{Binding Created, StringFormat='{0:d}'}" Style="{StaticResource Timestamp}"
+                                               HorizontalTextAlignment="End" />
+                                        <Label Text="{Binding Created, StringFormat='{0:t}'}" Style="{StaticResource Timestamp}"
+                                               HorizontalTextAlignment="End" />
+                                    </VerticalStackLayout>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </Border>
-                </ContentView>
-            </DataTemplate>
-        </CollectionView.ItemTemplate>
-    </CollectionView>
+                        </Border>
+                    </ContentView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </deviceStatus:DeviceStatusBar>
 </ContentPage>

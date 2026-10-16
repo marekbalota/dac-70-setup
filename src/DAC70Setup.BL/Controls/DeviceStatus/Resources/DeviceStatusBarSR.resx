@@ -180,4 +180,16 @@
   <data name="DeviceTransport" xml:space="preserve">
     <value>Connect through</value>
   </data>
+  <data name="DeviceSyncing" xml:space="preserve">
+    <value>Reading {0} of {1} · {2}</value>
+  </data>
+  <data name="DeviceSyncRunning" xml:space="preserve">
+    <value>Synchronizing with device…</value>
+  </data>
+  <data name="DeviceNotSynced" xml:space="preserve">
+    <value>Not synced with device yet</value>
+  </data>
+  <data name="DeviceSyncedAt" xml:space="preserve">
+    <value>Synced with device at {0}</value>
+  </data>
 </root>

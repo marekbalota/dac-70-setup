@@ -59,16 +59,16 @@ namespace DAC70Setup.BL.Resources {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
-        ///   Looks up a localized string similar to Download from device.
+        ///   Looks up a localized string similar to Synchronize with device.
         /// </summary>
-        public static string DownloadFromDevice {
+        public static string SynchronizeWithDevice {
             get {
-                return ResourceManager.GetString("DownloadFromDevice", resourceCulture);
+                return ResourceManager.GetString("SynchronizeWithDevice", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Go to configurations.
         /// </summary>

@@ -70,42 +70,6 @@ namespace DAC70Setup.BL.Features.Configurations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Accept.
-        /// </summary>
-        public static string CreateConfigurationDisplayPromptAccept {
-            get {
-                return ResourceManager.GetString("CreateConfigurationDisplayPromptAccept", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cancel.
-        /// </summary>
-        public static string CreateConfigurationDisplayPromptCancel {
-            get {
-                return ResourceManager.GetString("CreateConfigurationDisplayPromptCancel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enter a name for the new configuration..
-        /// </summary>
-        public static string CreateConfigurationDisplayPromptMessage {
-            get {
-                return ResourceManager.GetString("CreateConfigurationDisplayPromptMessage", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Create configuration.
-        /// </summary>
-        public static string CreateConfigurationDisplayPromptTitle {
-            get {
-                return ResourceManager.GetString("CreateConfigurationDisplayPromptTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There is currently no existing configuration..
         /// </summary>
         public static string NoExistingConfiguration {
@@ -147,6 +111,69 @@ namespace DAC70Setup.BL.Features.Configurations.Resources {
         public static string DeleteConfigurationConfirmCancel {
             get {
                 return ResourceManager.GetString("DeleteConfigurationConfirmCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New configuration.
+        /// </summary>
+        public static string NewConfigurationTitle {
+            get {
+                return ResourceManager.GetString("NewConfigurationTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start with.
+        /// </summary>
+        public static string NewConfigurationStartWith {
+            get {
+                return ResourceManager.GetString("NewConfigurationStartWith", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Values from the device.
+        /// </summary>
+        public static string NewConfigurationFromDevice {
+            get {
+                return ResourceManager.GetString("NewConfigurationFromDevice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Empty.
+        /// </summary>
+        public static string NewConfigurationEmpty {
+            get {
+                return ResourceManager.GetString("NewConfigurationEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string NewConfigurationCreate {
+            get {
+                return ResourceManager.GetString("NewConfigurationCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string NewConfigurationCancel {
+            get {
+                return ResourceManager.GetString("NewConfigurationCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter a name for the new configuration..
+        /// </summary>
+        public static string NewConfigurationNamePrompt {
+            get {
+                return ResourceManager.GetString("NewConfigurationNamePrompt", resourceCulture);
             }
         }
     }

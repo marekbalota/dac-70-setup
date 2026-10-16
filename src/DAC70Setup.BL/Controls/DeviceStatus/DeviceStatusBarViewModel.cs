@@ -17,6 +17,8 @@ public class DeviceStatusBarViewModel : BindableBase, IDisposable
 
     private Func<Task>? _action;
 
+    private DeviceSnapshot? _observedSnapshot;
+
     public DeviceStatusBarViewModel(DeviceConnectionService deviceConnectionService,
         ILocalizationResourceManager localizationResourceManager)
     {
@@ -35,6 +37,7 @@ public class DeviceStatusBarViewModel : BindableBase, IDisposable
 
         _deviceConnectionService.PropertyChanged += OnDeviceConnectionServiceChanged;
 
+        ObserveSelectedSnapshot();
         UpdateBar();
     }
 
@@ -125,11 +128,37 @@ public class DeviceStatusBarViewModel : BindableBase, IDisposable
         private set => SetProperty(ref _progressValue, value);
     }
 
+    private bool _isSyncInfoVisible;
+    public bool IsSyncInfoVisible
+    {
+        get => _isSyncInfoVisible;
+        private set => SetProperty(ref _isSyncInfoVisible, value);
+    }
+
+    private bool _isSyncWarning;
+    public bool IsSyncWarning
+    {
+        get => _isSyncWarning;
+        private set => SetProperty(ref _isSyncWarning, value);
+    }
+
+    private LocalizedString _syncText = new(() => string.Empty);
+    public LocalizedString SyncText
+    {
+        get => _syncText;
+        private set => SetProperty(ref _syncText, value);
+    }
+
     private void OnDeviceConnectionServiceChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(DeviceConnectionService.SelectedTransport))
         {
             RaisePropertyChanged(nameof(SelectedTransport));
+        }
+
+        if (e.PropertyName == nameof(DeviceConnectionService.SelectedDevice))
+        {
+            ObserveSelectedSnapshot();
         }
 
         if (e.PropertyName == nameof(DeviceConnectionService.Devices))
@@ -155,15 +184,64 @@ public class DeviceStatusBarViewModel : BindableBase, IDisposable
         var selectedDevice = _deviceConnectionService.SelectedDevice;
 
         IsPickerAvailable = HasTransportChoice || devices.Count > (selectedDevice == null ? 0 : 1);
-        IsPickerEnabled = _deviceConnectionService.State != DeviceState.Sending;
+        IsPickerEnabled = _deviceConnectionService.State is not (DeviceState.Sending or DeviceState.Syncing);
         IsChoiceRequired = selectedDevice == null && devices.Count > 0;
 
         UpdateStatus(devices);
+        UpdateSyncInfo();
+    }
+
+    private void ObserveSelectedSnapshot()
+    {
+        if (_observedSnapshot != null)
+        {
+            _observedSnapshot.PropertyChanged -= OnSnapshotPropertyChanged;
+        }
+
+        _observedSnapshot = _deviceConnectionService.SelectedDevice?.Snapshot;
+
+        if (_observedSnapshot != null)
+        {
+            _observedSnapshot.PropertyChanged += OnSnapshotPropertyChanged;
+        }
+    }
+
+    private void OnSnapshotPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(DeviceSnapshot.LastFullSync))
+        {
+            UpdateSyncInfo();
+        }
+    }
+
+    private void UpdateSyncInfo()
+    {
+        var snapshot = _deviceConnectionService.SelectedDevice?.Snapshot;
+        bool isSyncing = _deviceConnectionService.State == DeviceState.Syncing;
+
+        IsSyncInfoVisible = snapshot != null;
+        IsSyncWarning = snapshot?.LastFullSync == null && !isSyncing;
+
+        if (isSyncing)
+        {
+            SyncText = new LocalizedString(() => _localizationResourceManager[nameof(DeviceStatusBarSR.DeviceSyncRunning)]);
+        }
+        else if (snapshot?.LastFullSync is { } lastFullSync)
+        {
+            SyncText = new LocalizedString(() => _localizationResourceManager[nameof(DeviceStatusBarSR.DeviceSyncedAt),
+                lastFullSync.ToString(lastFullSync.Date == DateTime.Today ? "t" : "g", _localizationResourceManager.CurrentCulture)]);
+        }
+        else
+        {
+            SyncText = new LocalizedString(() => _localizationResourceManager[nameof(DeviceStatusBarSR.DeviceNotSynced)]);
+        }
     }
 
     private void UpdateStatus(IReadOnlyList<AttachedDevice> devices)
     {
-        var progress = _deviceConnectionService.State == DeviceState.Sending ? _deviceConnectionService.Progress : null;
+        var progress = _deviceConnectionService.State is DeviceState.Sending or DeviceState.Syncing
+            ? _deviceConnectionService.Progress
+            : null;
 
         IsProgressVisible = progress != null;
         ProgressValue = progress == null ? 0 : (double)progress.Completed / progress.Total;
@@ -228,6 +306,17 @@ public class DeviceStatusBarViewModel : BindableBase, IDisposable
 
                 SetAction(_deviceConnectionService.CancelTransfer, nameof(DeviceStatusBarSR.DeviceCancel));
                 break;
+            case DeviceState.Syncing:
+                Severity = DeviceStatusSeverity.Info;
+
+                if (progress != null)
+                {
+                    detail = () => _localizationResourceManager[nameof(DeviceStatusBarSR.DeviceSyncing),
+                        progress.Completed + 1, progress.Total, progress.SettingName];
+                }
+
+                SetAction(_deviceConnectionService.CancelTransfer, nameof(DeviceStatusBarSR.DeviceCancel));
+                break;
             case DeviceState.SendCancelled:
                 Severity = DeviceStatusSeverity.Warning;
 
@@ -286,5 +375,11 @@ public class DeviceStatusBarViewModel : BindableBase, IDisposable
     public void Dispose()
     {
         _deviceConnectionService.PropertyChanged -= OnDeviceConnectionServiceChanged;
+
+        if (_observedSnapshot != null)
+        {
+            _observedSnapshot.PropertyChanged -= OnSnapshotPropertyChanged;
+            _observedSnapshot = null;
+        }
     }
 }

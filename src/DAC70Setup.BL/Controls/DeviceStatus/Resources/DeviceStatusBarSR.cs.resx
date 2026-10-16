@@ -180,4 +180,16 @@
   <data name="DeviceTransport" xml:space="preserve">
     <value>Připojit přes</value>
   </data>
+  <data name="DeviceSyncing" xml:space="preserve">
+    <value>Čtení {0} z {1} · {2}</value>
+  </data>
+  <data name="DeviceSyncRunning" xml:space="preserve">
+    <value>Synchronizuji se zařízením…</value>
+  </data>
+  <data name="DeviceNotSynced" xml:space="preserve">
+    <value>Se zařízením zatím nesynchronizováno</value>
+  </data>
+  <data name="DeviceSyncedAt" xml:space="preserve">
+    <value>Synchronizováno se zařízením v {0}</value>
+  </data>
 </root>

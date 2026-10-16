@@ -248,5 +248,41 @@ namespace DAC70Setup.BL.Controls.DeviceStatus.Resources {
                 return ResourceManager.GetString("DeviceTransport", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reading {0} of {1} · {2}.
+        /// </summary>
+        public static string DeviceSyncing {
+            get {
+                return ResourceManager.GetString("DeviceSyncing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Synchronizing with device….
+        /// </summary>
+        public static string DeviceSyncRunning {
+            get {
+                return ResourceManager.GetString("DeviceSyncRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not synced with device yet.
+        /// </summary>
+        public static string DeviceNotSynced {
+            get {
+                return ResourceManager.GetString("DeviceNotSynced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Synced with device at {0}.
+        /// </summary>
+        public static string DeviceSyncedAt {
+            get {
+                return ResourceManager.GetString("DeviceSyncedAt", resourceCulture);
+            }
+        }
     }
 }

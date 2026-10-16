@@ -19,7 +19,6 @@
 
     <Grid>
         <controls:NoConfigurationSelectedView GoToConfigurationsCommand="{Binding GoToConfigurationsCommand}"
-                DownloadFromDeviceCommand="{Binding DownloadFromDeviceCommand}"
                 IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNullConverter}}" />
 
         <Grid RowDefinitions="Auto,*" IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
