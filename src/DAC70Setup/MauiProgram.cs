@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using DAC70Setup.BL.Controls.DeviceStatus.Resources;
+using DAC70Setup.BL.Controls.SettingSelection.Resources;
 using DAC70Setup.BL.Features.Configurations;
 using DAC70Setup.BL.Features.Configurations.Resources;
 using DAC70Setup.BL.Features.ConfigurationsLanding;
@@ -52,6 +53,7 @@ public static class MauiProgram
                 localization.AddResource(ConfigurationsLandingPageSR.ResourceManager);
                 localization.AddResource(SelectedConfigurationPageSR.ResourceManager);
                 localization.AddResource(DeviceStatusBarSR.ResourceManager);
+                localization.AddResource(SettingSelectionViewSR.ResourceManager);
                 localization.AddResource(EditConfigurationPageSR.ResourceManager);
                 localization.AddResource(ConfigurationsPageSR.ResourceManager);
                 localization.AddResource(EditSettingPageSR.ResourceManager);

@@ -50,6 +50,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>DeviceStatusBarSR.resx</DependentUpon>
     </Compile>
+    <Compile Update="Controls\SettingSelection\Resources\SettingSelectionViewSR.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SettingSelectionViewSR.resx</DependentUpon>
+    </Compile>
     <Compile Update="Features\ConfigurationsLanding\Resources\ConfigurationsLandingPageSR.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -96,6 +101,10 @@
     <EmbeddedResource Update="Controls\DeviceStatus\Resources\DeviceStatusBarSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>DeviceStatusBarSR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Controls\SettingSelection\Resources\SettingSelectionViewSR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SettingSelectionViewSR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Features\ConfigurationsLanding\Resources\ConfigurationsLandingPageSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
