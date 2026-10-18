@@ -2,8 +2,10 @@
 
 public partial class EditSettingPage : ContentPage
 {
-    public EditSettingPage()
+    public EditSettingPage(EditSettingPageViewModel viewModel)
     {
         InitializeComponent();
+
+        BindingContext = viewModel;
     }
 }

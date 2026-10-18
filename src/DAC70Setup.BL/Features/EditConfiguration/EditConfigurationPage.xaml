@@ -2,7 +2,6 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:DAC70Setup.BL.Features.EditConfiguration"
-             xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
              xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
@@ -12,24 +11,20 @@
              x:DataType="local:EditConfigurationPageViewModel"
              Title="{localization:Translate EditConfigurationTitle}">
 
-    <ContentPage.IconImageSource>
-        <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Gear}"/>
-    </ContentPage.IconImageSource>
-
     <Grid RowDefinitions="Auto,*">
-        <controls:ConfigurationContextBar Grid.Row="0" ConfigurationName="{Binding Model.SelectedConfiguration.Name}"
-                                          IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
-            <Label Text="{Binding Model.SelectedConfiguration.Created, StringFormat='{0:d} · {0:t}'}"
+        <controls:ConfigurationContextBar Grid.Row="0" ConfigurationName="{Binding ConfigurationsService.SelectedConfiguration.Name}"
+                                          IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
+            <Label Text="{Binding ConfigurationsService.SelectedConfiguration.Created, StringFormat='{0:d} · {0:t}'}"
                    Style="{StaticResource ContextBarValue}" />
         </controls:ConfigurationContextBar>
 
         <deviceStatus:DeviceStatusBar Grid.Row="1" Status="{Binding DeviceStatus}">
             <Grid>
                 <controls:NoConfigurationSelectedView GoToConfigurationsCommand="{Binding GoToConfigurationsCommand}"
-                        IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNullConverter}}" />
+                        IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNullConverter}}" />
 
                 <selection:SettingSelectionView Selection="{Binding SettingSelection}"
-                        IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}" />
+                        IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}" />
             </Grid>
         </deviceStatus:DeviceStatusBar>
     </Grid>

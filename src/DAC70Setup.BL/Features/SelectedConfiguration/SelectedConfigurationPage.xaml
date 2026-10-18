@@ -11,24 +11,20 @@
              x:DataType="local:SelectedConfigurationPageViewModel"
              Title="{localization:Translate SelectedConfigurationTitle}">
 
-    <ContentPage.IconImageSource>
-        <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Share}"/>
-    </ContentPage.IconImageSource>
-
     <Grid RowDefinitions="Auto,*">
-        <controls:ConfigurationContextBar Grid.Row="0" ConfigurationName="{Binding Model.SelectedConfiguration.Name}"
-                                          IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
-            <Label Text="{Binding Model.SelectedConfiguration.Created, StringFormat='{0:d} · {0:t}'}"
+        <controls:ConfigurationContextBar Grid.Row="0" ConfigurationName="{Binding ConfigurationsService.SelectedConfiguration.Name}"
+                                          IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
+            <Label Text="{Binding ConfigurationsService.SelectedConfiguration.Created, StringFormat='{0:d} · {0:t}'}"
                    Style="{StaticResource ContextBarValue}" />
         </controls:ConfigurationContextBar>
 
         <deviceStatus:DeviceStatusBar Grid.Row="1" Status="{Binding DeviceStatus}">
             <Grid>
                 <controls:NoConfigurationSelectedView GoToConfigurationsCommand="{Binding GoToConfigurationsCommand}"
-                        IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNullConverter}}" />
+                        IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNullConverter}}" />
 
                 <VerticalStackLayout Spacing="12" Padding="15,18"
-                                     IsVisible="{Binding Model.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
+                                     IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
                     <Button Text="{localization:Translate SendToDevice}" Command="{Binding SendToDeviceCommand}"
                             Style="{StaticResource PrimaryButton}" ContentLayout="Left,10">
                         <Button.ImageSource>

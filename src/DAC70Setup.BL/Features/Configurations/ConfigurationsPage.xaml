@@ -12,12 +12,24 @@
              x:DataType="local:ConfigurationsPageViewModel"
              Title="{localization:Translate ConfigurationsTitle}">
 
-    <ContentPage.IconImageSource>
-        <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Toolbox}"/>
-    </ContentPage.IconImageSource>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Order="Primary" Priority="0" Command="{Binding CreateConfigurationCommand}">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.SquarePlus}"
+                                 Color="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+
+        <ToolbarItem Order="Primary" Priority="1" Command="{Binding DeleteConfigurationCommand}">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.SquareMinus}"
+                                 Color="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
 
     <deviceStatus:DeviceStatusBar Status="{Binding DeviceStatus}">
-        <CollectionView ItemsSource="{Binding Model.Configurations}" SelectedItem="{Binding SelectedConfiguration}" SelectionMode="Single">
+        <CollectionView ItemsSource="{Binding ConfigurationsService.Configurations}" SelectionMode="None">
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="WidthStates">
                     <VisualState x:Name="Narrow">
@@ -59,24 +71,19 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Configuration">
                     <ContentView Padding="10,8">
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal" />
-                                <VisualState x:Name="Selected">
-                                    <VisualState.Setters>
-                                        <Setter TargetName="CardBorder" Property="Border.Background"
-                                                Value="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}" />
-                                        <Setter TargetName="BadgeBorder" Property="Border.Background"
-                                                Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-
                         <Border x:Name="CardBorder" Style="{StaticResource Card}">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                    <Setter Property="Background"
+                                            Value="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+
                             <Border.Behaviors>
                                 <toolkit:TouchBehavior LongPressDuration="500"
-                                        LongPressCommand="{Binding Source={x:Reference PageRoot}, Path=BindingContext.OpenConfigurationCommand}"
+                                        Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.OpenConfigurationCommand}"
+                                        CommandParameter="{Binding Source={x:Reference CardBorder}, Path=BindingContext}"
+                                        LongPressCommand="{Binding Source={x:Reference PageRoot}, Path=BindingContext.ToggleSelectionCommand}"
                                         LongPressCommandParameter="{Binding Source={x:Reference CardBorder}, Path=BindingContext}" />
                             </Border.Behaviors>
 
@@ -86,9 +93,16 @@
 
                                 <Grid Grid.Column="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="11"
                                       Padding="{OnIdiom Phone=13, Default=13, Desktop=11}">
-                                    <Border x:Name="BadgeBorder" Grid.Column="0" WidthRequest="34" HeightRequest="34" StrokeThickness="0"
+                                    <Border Grid.Column="0" WidthRequest="34" HeightRequest="34" StrokeThickness="0"
                                             StrokeShape="RoundRectangle 10" VerticalOptions="Start"
                                             Background="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="Background"
+                                                        Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+
                                         <Label Text="{x:Static fontAwesome:AwesomeSolidIconFont.Sliders}" FontFamily="FA-S" FontSize="15"
                                                HorizontalOptions="Center" VerticalOptions="Center"
                                                TextColor="{AppThemeBinding Light={StaticResource OnPrimaryContainerLight}, Dark={StaticResource OnPrimaryContainerDark}}" />

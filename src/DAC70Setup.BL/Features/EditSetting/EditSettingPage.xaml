@@ -11,6 +11,7 @@
              x:Class="DAC70Setup.BL.Features.EditSetting.EditSettingPage"
              x:DataType="local:EditSettingPageViewModel"
              HideSoftInputOnTapped="True"
+             Shell.TabBarIsVisible="False"
              Title="{Binding SettingName}">
 
     <ContentPage.Resources>
