@@ -1,107 +1,72 @@
-﻿using DAC70Setup.BL.Features.EditSetting.Resources;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DAC70Setup.BL.Features.EditSetting.Resources;
 using DAC70Setup.BL.Models;
-using DAC70Setup.BL.Models.ViewModels;
 using DAC70Setup.BL.Services;
+using DAC70Setup.BL.Services.Navigation;
 using DAC70Setup.Core.Models.Definitions;
 using DAC70Setup.Core.Models.Values;
 using LocalizationResourceManager.Maui;
 
 namespace DAC70Setup.BL.Features.EditSetting;
 
-public class EditSettingPageViewModel : ViewModelBase
+public partial class EditSettingPageViewModel : ObservableObject, IQueryAttributable
 {
-    private readonly IConfigurationsService _configurationsService;
+    private readonly ConfigurationsService _configurationsService;
     private readonly INavigationService _navigationService;
     private readonly ILocalizationResourceManager _localizationResourceManager;
 
-    public EditSettingPageViewModel(IConfigurationsService configurationsService,
+    public EditSettingPageViewModel(ConfigurationsService configurationsService,
         INavigationService navigationService,
         ILocalizationResourceManager localizationResourceManager)
     {
         _configurationsService = configurationsService;
         _navigationService = navigationService;
         _localizationResourceManager = localizationResourceManager;
-
-        SaveCommand = new DelegateCommand(async () =>
-        {
-            IsBusy = true;
-            try
-            {
-                await _configurationsService.SaveSettingAsync(Configuration!, WorkingValue);
-
-                await _navigationService.GoBackToRootAsync();
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }, () => !IsBusy)
-            .ObservesProperty(() => IsBusy);
-
-        CancelCommand = new DelegateCommand(async () =>
-        {
-            IsBusy = true;
-            try
-            {
-                await _navigationService.GoBackAsync();
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }, () => !IsBusy)
-            .ObservesProperty(() => IsBusy);
     }
 
-    private Dac70SettingValue _workingValue = null!;
-    public Dac70SettingValue WorkingValue
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SettingName))]
+    public partial Dac70SettingValue? WorkingValue { get; private set; }
+
+    public string SettingName => WorkingValue?.Definition.Name ?? string.Empty;
+
+    [ObservableProperty]
+    public partial Configuration? Configuration { get; private set; }
+
+    [ObservableProperty]
+    public partial string? DependencyNoticeText { get; private set; }
+
+    [ObservableProperty]
+    public partial bool IsDependencyUnmet { get; private set; }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        get => _workingValue;
-        private set => SetProperty(ref _workingValue, value, () => RaisePropertyChanged(nameof(SettingName)));
-    }
+        Configuration = (Configuration)query[EditSettingNavigationParameters.Configuration];
 
-    public string SettingName => _workingValue?.Definition.Name ?? string.Empty;
-
-    private Configuration? _configuration;
-    public Configuration? Configuration
-    {
-        get => _configuration;
-        private set => SetProperty(ref _configuration, value);
-    }
-
-    private string? _dependencyNoticeText;
-    public string? DependencyNoticeText
-    {
-        get => _dependencyNoticeText;
-        private set => SetProperty(ref _dependencyNoticeText, value);
-    }
-
-    private bool _isDependencyUnmet;
-    public bool IsDependencyUnmet
-    {
-        get => _isDependencyUnmet;
-        private set => SetProperty(ref _isDependencyUnmet, value);
-    }
-
-    public DelegateCommand SaveCommand { get; }
-
-    public DelegateCommand CancelCommand { get; }
-
-    protected override async Task InitializeAsyncInt(INavigationParameters parameters)
-    {
-        await base.InitializeAsyncInt(parameters);
-
-        Configuration = parameters.GetValue<Configuration>(EditSettingNavigationParameters.Configuration);
-
-        var settingValue = parameters.GetValue<Dac70SettingValue>(EditSettingNavigationParameters.SettingValue);
+        var settingValue = (Dac70SettingValue)query[EditSettingNavigationParameters.SettingValue];
         WorkingValue = settingValue.Definition.CreateValue(settingValue.GetValueBytes());
 
         EvaluateDependency();
     }
 
+    [RelayCommand]
+    private async Task SaveAsync()
+    {
+        await _configurationsService.SaveSettingAsync(Configuration!, WorkingValue!);
+
+        await _navigationService.GoBackAsync();
+    }
+
+    [RelayCommand]
+    private Task CancelAsync()
+    {
+        return _navigationService.GoBackAsync();
+    }
+
     private void EvaluateDependency()
     {
-        SettingDependency? dependency = WorkingValue.Definition.Dependency;
+        SettingDependency? dependency = WorkingValue!.Definition.Dependency;
 
         if (dependency is null)
         {

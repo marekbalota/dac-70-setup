@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using AsyncAwaitBestPractices;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DAC70Setup.BL.Controls.DeviceStatus.Resources;
 using DAC70Setup.BL.Services.Device;
 using DAC70Setup.Core.Interfaces;
@@ -8,7 +10,7 @@ using LocalizationResourceManager.Maui;
 
 namespace DAC70Setup.BL.Controls.DeviceStatus;
 
-public class DeviceStatusBarViewModel : BindableBase, IDisposable
+public partial class DeviceStatusBarViewModel : ObservableObject
 {
     private const string DeviceName = "DAC-70";
 
@@ -25,25 +27,11 @@ public class DeviceStatusBarViewModel : BindableBase, IDisposable
         _deviceConnectionService = deviceConnectionService;
         _localizationResourceManager = localizationResourceManager;
 
-        ActionCommand = new AsyncDelegateCommand(() => _action?.Invoke() ?? Task.CompletedTask);
-
-        SelectDeviceCommand = new AsyncDelegateCommand<AttachedDevice>(async (device) =>
-        {
-            if (device != null && !(device.IsSelected && _deviceConnectionService.CanSend))
-            {
-                await _deviceConnectionService.SelectDeviceAsync(device);
-            }
-        });
-
         _deviceConnectionService.PropertyChanged += OnDeviceConnectionServiceChanged;
 
         ObserveSelectedSnapshot();
         UpdateBar();
     }
-
-    public AsyncDelegateCommand ActionCommand { get; }
-
-    public AsyncDelegateCommand<AttachedDevice> SelectDeviceCommand { get; }
 
     public IReadOnlyList<IDac70Transport> Transports => _deviceConnectionService.Transports;
 
@@ -149,11 +137,26 @@ public class DeviceStatusBarViewModel : BindableBase, IDisposable
         private set => SetProperty(ref _syncText, value);
     }
 
+    [RelayCommand]
+    private Task ActionAsync()
+    {
+        return _action?.Invoke() ?? Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private async Task SelectDeviceAsync(AttachedDevice device)
+    {
+        if (!(device.IsSelected && _deviceConnectionService.CanSend))
+        {
+            await _deviceConnectionService.SelectDeviceAsync(device);
+        }
+    }
+
     private void OnDeviceConnectionServiceChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(DeviceConnectionService.SelectedTransport))
         {
-            RaisePropertyChanged(nameof(SelectedTransport));
+            OnPropertyChanged(nameof(SelectedTransport));
         }
 
         if (e.PropertyName == nameof(DeviceConnectionService.SelectedDevice))
@@ -163,8 +166,8 @@ public class DeviceStatusBarViewModel : BindableBase, IDisposable
 
         if (e.PropertyName == nameof(DeviceConnectionService.Devices))
         {
-            RaisePropertyChanged(nameof(Devices));
-            RaisePropertyChanged(nameof(IsNumberShown));
+            OnPropertyChanged(nameof(Devices));
+            OnPropertyChanged(nameof(IsNumberShown));
         }
 
         UpdateBar();
@@ -370,16 +373,5 @@ public class DeviceStatusBarViewModel : BindableBase, IDisposable
     {
         _action = null;
         ActionText = null;
-    }
-
-    public void Dispose()
-    {
-        _deviceConnectionService.PropertyChanged -= OnDeviceConnectionServiceChanged;
-
-        if (_observedSnapshot != null)
-        {
-            _observedSnapshot.PropertyChanged -= OnSnapshotPropertyChanged;
-            _observedSnapshot = null;
-        }
     }
 }

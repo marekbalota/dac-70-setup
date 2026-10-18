@@ -1,12 +1,13 @@
 ﻿using System.Globalization;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DAC70Setup.BL.Features.Settings.Resources;
-using DAC70Setup.BL.Models.ViewModels;
 using DAC70Setup.BL.Resources;
 using LocalizationResourceManager.Maui;
 
 namespace DAC70Setup.BL.Features.Settings;
 
-public class SettingsPageViewModel : ViewModelBase
+public partial class SettingsPageViewModel : ObservableObject
 {
     private readonly ILocalizationResourceManager _localizationResourceManager;
 
@@ -35,15 +36,13 @@ public class SettingsPageViewModel : ViewModelBase
             ?? Themes[0];
         _selectedTheme.IsSelected = true;
 
-        SelectThemeCommand = new DelegateCommand<ThemeOption>(option => SelectedTheme = option);
-
         Languages =
         [
             new LanguageOption("English", new CultureInfo("en")),
             new LanguageOption("Čeština", new CultureInfo("cs"))
         ];
 
-        _selectedLanguage = Languages.FirstOrDefault(language => language.Culture.TwoLetterISOLanguageName 
+        _selectedLanguage = Languages.FirstOrDefault(language => language.Culture.TwoLetterISOLanguageName
             == _localizationResourceManager.CurrentCulture.TwoLetterISOLanguageName) ?? Languages[0];
     }
 
@@ -69,8 +68,6 @@ public class SettingsPageViewModel : ViewModelBase
         }
     }
 
-    public DelegateCommand<ThemeOption> SelectThemeCommand { get; }
-
     public LanguageOption[] Languages { get; }
 
     private LanguageOption _selectedLanguage;
@@ -84,6 +81,12 @@ public class SettingsPageViewModel : ViewModelBase
                 _localizationResourceManager.CurrentCulture = value.Culture;
             }
         }
+    }
+
+    [RelayCommand]
+    private void SelectTheme(ThemeOption option)
+    {
+        SelectedTheme = option;
     }
 
     public string VersionText => AppInfo.Current.VersionString;

@@ -1,90 +1,130 @@
-﻿using DAC70Setup.BL.Controls.DeviceStatus;
-using DAC70Setup.BL.Features.Configurations.Commands;
-using DAC70Setup.BL.Features.SelectedConfiguration;
+﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DAC70Setup.BL.Controls.DeviceStatus;
+using DAC70Setup.BL.Features.Configurations.Popups;
 using DAC70Setup.BL.Models;
-using DAC70Setup.BL.Models.Commands;
-using DAC70Setup.BL.Models.ViewModels;
 using DAC70Setup.BL.Services;
-using DAC70Setup.BL.Services.Commands;
 using DAC70Setup.BL.Services.Device;
+using DAC70Setup.BL.Services.Navigation;
 using LocalizationResourceManager.Maui;
 
 namespace DAC70Setup.BL.Features.Configurations;
 
-public class ConfigurationsPageViewModel : TabViewModelBase
+public partial class ConfigurationsPageViewModel : ObservableObject
 {
-    private readonly IApplicationCommands _applicationCommands;
-    private readonly IConfigurationsService _configurationsService;
     private readonly INavigationService _navigationService;
+    private readonly DeviceConnectionService _deviceConnectionService;
+    private readonly IPopupService _popupService;
+    private readonly ILocalizationResourceManager _localizationResourceManager;
 
-    public ConfigurationsPageViewModel(DataModel model,
-        IApplicationCommands applicationCommands,
-        CreateConfigurationCommand createConfigurationCommand,
-        DeleteConfigurationCommand deleteConfigurationCommand,
-        SelectConfigurationCommand selectConfigurationCommand,
-        IConfigurationsService configurationsService,
+    public ConfigurationsPageViewModel(ConfigurationsService configurationsService,
         INavigationService navigationService,
         DeviceConnectionService deviceConnectionService,
+        IPopupService popupService,
         ILocalizationResourceManager localizationResourceManager)
     {
-        Model = model;
-        _applicationCommands = applicationCommands;
-        _configurationsService = configurationsService;
+        ConfigurationsService = configurationsService;
         _navigationService = navigationService;
+        _deviceConnectionService = deviceConnectionService;
+        _popupService = popupService;
+        _localizationResourceManager = localizationResourceManager;
 
         DeviceStatus = new DeviceStatusBarViewModel(deviceConnectionService, localizationResourceManager);
-
-        CreateConfigurationCommand = createConfigurationCommand;
-        DeleteConfigurationCommand = deleteConfigurationCommand;
-        SelectConfigurationCommand = selectConfigurationCommand;
-
-        _applicationCommands.SelectCommand.RegisterCommand(SelectConfigurationCommand);
-        _applicationCommands.RemoveCommand.RegisterCommand(DeleteConfigurationCommand);
-        _applicationCommands.AddCommand.RegisterCommand(CreateConfigurationCommand);
-
-        OpenConfigurationCommand = new DelegateCommand<Configuration>(async configuration =>
-        {
-            _configurationsService.SelectConfiguration(configuration);
-            await _navigationService.SelectTabAsync(nameof(SelectedConfigurationPage));
-        });
     }
 
-    public DataModel Model { get; }
+    public ConfigurationsService ConfigurationsService { get; }
 
     public DeviceStatusBarViewModel DeviceStatus { get; }
 
-    private Configuration? _selectedConfiguration;
-    public Configuration? SelectedConfiguration
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(DeleteConfigurationCommand))]
+    public partial Configuration? SelectedConfiguration { get; set; }
+
+    partial void OnSelectedConfigurationChanged(Configuration? oldValue, Configuration? newValue)
     {
-        get => _selectedConfiguration;
-        set => SetProperty(ref _selectedConfiguration, value);
+        if (oldValue != null)
+        {
+            oldValue.IsSelected = false;
+        }
+
+        if (newValue != null)
+        {
+            newValue.IsSelected = true;
+        }
     }
 
-    public CommandBase CreateConfigurationCommand { get; }
-
-    public CommandBase DeleteConfigurationCommand { get; }
-
-    public CommandBase SelectConfigurationCommand { get; }
-
-    public DelegateCommand<Configuration> OpenConfigurationCommand { get; }
-
-    protected override async Task InitializeAsyncInt(INavigationParameters parameters)
+    [RelayCommand]
+    private async Task OpenConfigurationAsync(Configuration configuration)
     {
-        await base.InitializeAsyncInt(parameters);
+        ConfigurationsService.SelectConfiguration(configuration);
 
-        SelectConfigurationCommand.Initialize(this);
-        DeleteConfigurationCommand.Initialize(this);
-        CreateConfigurationCommand.Initialize(this);
+        await _navigationService.NavigateToAsync(Routes.SelectedConfiguration);
     }
 
-    protected override void OnDestroy()
+    [RelayCommand]
+    private void ToggleSelection(Configuration configuration)
     {
-        base.OnDestroy();
+        SelectedConfiguration = SelectedConfiguration == configuration ? null : configuration;
+    }
 
-        _applicationCommands.SelectCommand.UnregisterCommand(SelectConfigurationCommand);
-        _applicationCommands.RemoveCommand.UnregisterCommand(DeleteConfigurationCommand);
-        _applicationCommands.AddCommand.UnregisterCommand(CreateConfigurationCommand);
+    [RelayCommand]
+    private async Task CreateConfigurationAsync()
+    {
+        var popupResult = await _popupService
+            .ShowPopupAsync<CreateConfigurationPopupViewModel, CreateConfigurationResult>(Shell.Current);
 
-        DeviceStatus.Dispose();
+        if (popupResult.Result is not { } result)
+        {
+            return;
+        }
+
+        if (!result.IsFromDevice)
+        {
+            await ConfigurationsService.CreateNewConfigurationAsync(result.Name);
+
+            return;
+        }
+
+        if (_deviceConnectionService.SelectedDevice?.Snapshot.LastFullSync == null
+            && !await _deviceConnectionService.SyncAsync())
+        {
+            return;
+        }
+
+        if (_deviceConnectionService.SelectedDevice?.Snapshot is { } snapshot)
+        {
+            await ConfigurationsService.CreateFromDeviceAsync(result.Name, snapshot);
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanDeleteConfiguration))]
+    private async Task DeleteConfigurationAsync()
+    {
+        if (SelectedConfiguration is not { } configuration)
+        {
+            return;
+        }
+
+        var popupResult = await _popupService.ShowPopupAsync<DeleteConfigurationPopupViewModel, bool>(
+            Shell.Current,
+            shellParameters: new Dictionary<string, object>
+            {
+                [DeleteConfigurationPopupViewModel.ConfigurationNameParameter] = configuration.Name
+            });
+
+        if (popupResult.Result != true)
+        {
+            return;
+        }
+
+        SelectedConfiguration = null;
+
+        await ConfigurationsService.DeleteConfigurationAsync(configuration);
+    }
+
+    private bool CanDeleteConfiguration()
+    {
+        return SelectedConfiguration != null;
     }
 }

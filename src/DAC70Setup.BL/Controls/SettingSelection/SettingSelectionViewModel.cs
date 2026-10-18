@@ -1,5 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Device;
@@ -9,10 +11,9 @@ using LocalizationResourceManager.Maui;
 
 namespace DAC70Setup.BL.Controls.SettingSelection;
 
-public class SettingSelectionViewModel : BindableBase, IDisposable
+public partial class SettingSelectionViewModel : ObservableObject
 {
-    private readonly DataModel _model;
-    private readonly IConfigurationsService _configurationsService;
+    private readonly ConfigurationsService _configurationsService;
     private readonly DeviceConnectionService _deviceConnectionService;
     private readonly Func<Dac70SettingValue, Task> _openSetting;
 
@@ -21,11 +22,10 @@ public class SettingSelectionViewModel : BindableBase, IDisposable
     private Configuration? _observedConfiguration;
     private DeviceSnapshot? _observedSnapshot;
 
-    public SettingSelectionViewModel(DataModel model, IConfigurationsService configurationsService,
+    public SettingSelectionViewModel(ConfigurationsService configurationsService,
         DeviceConnectionService deviceConnectionService, ILocalizationResourceManager localizationResourceManager,
         Func<Dac70SettingValue, Task> openSetting)
     {
-        _model = model;
         _configurationsService = configurationsService;
         _deviceConnectionService = deviceConnectionService;
         _openSetting = openSetting;
@@ -40,104 +40,113 @@ public class SettingSelectionViewModel : BindableBase, IDisposable
             .Select(group => new SettingRowGroup(group.Key, group))
             .ToList();
 
-        PressCommand = new AsyncDelegateCommand<SettingRowItem>(async row =>
-        {
-            if (IsSelectionMode)
-            {
-                if (row.IsIncluded)
-                {
-                    SetSelected([row], !row.IsSelected);
-                }
-            }
-            else if (row.ConfigurationValue is { } value)
-            {
-                await _openSetting(value);
-            }
-        });
-
-        LongPressCommand = new DelegateCommand<SettingRowItem>(row =>
-        {
-            if (row.IsIncluded)
-            {
-                SetSelected([row], true);
-            }
-        });
-
-        ToggleIncludedCommand = new AsyncDelegateCommand<SettingRowItem>(async row =>
-        {
-            if (IsSelectionMode || _model.SelectedConfiguration is not { } configuration)
-            {
-                return;
-            }
-
-            if (row.ConfigurationValue is { } value)
-            {
-                await _configurationsService.DeleteSettingAsync(configuration, value);
-            }
-            else if (row.DeviceValue is { } deviceValue)
-            {
-                await _configurationsService.SaveSettingAsync(configuration, deviceValue);
-            }
-            else
-            {
-                await _openSetting(row.Definition.CreateValue());
-            }
-        });
-
-        SelectAllCommand = new DelegateCommand(() => SetSelected(_rows.Where(row => row.IsIncluded), true));
-
-        ClearSelectionCommand = new DelegateCommand(() => SetSelected(_rows, false));
-
-        UseDeviceValuesCommand = new AsyncDelegateCommand(async () =>
-        {
-            if (_model.SelectedConfiguration is not { } configuration)
-            {
-                return;
-            }
-
-            var values = SelectedRows
-                .Select(row => row.DeviceValue)
-                .OfType<Dac70SettingValue>()
-                .ToList();
-
-            SetSelected(_rows, false);
-
-            await _configurationsService.SaveSettingsAsync(configuration, values);
-        }, () => IsSelectionMode && SelectedRows.Any(row => row.DeviceValue != null)
-            && _deviceConnectionService.State is not (DeviceState.Sending or DeviceState.Syncing));
-
-        SendSelectedCommand = new AsyncDelegateCommand(async () =>
-        {
-            var values = SelectedRows
-                .Select(row => row.ConfigurationValue)
-                .OfType<Dac70SettingValue>()
-                .ToList();
-
-            SetSelected(_rows, false);
-
-            await _deviceConnectionService.SendValuesAsync(values);
-        }, () => IsSelectionMode && _deviceConnectionService.CanSend);
-
-        _model.PropertyChanged += OnModelPropertyChanged;
+        _configurationsService.PropertyChanged += OnConfigurationsPropertyChanged;
         _deviceConnectionService.PropertyChanged += OnDeviceConnectionServiceChanged;
 
         ObserveSelectedConfiguration();
         ObserveSelectedSnapshot();
     }
 
-    public AsyncDelegateCommand<SettingRowItem> PressCommand { get; }
+    [RelayCommand]
+    private async Task PressAsync(SettingRowItem row)
+    {
+        if (IsSelectionMode)
+        {
+            if (row.IsIncluded)
+            {
+                SetSelected([row], !row.IsSelected);
+            }
+        }
+        else if (row.ConfigurationValue is { } value)
+        {
+            await _openSetting(value);
+        }
+    }
 
-    public DelegateCommand<SettingRowItem> LongPressCommand { get; }
+    [RelayCommand]
+    private void LongPress(SettingRowItem row)
+    {
+        if (row.IsIncluded)
+        {
+            SetSelected([row], true);
+        }
+    }
 
-    public AsyncDelegateCommand<SettingRowItem> ToggleIncludedCommand { get; }
+    [RelayCommand]
+    private async Task ToggleIncludedAsync(SettingRowItem row)
+    {
+        if (IsSelectionMode || _configurationsService.SelectedConfiguration is not { } configuration)
+        {
+            return;
+        }
 
-    public DelegateCommand SelectAllCommand { get; }
+        if (row.ConfigurationValue is { } value)
+        {
+            await _configurationsService.DeleteSettingAsync(configuration, value);
+        }
+        else if (row.DeviceValue is { } deviceValue)
+        {
+            await _configurationsService.SaveSettingAsync(configuration, deviceValue);
+        }
+        else
+        {
+            await _openSetting(row.Definition.CreateValue());
+        }
+    }
 
-    public DelegateCommand ClearSelectionCommand { get; }
+    [RelayCommand]
+    private void SelectAll()
+    {
+        SetSelected(_rows.Where(row => row.IsIncluded), true);
+    }
 
-    public AsyncDelegateCommand UseDeviceValuesCommand { get; }
+    [RelayCommand]
+    private void ClearSelection()
+    {
+        SetSelected(_rows, false);
+    }
 
-    public AsyncDelegateCommand SendSelectedCommand { get; }
+    [RelayCommand(CanExecute = nameof(CanUseDeviceValues))]
+    private async Task UseDeviceValuesAsync()
+    {
+        if (_configurationsService.SelectedConfiguration is not { } configuration)
+        {
+            return;
+        }
+
+        var values = SelectedRows
+            .Select(row => row.DeviceValue)
+            .OfType<Dac70SettingValue>()
+            .ToList();
+
+        SetSelected(_rows, false);
+
+        await _configurationsService.SaveSettingsAsync(configuration, values);
+    }
+
+    private bool CanUseDeviceValues()
+    {
+        return IsSelectionMode && SelectedRows.Any(row => row.DeviceValue != null)
+            && _deviceConnectionService.State is not (DeviceState.Sending or DeviceState.Syncing);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanSendSelected))]
+    private async Task SendSelectedAsync()
+    {
+        var values = SelectedRows
+            .Select(row => row.ConfigurationValue)
+            .OfType<Dac70SettingValue>()
+            .ToList();
+
+        SetSelected(_rows, false);
+
+        await _deviceConnectionService.SendValuesAsync(values);
+    }
+
+    private bool CanSendSelected()
+    {
+        return IsSelectionMode && _deviceConnectionService.CanSend;
+    }
 
     public IReadOnlyList<SettingRowGroup> Groups { get; }
 
@@ -160,10 +169,10 @@ public class SettingSelectionViewModel : BindableBase, IDisposable
             row.IsSelected = isSelected;
         }
 
-        RaisePropertyChanged(nameof(SelectedCount));
-        RaisePropertyChanged(nameof(IsSelectionMode));
-        UseDeviceValuesCommand.RaiseCanExecuteChanged();
-        SendSelectedCommand.RaiseCanExecuteChanged();
+        OnPropertyChanged(nameof(SelectedCount));
+        OnPropertyChanged(nameof(IsSelectionMode));
+        UseDeviceValuesCommand.NotifyCanExecuteChanged();
+        SendSelectedCommand.NotifyCanExecuteChanged();
     }
 
     private void ObserveSelectedConfiguration()
@@ -173,7 +182,7 @@ public class SettingSelectionViewModel : BindableBase, IDisposable
             _observedConfiguration.Settings.CollectionChanged -= OnSettingsCollectionChanged;
         }
 
-        _observedConfiguration = _model.SelectedConfiguration;
+        _observedConfiguration = _configurationsService.SelectedConfiguration;
 
         if (_observedConfiguration != null)
         {
@@ -212,12 +221,12 @@ public class SettingSelectionViewModel : BindableBase, IDisposable
 
         SetSelected(_rows.Where(row => !row.IsIncluded), false);
 
-        UseDeviceValuesCommand.RaiseCanExecuteChanged();
+        UseDeviceValuesCommand.NotifyCanExecuteChanged();
     }
 
-    private void OnModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void OnConfigurationsPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(DataModel.SelectedConfiguration))
+        if (e.PropertyName == nameof(ConfigurationsService.SelectedConfiguration))
         {
             SetSelected(_rows, false);
             ObserveSelectedConfiguration();
@@ -231,8 +240,8 @@ public class SettingSelectionViewModel : BindableBase, IDisposable
             ObserveSelectedSnapshot();
         }
 
-        UseDeviceValuesCommand.RaiseCanExecuteChanged();
-        SendSelectedCommand.RaiseCanExecuteChanged();
+        UseDeviceValuesCommand.NotifyCanExecuteChanged();
+        SendSelectedCommand.NotifyCanExecuteChanged();
     }
 
     private void OnSettingsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -245,29 +254,6 @@ public class SettingSelectionViewModel : BindableBase, IDisposable
         if (e.PropertyName == nameof(DeviceSnapshot.Values))
         {
             RefreshRows();
-        }
-    }
-
-    public void Dispose()
-    {
-        _model.PropertyChanged -= OnModelPropertyChanged;
-        _deviceConnectionService.PropertyChanged -= OnDeviceConnectionServiceChanged;
-
-        if (_observedConfiguration != null)
-        {
-            _observedConfiguration.Settings.CollectionChanged -= OnSettingsCollectionChanged;
-            _observedConfiguration = null;
-        }
-
-        if (_observedSnapshot != null)
-        {
-            _observedSnapshot.PropertyChanged -= OnSnapshotPropertyChanged;
-            _observedSnapshot = null;
-        }
-
-        foreach (var row in _rows)
-        {
-            row.Dispose();
         }
     }
 }

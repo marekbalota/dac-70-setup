@@ -1,73 +1,57 @@
-﻿using DAC70Setup.BL.Controls.DeviceStatus;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DAC70Setup.BL.Controls.DeviceStatus;
 using DAC70Setup.BL.Controls.SettingSelection;
-using DAC70Setup.BL.Features.Configurations;
 using DAC70Setup.BL.Features.EditSetting;
-using DAC70Setup.BL.Models;
-using DAC70Setup.BL.Models.ViewModels;
 using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Device;
+using DAC70Setup.BL.Services.Navigation;
 using DAC70Setup.Core.Models.Values;
 using LocalizationResourceManager.Maui;
 
 namespace DAC70Setup.BL.Features.EditConfiguration;
 
-public class EditConfigurationPageViewModel : TabViewModelBase
+public partial class EditConfigurationPageViewModel : ObservableObject
 {
     private readonly INavigationService _navigationService;
 
-    public EditConfigurationPageViewModel(DataModel model, INavigationService navigationService,
-        IConfigurationsService configurationsService, DeviceConnectionService deviceConnectionService,
+    public EditConfigurationPageViewModel(ConfigurationsService configurationsService,
+        INavigationService navigationService,
+        DeviceConnectionService deviceConnectionService,
         ILocalizationResourceManager localizationResourceManager)
     {
-        Model = model;
+        ConfigurationsService = configurationsService;
         _navigationService = navigationService;
 
         DeviceStatus = new DeviceStatusBarViewModel(deviceConnectionService, localizationResourceManager);
 
-        SettingSelection = new SettingSelectionViewModel(model, configurationsService, deviceConnectionService,
+        SettingSelection = new SettingSelectionViewModel(configurationsService, deviceConnectionService,
             localizationResourceManager, OpenSettingAsync);
-
-        GoToConfigurationsCommand = new DelegateCommand(async () =>
-            await _navigationService.SelectTabAsync(nameof(ConfigurationsPage)));
     }
 
-    public DelegateCommand GoToConfigurationsCommand { get; }
-
-    public DataModel Model { get; }
+    public ConfigurationsService ConfigurationsService { get; }
 
     public DeviceStatusBarViewModel DeviceStatus { get; }
 
     public SettingSelectionViewModel SettingSelection { get; }
 
-    private async Task OpenSettingAsync(Dac70SettingValue value)
+    [RelayCommand]
+    private Task GoToConfigurationsAsync()
     {
-        if (IsBusy || Model.SelectedConfiguration is not { } configuration)
-        {
-            return;
-        }
-
-        IsBusy = true;
-        try
-        {
-            var parameters = new NavigationParameters
-            {
-                { EditSettingNavigationParameters.Configuration, configuration },
-                { EditSettingNavigationParameters.SettingValue, value }
-            };
-
-            await _navigationService.NavigateAsync(nameof(EditSettingPage), parameters);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        return _navigationService.NavigateToAsync(Routes.ConfigurationList);
     }
 
-    protected override void OnDestroy()
+    private Task OpenSettingAsync(Dac70SettingValue value)
     {
-        base.OnDestroy();
+        if (ConfigurationsService.SelectedConfiguration is not { } configuration)
+        {
+            return Task.CompletedTask;
+        }
 
-        SettingSelection.Dispose();
-        DeviceStatus.Dispose();
+        return _navigationService.NavigateToAsync(Routes.EditSetting, new Dictionary<string, object>
+        {
+            { EditSettingNavigationParameters.Configuration, configuration },
+            { EditSettingNavigationParameters.SettingValue, value }
+        });
     }
 }

@@ -1,74 +1,77 @@
 ﻿using System.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DAC70Setup.BL.Controls.DeviceStatus;
-using DAC70Setup.BL.Features.Configurations;
-using DAC70Setup.BL.Models;
-using DAC70Setup.BL.Models.ViewModels;
+using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Device;
+using DAC70Setup.BL.Services.Navigation;
 using LocalizationResourceManager.Maui;
 
 namespace DAC70Setup.BL.Features.SelectedConfiguration;
 
-public class SelectedConfigurationPageViewModel : TabViewModelBase
+public partial class SelectedConfigurationPageViewModel : ObservableObject
 {
     private readonly INavigationService _navigationService;
     private readonly DeviceConnectionService _deviceConnectionService;
 
-    public SelectedConfigurationPageViewModel(DataModel model, INavigationService navigationService,
+    public SelectedConfigurationPageViewModel(ConfigurationsService configurationsService,
+        INavigationService navigationService,
         DeviceConnectionService deviceConnectionService, ILocalizationResourceManager localizationResourceManager)
     {
-        Model = model;
+        ConfigurationsService = configurationsService;
         _navigationService = navigationService;
         _deviceConnectionService = deviceConnectionService;
 
         DeviceStatus = new DeviceStatusBarViewModel(deviceConnectionService, localizationResourceManager);
 
-        GoToConfigurationsCommand = new DelegateCommand(async () =>
-            await _navigationService.SelectTabAsync(nameof(ConfigurationsPage)));
-
-        SendToDeviceCommand = new AsyncDelegateCommand(async () =>
-        {
-            if (Model.SelectedConfiguration is { } configuration)
-            {
-                await _deviceConnectionService.SendConfigurationAsync(configuration);
-            }
-        }, () => Model.SelectedConfiguration != null && _deviceConnectionService.CanSend);
-
-        // TODO: save the selected configuration to a file the user picks.
-        ExportConfigurationCommand = new DelegateCommand(() => { });
-
-        SynchronizeWithDeviceCommand = new AsyncDelegateCommand(async () =>
-        {
-            await _deviceConnectionService.SyncAsync();
-        }, () => _deviceConnectionService.CanSend);
-
-        Model.PropertyChanged += OnSendConditionsChanged;
+        ConfigurationsService.PropertyChanged += OnSendConditionsChanged;
         _deviceConnectionService.PropertyChanged += OnSendConditionsChanged;
     }
 
-    public DataModel Model { get; }
+    public ConfigurationsService ConfigurationsService { get; }
 
     public DeviceStatusBarViewModel DeviceStatus { get; }
 
-    public DelegateCommand GoToConfigurationsCommand { get; }
+    [RelayCommand]
+    private Task GoToConfigurationsAsync()
+    {
+        return _navigationService.NavigateToAsync(Routes.ConfigurationList);
+    }
 
-    public AsyncDelegateCommand SendToDeviceCommand { get; }
+    [RelayCommand(CanExecute = nameof(CanSendToDevice))]
+    private async Task SendToDeviceAsync()
+    {
+        if (ConfigurationsService.SelectedConfiguration is { } configuration)
+        {
+            await _deviceConnectionService.SendConfigurationAsync(configuration);
+        }
+    }
 
-    public DelegateCommand ExportConfigurationCommand { get; }
+    private bool CanSendToDevice()
+    {
+        return ConfigurationsService.SelectedConfiguration != null && _deviceConnectionService.CanSend;
+    }
 
-    public AsyncDelegateCommand SynchronizeWithDeviceCommand { get; }
+    // TODO: save the selected configuration to a file the user picks.
+    [RelayCommand]
+    private void ExportConfiguration()
+    {
+    }
+
+    [RelayCommand(CanExecute = nameof(CanSynchronizeWithDevice))]
+    private async Task SynchronizeWithDeviceAsync()
+    {
+        await _deviceConnectionService.SyncAsync();
+    }
+
+    private bool CanSynchronizeWithDevice()
+    {
+        return _deviceConnectionService.CanSend;
+    }
 
     private void OnSendConditionsChanged(object? sender, PropertyChangedEventArgs e)
     {
-        SendToDeviceCommand.RaiseCanExecuteChanged();
-        SynchronizeWithDeviceCommand.RaiseCanExecuteChanged();
-    }
-
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
-
-        Model.PropertyChanged -= OnSendConditionsChanged;
-        _deviceConnectionService.PropertyChanged -= OnSendConditionsChanged;
-        DeviceStatus.Dispose();
+        SendToDeviceCommand.NotifyCanExecuteChanged();
+        SynchronizeWithDeviceCommand.NotifyCanExecuteChanged();
     }
 }
