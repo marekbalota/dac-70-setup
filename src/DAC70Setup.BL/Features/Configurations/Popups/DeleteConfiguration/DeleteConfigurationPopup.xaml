@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup x:TypeArguments="x:Boolean"
+               xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               xmlns:popups="clr-namespace:DAC70Setup.BL.Features.Configurations.Popups.DeleteConfiguration"
+               xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
+               x:Class="DAC70Setup.BL.Features.Configurations.Popups.DeleteConfiguration.DeleteConfigurationPopup"
+               x:DataType="popups:DeleteConfigurationPopupViewModel"
+               WidthRequest="340" Padding="20,20,20,16"
+               Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+
+    <VerticalStackLayout Spacing="16">
+        <Label Text="{localization:Translate DeleteConfigurationConfirmTitle}" FontFamily="PlexSansSemiBold" FontSize="18"
+               TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+
+        <Label Text="{Binding Message.Localized}" Style="{StaticResource CardCaption}" />
+
+        <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
+            <Button Text="{localization:Translate DeleteConfigurationConfirmCancel}" Command="{Binding CancelCommand}"
+                    Style="{StaticResource SecondaryButton}" StyleClass="DialogButton" />
+
+            <Button Text="{localization:Translate DeleteConfigurationConfirmAccept}" Command="{Binding ConfirmCommand}"
+                    Style="{StaticResource DestructiveButton}" StyleClass="DialogButton" />
+        </HorizontalStackLayout>
+    </VerticalStackLayout>
+</toolkit:Popup>

@@ -197,6 +197,13 @@
                 Value="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}" />
     </Style>
 
+    <Style TargetType="Button" Class="DialogButton">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="16,8" />
+        <Setter Property="MinimumHeightRequest" Value="40" />
+    </Style>
+
     <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}" />
 
     <!-- ── Inputs ───────────────────────────────────────────────────── -->

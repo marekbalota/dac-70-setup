@@ -2,7 +2,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DAC70Setup.BL.Controls.DeviceStatus;
-using DAC70Setup.BL.Features.Configurations.Popups;
+using DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration;
+using DAC70Setup.BL.Features.Configurations.Popups.DeleteConfiguration;
 using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Device;
@@ -16,7 +17,6 @@ public partial class ConfigurationsPageViewModel : ObservableObject
     private readonly INavigationService _navigationService;
     private readonly DeviceConnectionService _deviceConnectionService;
     private readonly IPopupService _popupService;
-    private readonly ILocalizationResourceManager _localizationResourceManager;
 
     public ConfigurationsPageViewModel(ConfigurationsService configurationsService,
         INavigationService navigationService,
@@ -28,7 +28,6 @@ public partial class ConfigurationsPageViewModel : ObservableObject
         _navigationService = navigationService;
         _deviceConnectionService = deviceConnectionService;
         _popupService = popupService;
-        _localizationResourceManager = localizationResourceManager;
 
         DeviceStatus = new DeviceStatusBarViewModel(deviceConnectionService, localizationResourceManager);
     }
@@ -74,7 +73,7 @@ public partial class ConfigurationsPageViewModel : ObservableObject
         var popupResult = await _popupService
             .ShowPopupAsync<CreateConfigurationPopupViewModel, CreateConfigurationResult>(Shell.Current);
 
-        if (popupResult.Result is not { } result)
+        if (popupResult.WasDismissedByTappingOutsideOfPopup || popupResult.Result is not { } result)
         {
             return;
         }
@@ -113,14 +112,14 @@ public partial class ConfigurationsPageViewModel : ObservableObject
                 [DeleteConfigurationPopupViewModel.ConfigurationNameParameter] = configuration.Name
             });
 
-        if (popupResult.Result != true)
+        if (popupResult.WasDismissedByTappingOutsideOfPopup || popupResult.Result != true)
         {
             return;
         }
 
-        SelectedConfiguration = null;
-
         await ConfigurationsService.DeleteConfigurationAsync(configuration);
+
+        SelectedConfiguration = null;
     }
 
     private bool CanDeleteConfiguration()
