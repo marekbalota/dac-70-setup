@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel;
 using DAC70Setup.BL.Controls.SettingSelection.Resources;
-using DAC70Setup.Core;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DAC70Setup.Core.Models.Definitions;
 using DAC70Setup.Core.Models.Values;
 using LocalizationResourceManager.Maui;
 
 namespace DAC70Setup.BL.Controls.SettingSelection;
 
-public class SettingRowItem : NotifyPropertyChangedBase, IDisposable
+public partial class SettingRowItem : ObservableObject, IDisposable
 {
     private readonly ILocalizationResourceManager _localizationResourceManager;
 
@@ -35,52 +35,32 @@ public class SettingRowItem : NotifyPropertyChangedBase, IDisposable
 
     public Dac70SettingDefinition Definition { get; }
 
-    private Dac70SettingValue? _configurationValue;
-    public Dac70SettingValue? ConfigurationValue
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsIncluded))]
+    public partial Dac70SettingValue? ConfigurationValue { get; set; }
+
+    partial void OnConfigurationValueChanged(Dac70SettingValue? oldValue, Dac70SettingValue? newValue)
     {
-        get => _configurationValue;
-        set
-        {
-            var oldValue = _configurationValue;
-            SetProperty(ref _configurationValue, value, () =>
-            {
-                ObserveValue(oldValue, value);
-                RaisePropertyChanged(nameof(IsIncluded));
-                Refresh();
-            });
-        }
+        ObserveValue(oldValue, newValue);
+        Refresh();
     }
 
-    private Dac70SettingValue? _deviceValue;
-    public Dac70SettingValue? DeviceValue
+    [ObservableProperty]
+    public partial Dac70SettingValue? DeviceValue { get; set; }
+
+    partial void OnDeviceValueChanged(Dac70SettingValue? oldValue, Dac70SettingValue? newValue)
     {
-        get => _deviceValue;
-        set
-        {
-            var oldValue = _deviceValue;
-            SetProperty(ref _deviceValue, value, () =>
-            {
-                ObserveValue(oldValue, value);
-                Refresh();
-            });
-        }
+        ObserveValue(oldValue, newValue);
+        Refresh();
     }
 
     public bool IsIncluded => ConfigurationValue != null;
 
-    private bool _isSelected;
-    public bool IsSelected
-    {
-        get => _isSelected;
-        set => SetProperty(ref _isSelected, value);
-    }
+    [ObservableProperty]
+    public partial bool IsSelected { get; set; }
 
-    private SettingComparison _comparison;
-    public SettingComparison Comparison
-    {
-        get => _comparison;
-        private set => SetProperty(ref _comparison, value);
-    }
+    [ObservableProperty]
+    public partial SettingComparison Comparison { get; private set; }
 
     public LocalizedString DeviceText { get; }
 
@@ -123,12 +103,12 @@ public class SettingRowItem : NotifyPropertyChangedBase, IDisposable
             Comparison = SettingComparison.Unknown;
         }
 
-        RaisePropertyChanged(nameof(DeviceText));
+        OnPropertyChanged(nameof(DeviceText));
     }
 
     public void Dispose()
     {
-        ObserveValue(_configurationValue, null);
-        ObserveValue(_deviceValue, null);
+        ObserveValue(ConfigurationValue, null);
+        ObserveValue(DeviceValue, null);
     }
 }

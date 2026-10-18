@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using DAC70Setup.BL.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DAC70Setup.Core.Exceptions;
 using DAC70Setup.Core.Interfaces;
 using DAC70Setup.Core.Models;
@@ -8,7 +9,7 @@ using DAC70Setup.Core.Models.Values;
 
 namespace DAC70Setup.BL.Services.Device;
 
-public class DeviceConnectionService : BindableBase
+public partial class DeviceConnectionService : ObservableObject
 {
     private const string SelectedTransportIdKey = "SelectedTransportId";
 
@@ -26,67 +27,49 @@ public class DeviceConnectionService : BindableBase
         Devices = new ReadOnlyObservableCollection<AttachedDevice>(_devices);
 
         string savedId = Preferences.Default.Get(SelectedTransportIdKey, string.Empty);
-        _selectedTransport = Transports.FirstOrDefault(transport => transport.Id == savedId)
+        SelectedTransport = Transports.FirstOrDefault(transport => transport.Id == savedId)
             ?? Transports.FirstOrDefault();
 
-        if (_selectedTransport != null)
+        if (SelectedTransport != null)
         {
-            _selectedTransport.DevicesChanged += OnDevicesChanged;
+            SelectedTransport.DevicesChanged += OnDevicesChanged;
         }
 
-        _state = _selectedTransport == null ? DeviceState.NoTransport : DeviceState.Disconnected;
+        State = SelectedTransport == null ? DeviceState.NoTransport : DeviceState.Disconnected;
     }
 
     public IReadOnlyList<IDac70Transport> Transports { get; }
 
-    private IDac70Transport? _selectedTransport;
-    public IDac70Transport? SelectedTransport
-    {
-        get => _selectedTransport;
-        private set => SetProperty(ref _selectedTransport, value);
-    }
+    [ObservableProperty]
+    public partial IDac70Transport? SelectedTransport { get; private set; }
 
     private readonly ObservableCollection<AttachedDevice> _devices = [];
     public ReadOnlyObservableCollection<AttachedDevice> Devices { get; }
 
-    private AttachedDevice? _selectedDevice;
-    public AttachedDevice? SelectedDevice
+    [ObservableProperty]
+    public partial AttachedDevice? SelectedDevice { get; private set; }
+
+    partial void OnSelectedDeviceChanged(AttachedDevice? oldValue, AttachedDevice? newValue)
     {
-        get => _selectedDevice;
-        private set
+        if (oldValue != null)
         {
-            var previous = _selectedDevice;
+            oldValue.IsSelected = false;
+        }
 
-            if (SetProperty(ref _selectedDevice, value))
-            {
-                if (previous != null)
-                {
-                    previous.IsSelected = false;
-                }
-
-                if (value != null)
-                {
-                    value.IsSelected = true;
-                }
-            }
+        if (newValue != null)
+        {
+            newValue.IsSelected = true;
         }
     }
 
-    private DeviceState _state;
-    public DeviceState State
-    {
-        get => _state;
-        private set => SetProperty(ref _state, value, () => RaisePropertyChanged(nameof(CanSend)));
-    }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanSend))]
+    public partial DeviceState State { get; private set; }
 
     public bool CanSend => State is DeviceState.Ready or DeviceState.SendCancelled;
 
-    private TransferProgress? _progress;
-    public TransferProgress? Progress
-    {
-        get => _progress;
-        private set => SetProperty(ref _progress, value);
-    }
+    [ObservableProperty]
+    public partial TransferProgress? Progress { get; private set; }
 
     public async Task RefreshDevicesAsync()
     {
@@ -494,7 +477,7 @@ public class DeviceConnectionService : BindableBase
             isDeviceAdded = true;
         }
 
-        RaisePropertyChanged(nameof(Devices));
+        OnPropertyChanged(nameof(Devices));
 
         return isDeviceAdded;
     }

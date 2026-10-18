@@ -1,10 +1,10 @@
-﻿using DAC70Setup.Core;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DAC70Setup.Core.Models.Protocol;
 using DAC70Setup.Core.Models.Values;
 
 namespace DAC70Setup.BL.Services.Device;
 
-public class DeviceSnapshot : NotifyPropertyChangedBase
+public partial class DeviceSnapshot : ObservableObject
 {
     private readonly Dictionary<SettingKey, Dac70SettingValue> _values = [];
 
@@ -15,12 +15,8 @@ public class DeviceSnapshot : NotifyPropertyChangedBase
 
     public IReadOnlyDictionary<SettingKey, Dac70SettingValue> Values { get; }
 
-    private DateTime? _lastFullSync;
-    public DateTime? LastFullSync
-    {
-        get => _lastFullSync;
-        private set => SetProperty(ref _lastFullSync, value);
-    }
+    [ObservableProperty]
+    public partial DateTime? LastFullSync { get; private set; }
 
     public void SetValue(Dac70SettingValue value)
     {
@@ -35,7 +31,7 @@ public class DeviceSnapshot : NotifyPropertyChangedBase
             _values[value.Definition.Key] = value.Definition.CreateValue(valueBytes);
         }
 
-        RaisePropertyChanged(nameof(Values));
+        OnPropertyChanged(nameof(Values));
     }
 
     public void CompleteFullSync(DateTime date)

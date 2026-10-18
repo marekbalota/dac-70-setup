@@ -1,8 +1,9 @@
-﻿using LocalizationResourceManager.Maui;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using LocalizationResourceManager.Maui;
 
 namespace DAC70Setup.BL.Features.Settings;
 
-public class ThemeOption : BindableBase
+public partial class ThemeOption : ObservableObject
 {
     public ThemeOption(AppTheme theme, string glyph, LocalizedString name, LocalizedString? hint = null)
     {
@@ -20,10 +21,6 @@ public class ThemeOption : BindableBase
 
     public LocalizedString? Hint { get; }
 
-    private bool _isSelected;
-    public bool IsSelected
-    {
-        get => _isSelected;
-        set => SetProperty(ref _isSelected, value);
-    }
+    [ObservableProperty]
+    public partial bool IsSelected { get; set; }
 }

@@ -1,10 +1,10 @@
 ﻿using System.Collections.ObjectModel;
-using DAC70Setup.Core;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DAC70Setup.Core.Models.Values;
 
 namespace DAC70Setup.BL.Models;
 
-public class Configuration : NotifyPropertyChangedBase
+public partial class Configuration : ObservableObject
 {
     public Configuration(string name, DateTime created) : this(Guid.NewGuid(), name, created)
     {
@@ -13,31 +13,26 @@ public class Configuration : NotifyPropertyChangedBase
     public Configuration(Guid id, string name, DateTime created)
     {
         Id = id;
-        _name = name;
+        Name = name;
         Created = created;
         Settings.CollectionChanged += (_, _) =>
         {
-            RaisePropertyChanged(nameof(SettingsCountText));
+            OnPropertyChanged(nameof(SettingsCountText));
         };
     }
 
     public Guid Id { get; }
 
-    private string _name;
-    public string Name
-    {
-        get => _name;
-        set => SetProperty(ref _name, value);
-    }
+    [ObservableProperty]
+    public partial string Name { get; set; }
 
     public DateTime Created { get; }
 
-    private bool _isActive;
-    public bool IsActive
-    {
-        get => _isActive;
-        set => SetProperty(ref _isActive, value);
-    }
+    [ObservableProperty]
+    public partial bool IsActive { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsSelected { get; set; }
 
     // TODO: this needs to support translation
     public string SettingsCountText => $"{Settings.Count} settings";
