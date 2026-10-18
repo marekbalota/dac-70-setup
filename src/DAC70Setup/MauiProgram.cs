@@ -1,25 +1,24 @@
 ﻿using CommunityToolkit.Maui;
+using DAC70Setup.BL;
 using DAC70Setup.BL.Controls.DeviceStatus.Resources;
 using DAC70Setup.BL.Controls.SettingSelection.Resources;
 using DAC70Setup.BL.Features.Configurations;
+using DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration;
+using DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.Resources;
+using DAC70Setup.BL.Features.Configurations.Popups.DeleteConfiguration;
+using DAC70Setup.BL.Features.Configurations.Popups.DeleteConfiguration.Resources;
 using DAC70Setup.BL.Features.Configurations.Resources;
-using DAC70Setup.BL.Features.ConfigurationsLanding;
-using DAC70Setup.BL.Features.ConfigurationsLanding.Resources;
 using DAC70Setup.BL.Features.EditConfiguration;
 using DAC70Setup.BL.Features.EditConfiguration.Resources;
 using DAC70Setup.BL.Features.EditSetting;
 using DAC70Setup.BL.Features.EditSetting.Resources;
-using DAC70Setup.BL.Features.Main;
-using DAC70Setup.BL.Features.Main.Resources;
 using DAC70Setup.BL.Features.SelectedConfiguration;
 using DAC70Setup.BL.Features.SelectedConfiguration.Resources;
 using DAC70Setup.BL.Features.Settings;
 using DAC70Setup.BL.Features.Settings.Resources;
 using DAC70Setup.BL.Mappers;
-using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Resources;
 using DAC70Setup.BL.Services;
-using DAC70Setup.BL.Services.Commands;
 using DAC70Setup.BL.Services.Device;
 using DAC70Setup.BL.Services.Navigation;
 using DAC70Setup.Core.Interfaces;
@@ -49,23 +48,21 @@ public static class MauiProgram
             .UseLocalizationResourceManager(localization =>
             {
                 localization.AddResource(GeneralSR.ResourceManager);
-                localization.AddResource(MainPageSR.ResourceManager);
-                localization.AddResource(ConfigurationsLandingPageSR.ResourceManager);
+                localization.AddResource(AppShellSR.ResourceManager);
                 localization.AddResource(SelectedConfigurationPageSR.ResourceManager);
                 localization.AddResource(DeviceStatusBarSR.ResourceManager);
                 localization.AddResource(SettingSelectionViewSR.ResourceManager);
                 localization.AddResource(EditConfigurationPageSR.ResourceManager);
                 localization.AddResource(ConfigurationsPageSR.ResourceManager);
+                localization.AddResource(CreateConfigurationPopupSR.ResourceManager);
+                localization.AddResource(DeleteConfigurationPopupSR.ResourceManager);
                 localization.AddResource(EditSettingPageSR.ResourceManager);
                 localization.AddResource(SettingsPageSR.ResourceManager);
                 localization.RestoreLatestCulture(true);
-            })
-            .UsePrism(prism =>
-            {
-                prism.RegisterTypes(RegisterTypes);
-                prism.OnInitialized(InitializeServices);
-                prism.CreateWindow(InitialView);
             });
+
+        RegisterServices(builder.Services);
+        RegisterViews(builder.Services);
 
 #if DEBUG
         builder.Logging.AddDebug();
@@ -74,51 +71,40 @@ public static class MauiProgram
         return builder.Build();
     }
 
-    private static void RegisterTypes(IContainerRegistry containerRegistry)
+    private static void RegisterServices(IServiceCollection services)
     {
-        RegisterNavigation(containerRegistry);
-
         string databasePath = Path.Combine(FileSystem.AppDataDirectory, "dac70setup.db3");
-        containerRegistry.RegisterInstance<IConfigurationRepository>(new ConfigurationRepository(databasePath));
-        containerRegistry.RegisterSingleton<SettingMapper>();
-        containerRegistry.RegisterSingleton<ConfigurationMapper>();
-        containerRegistry.RegisterSingleton<IConfigurationsService, ConfigurationsService>();
+        services.AddSingleton<IConfigurationRepository>(new ConfigurationRepository(databasePath));
 
-        containerRegistry.RegisterSingleton<IDac70Transport, UsbTransport>();
-        containerRegistry.RegisterSingleton<DeviceConnectionService>();
+        services.AddSingleton<SettingMapper>();
+        services.AddSingleton<ConfigurationMapper>();
+        services.AddSingleton<ConfigurationsService>();
 
-        containerRegistry.RegisterSingleton<INavigationUri, NavigationUri>();
-        containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
-        containerRegistry.RegisterSingleton<DataModel>();
+        services.AddSingleton<IDac70Transport, UsbTransport>();
+        services.AddSingleton<DeviceConnectionService>();
+
+        services.AddSingleton<INavigationService, NavigationService>();
     }
 
-    private static void RegisterNavigation(IContainerRegistry containerRegistry)
+    private static void RegisterViews(IServiceCollection services)
     {
-        containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
-        containerRegistry.RegisterForNavigation<ConfigurationsLandingPage, ConfigurationsLandingPageViewModel>();
-        containerRegistry.RegisterForNavigation<SelectedConfigurationPage, SelectedConfigurationPageViewModel>();
-        containerRegistry.RegisterForNavigation<EditConfigurationPage, EditConfigurationPageViewModel>();
-        containerRegistry.RegisterForNavigation<ConfigurationsPage, ConfigurationsPageViewModel>();
-        containerRegistry.RegisterForNavigation<SettingsPage, SettingsPageViewModel>();
-        containerRegistry.RegisterForNavigation<EditSettingPage, EditSettingPageViewModel>();
-    }
+        services.AddSingleton<AppShell>();
 
-    private static void InitializeServices(IContainerProvider containerProvider)
-    {
-        var configurationsService = containerProvider.Resolve<IConfigurationsService>();
+        services.AddSingleton<SelectedConfigurationPage>();
+        services.AddSingleton<SelectedConfigurationPageViewModel>();
 
-        // Prism invokes this on the UI thread and then blocks that thread on the CreateWindow task
-        // (onStart.Wait()), so awaiting here would deadlock.
-        Task.Run(configurationsService.InitializeAsync).GetAwaiter().GetResult();
+        services.AddSingleton<EditConfigurationPage>();
+        services.AddSingleton<EditConfigurationPageViewModel>();
 
-        var deviceConnectionService = containerProvider.Resolve<DeviceConnectionService>();
-        MainThread.BeginInvokeOnMainThread(() => _ = deviceConnectionService.RefreshDevicesAsync());
-    }
+        services.AddSingleton<ConfigurationsPage>();
+        services.AddSingleton<ConfigurationsPageViewModel>();
 
-    private static Task InitialView(IContainerProvider containerProvider, INavigationService navigationService)
-    {
-        var navigationUri = containerProvider.Resolve<INavigationUri>();
+        services.AddSingleton<SettingsPage>();
+        services.AddSingleton<SettingsPageViewModel>();
 
-        return navigationService.NavigateAsync(navigationUri.CreateRootNavigationBuilder().Uri);
+        services.AddTransientWithShellRoute<EditSettingPage, EditSettingPageViewModel>(Routes.EditSetting);
+
+        services.AddTransientPopup<CreateConfigurationPopup, CreateConfigurationPopupViewModel>();
+        services.AddTransientPopup<DeleteConfigurationPopup, DeleteConfigurationPopupViewModel>();
     }
 }

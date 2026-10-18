@@ -117,16 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AppTitle" xml:space="preserve">
+    <value>DAC-70 Setup</value>
+  </data>
   <data name="Configurations" xml:space="preserve">
-    <value>Konfigurace</value>
+    <value>Configurations</value>
   </data>
   <data name="ConfigurationsDesc" xml:space="preserve">
-    <value>Odeslání a správa konfigurací</value>
+    <value>Use and manage configurations</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Nastavení</value>
+    <value>Settings</value>
   </data>
   <data name="SettingsDesc" xml:space="preserve">
-    <value>Nastavení aplikace</value>
+    <value>Application settings</value>
   </data>
 </root>

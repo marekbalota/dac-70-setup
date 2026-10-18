@@ -34,8 +34,6 @@
     <PackageReference Include="LocalizationResourceManager.Maui" Version="1.2.6" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.90" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.90" />
-    <PackageReference Include="Prism.DryIoc.Maui" Version="9.0.537" />
-    <PackageReference Include="Prism.Maui" Version="9.0.537" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,11 +53,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>SettingSelectionViewSR.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Features\ConfigurationsLanding\Resources\ConfigurationsLandingPageSR.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ConfigurationsLandingPageSR.resx</DependentUpon>
     </Compile>
     <Compile Update="Features\Configurations\Resources\ConfigurationsPageSR.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -86,10 +79,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>EditSettingPageSR.resx</DependentUpon>
     </Compile>
-    <Compile Update="Features\Main\Resources\MainPageSR.Designer.cs">
+    <Compile Update="Resources\AppShellSR.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>MainPageSR.resx</DependentUpon>
+      <DependentUpon>AppShellSR.resx</DependentUpon>
     </Compile>
     <Compile Update="Features\SelectedConfiguration\Resources\SelectedConfigurationPageSR.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -117,10 +110,6 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>SettingSelectionViewSR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Features\ConfigurationsLanding\Resources\ConfigurationsLandingPageSR.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ConfigurationsLandingPageSR.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Update="Features\Configurations\Resources\ConfigurationsPageSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ConfigurationsPageSR.Designer.cs</LastGenOutput>
@@ -141,9 +130,9 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>EditSettingPageSR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Features\Main\Resources\MainPageSR.resx">
+    <EmbeddedResource Update="Resources\AppShellSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>MainPageSR.Designer.cs</LastGenOutput>
+      <LastGenOutput>AppShellSR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Features\SelectedConfiguration\Resources\SelectedConfigurationPageSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

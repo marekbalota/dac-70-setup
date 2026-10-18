@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
+       xmlns:nav="clr-namespace:DAC70Setup.BL.Services.Navigation"
+       xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
+       xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
+       xmlns:configurations="clr-namespace:DAC70Setup.BL.Features.Configurations"
+       xmlns:editConfiguration="clr-namespace:DAC70Setup.BL.Features.EditConfiguration"
+       xmlns:selectedConfiguration="clr-namespace:DAC70Setup.BL.Features.SelectedConfiguration"
+       xmlns:settings="clr-namespace:DAC70Setup.BL.Features.Settings"
+       x:Class="DAC70Setup.BL.AppShell"
+       FlyoutBehavior="Flyout"
+       FlyoutWidth="280"
+       FlyoutHeaderBehavior="Fixed"
+       FlyoutBackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
+       BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
+       TitleColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
+       TabBarBackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
+       TabBarForegroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
+       TabBarTitleColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
+       TabBarUnselectedColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}"
+       ForegroundColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}">
+
+    <Shell.FlyoutHeader>
+        <VerticalStackLayout Padding="20,26,20,18"
+                             Background="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}">
+            <Label Text="{localization:Translate AppTitle}" Style="{StaticResource PageTitle}" />
+        </VerticalStackLayout>
+    </Shell.FlyoutHeader>
+
+    <Shell.ItemTemplate>
+        <DataTemplate x:DataType="controls:DescribedFlyoutItem">
+            <Grid ColumnDefinitions="Auto,*" Padding="0,11,12,11">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter TargetName="IconLabel" Property="Label.TextColor"
+                                        Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                <Setter TargetName="TitleLabel" Property="Label.TextColor"
+                                        Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                <Setter TargetName="SelectionBar" Property="BoxView.Opacity" Value="1" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+
+                <BoxView x:Name="SelectionBar" Grid.Column="0" WidthRequest="3" HeightRequest="20" CornerRadius="0,2,0,2"
+                         HorizontalOptions="Start" VerticalOptions="Center" Opacity="0"
+                         IsVisible="{OnPlatform Default=True, WinUI=False}"
+                         Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+
+                <Label x:Name="IconLabel" Grid.Column="0" Text="{Binding IconGlyph}" FontFamily="FA-S" FontSize="16"
+                       WidthRequest="24" Margin="9,0,0,0" HorizontalTextAlignment="Center" VerticalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+
+                <VerticalStackLayout Grid.Column="1" Spacing="1" Margin="12,0,0,0">
+                    <Label x:Name="TitleLabel" Text="{Binding Title}" Style="{StaticResource CardTitle}" />
+                    <Label Text="{Binding Description}" Style="{StaticResource CardCaption}" />
+                </VerticalStackLayout>
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
+    <controls:DescribedFlyoutItem Route="{x:Static nav:Routes.ConfigurationsRoot}"
+                                  Title="{localization:Translate Configurations}"
+                                  Description="{localization:Translate ConfigurationsDesc}"
+                                  IconGlyph="{x:Static fontAwesome:AwesomeSolidIconFont.Toolbox}">
+        <ShellContent Route="{x:Static nav:Routes.SelectedConfigurationSegment}"
+                      Title="{localization:Translate SelectedConfigurationTitle}"
+                      ContentTemplate="{DataTemplate selectedConfiguration:SelectedConfigurationPage}">
+            <ShellContent.Icon>
+                <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Share}" />
+            </ShellContent.Icon>
+        </ShellContent>
+
+        <ShellContent Route="{x:Static nav:Routes.EditConfigurationSegment}"
+                      Title="{localization:Translate EditConfigurationTitle}"
+                      ContentTemplate="{DataTemplate editConfiguration:EditConfigurationPage}">
+            <ShellContent.Icon>
+                <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Gear}" />
+            </ShellContent.Icon>
+        </ShellContent>
+
+        <ShellContent Route="{x:Static nav:Routes.ConfigurationListSegment}"
+                      Title="{localization:Translate ConfigurationsTitle}"
+                      ContentTemplate="{DataTemplate configurations:ConfigurationsPage}">
+            <ShellContent.Icon>
+                <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Toolbox}" />
+            </ShellContent.Icon>
+        </ShellContent>
+    </controls:DescribedFlyoutItem>
+
+    <controls:DescribedFlyoutItem Route="{x:Static nav:Routes.SettingsRoot}"
+                                  Title="{localization:Translate Settings}"
+                                  Description="{localization:Translate SettingsDesc}"
+                                  IconGlyph="{x:Static fontAwesome:AwesomeSolidIconFont.Gear}">
+        <ShellContent Title="{localization:Translate SettingsTitle}"
+                      ContentTemplate="{DataTemplate settings:SettingsPage}" />
+    </controls:DescribedFlyoutItem>
+
+</Shell>

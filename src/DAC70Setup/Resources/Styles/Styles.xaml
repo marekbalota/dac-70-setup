@@ -6,23 +6,8 @@
     <!-- ── Page ─────────────────────────────────────────────────────── -->
     <Style TargetType="Page" ApplyToDerivedTypes="True">
         <Setter Property="Padding" Value="0" />
-        <Setter Property="Background"
+        <Setter Property="BackgroundColor"
                 Value="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}" />
-    </Style>
-
-    <Style TargetType="NavigationPage" ApplyToDerivedTypes="True">
-        <Setter Property="BarBackground" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
-        <Setter Property="BarTextColor" Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
-        <Setter Property="IconColor" Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
-    </Style>
-
-    <Style TargetType="TabbedPage" ApplyToDerivedTypes="True">
-        <Setter Property="BarBackground"
-            Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
-        <Setter Property="SelectedTabColor"
-            Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
-        <Setter Property="UnselectedTabColor"
-            Value="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}" />
     </Style>
 
     <!-- ── Text ─────────────────────────────────────────────────────── -->
