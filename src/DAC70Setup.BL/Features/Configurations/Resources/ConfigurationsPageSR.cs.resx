@@ -123,4 +123,10 @@
   <data name="NoExistingConfiguration" xml:space="preserve">
     <value>Zatím není vytvořena žádná konfigurace.</value>
   </data>
+  <data name="ConfigurationsDelete" xml:space="preserve">
+    <value>Smazat</value>
+  </data>
+  <data name="ConfigurationsCreate" xml:space="preserve">
+    <value>Vytvořit</value>
+  </data>
 </root>

@@ -61,6 +61,24 @@ namespace DAC70Setup.BL.Features.Configurations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string ConfigurationsCreate {
+            get {
+                return ResourceManager.GetString("ConfigurationsCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string ConfigurationsDelete {
+            get {
+                return ResourceManager.GetString("ConfigurationsDelete", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Configurations.
         /// </summary>
         public static string ConfigurationsTitle {

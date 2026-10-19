@@ -123,4 +123,10 @@
   <data name="NoExistingConfiguration" xml:space="preserve">
     <value>There is currently no existing configuration.</value>
   </data>
+  <data name="ConfigurationsDelete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ConfigurationsCreate" xml:space="preserve">
+    <value>Create</value>
+  </data>
 </root>
