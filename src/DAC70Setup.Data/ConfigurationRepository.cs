@@ -85,6 +85,16 @@ public class ConfigurationRepository : IConfigurationRepository
         });
     }
 
+    public async Task RenameConfigurationAsync(Guid id, string name)
+    {
+        var connection = await _connection.Value;
+
+        var row = await connection.GetAsync<ConfigurationRow>(id);
+        row.Name = name;
+
+        await connection.UpdateAsync(row);
+    }
+
     public async Task UpsertSettingsAsync(Guid configId, IReadOnlyList<SettingDto> settings)
     {
         var connection = await _connection.Value;

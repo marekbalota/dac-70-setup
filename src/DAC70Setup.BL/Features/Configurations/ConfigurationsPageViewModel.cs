@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using DAC70Setup.BL.Controls.DeviceStatus;
 using DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration;
 using DAC70Setup.BL.Features.Configurations.Popups.DeleteConfiguration;
+using DAC70Setup.BL.Features.Configurations.Popups.RenameConfiguration;
 using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Device;
@@ -37,7 +38,7 @@ public partial class ConfigurationsPageViewModel : ObservableObject
     public DeviceStatusBarViewModel DeviceStatus { get; }
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(DeleteConfigurationCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RenameConfigurationCommand), nameof(DeleteConfigurationCommand))]
     public partial Configuration? SelectedConfiguration { get; set; }
 
     partial void OnSelectedConfigurationChanged(Configuration? oldValue, Configuration? newValue)
@@ -70,17 +71,34 @@ public partial class ConfigurationsPageViewModel : ObservableObject
     [RelayCommand]
     private async Task CreateConfigurationAsync()
     {
+        var shellParameters = new Dictionary<string, object>();
+
+        if (SelectedConfiguration is { } selected)
+        {
+            shellParameters[CreateConfigurationPopupViewModel.CopiedConfigurationParameter] = selected;
+        }
+
         var popupResult = await _popupService
-            .ShowPopupAsync<CreateConfigurationPopupViewModel, CreateConfigurationResult>(Shell.Current);
+            .ShowPopupAsync<CreateConfigurationPopupViewModel, CreateConfigurationResult>(Shell.Current, shellParameters: shellParameters);
 
         if (popupResult.WasDismissedByTappingOutsideOfPopup || popupResult.Result is not { } result)
         {
             return;
         }
 
-        if (!result.IsFromDevice)
+        if (result.Source == ConfigurationSource.Empty)
         {
             await ConfigurationsService.CreateNewConfigurationAsync(result.Name);
+
+            return;
+        }
+
+        if (result.Source == ConfigurationSource.Copy)
+        {
+            if (result.CopiedConfiguration is { } copiedConfiguration)
+            {
+                await ConfigurationsService.CreateCopyAsync(result.Name, copiedConfiguration);
+            }
 
             return;
         }
@@ -97,7 +115,30 @@ public partial class ConfigurationsPageViewModel : ObservableObject
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanDeleteConfiguration))]
+    [RelayCommand(CanExecute = nameof(IsConfigurationSelected))]
+    private async Task RenameConfigurationAsync()
+    {
+        if (SelectedConfiguration is not { } configuration)
+        {
+            return;
+        }
+
+        var popupResult = await _popupService.ShowPopupAsync<RenameConfigurationPopupViewModel, string>(
+            Shell.Current,
+            shellParameters: new Dictionary<string, object>
+            {
+                [RenameConfigurationPopupViewModel.ConfigurationNameParameter] = configuration.Name
+            });
+
+        if (popupResult.WasDismissedByTappingOutsideOfPopup || popupResult.Result is not { } name)
+        {
+            return;
+        }
+
+        await ConfigurationsService.RenameConfigurationAsync(configuration, name);
+    }
+
+    [RelayCommand(CanExecute = nameof(IsConfigurationSelected))]
     private async Task DeleteConfigurationAsync()
     {
         if (SelectedConfiguration is not { } configuration)
@@ -122,7 +163,7 @@ public partial class ConfigurationsPageViewModel : ObservableObject
         SelectedConfiguration = null;
     }
 
-    private bool CanDeleteConfiguration()
+    private bool IsConfigurationSelected()
     {
         return SelectedConfiguration != null;
     }

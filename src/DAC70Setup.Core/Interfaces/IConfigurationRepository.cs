@@ -11,6 +11,8 @@ public interface IConfigurationRepository
 
     Task DeleteConfigurationAsync(Guid id);
 
+    Task RenameConfigurationAsync(Guid id, string name);
+
     Task UpsertSettingsAsync(Guid configId, IReadOnlyList<SettingDto> settings);
 
     Task DeleteSettingAsync(Guid configId, SettingKey key);

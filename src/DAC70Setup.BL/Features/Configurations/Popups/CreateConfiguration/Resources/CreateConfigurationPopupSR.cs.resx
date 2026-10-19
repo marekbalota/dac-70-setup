@@ -123,6 +123,15 @@
   <data name="NewConfigurationCreate" xml:space="preserve">
     <value>Vytvořit</value>
   </data>
+  <data name="NewConfigurationCopy" xml:space="preserve">
+    <value>Zkopírovat konfiguraci</value>
+  </data>
+  <data name="NewConfigurationCopyDetail" xml:space="preserve">
+    <value>Její nastavení i hodnoty.</value>
+  </data>
+  <data name="NewConfigurationCopyUnavailable" xml:space="preserve">
+    <value>Zatím není co zkopírovat.</value>
+  </data>
   <data name="NewConfigurationEmpty" xml:space="preserve">
     <value>Prázdná konfigurace</value>
   </data>

@@ -135,4 +135,7 @@
   <data name="SettingsCountOne" xml:space="preserve">
     <value>{0} setting</value>
   </data>
+  <data name="ConfigurationsRename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
 </root>

@@ -79,6 +79,15 @@ namespace DAC70Setup.BL.Features.Configurations.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Rename.
+        /// </summary>
+        public static string ConfigurationsRename {
+            get {
+                return ResourceManager.GetString("ConfigurationsRename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configurations.
         /// </summary>
         public static string ConfigurationsTitle {

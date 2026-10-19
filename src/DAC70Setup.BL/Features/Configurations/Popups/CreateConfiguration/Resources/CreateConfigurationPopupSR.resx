@@ -123,6 +123,15 @@
   <data name="NewConfigurationCreate" xml:space="preserve">
     <value>Create</value>
   </data>
+  <data name="NewConfigurationCopy" xml:space="preserve">
+    <value>Copy a configuration</value>
+  </data>
+  <data name="NewConfigurationCopyDetail" xml:space="preserve">
+    <value>Its settings and their values.</value>
+  </data>
+  <data name="NewConfigurationCopyUnavailable" xml:space="preserve">
+    <value>There is no configuration to copy yet.</value>
+  </data>
   <data name="NewConfigurationEmpty" xml:space="preserve">
     <value>Empty configuration</value>
   </data>
@@ -139,7 +148,7 @@
     <value>Data from the last sync.</value>
   </data>
   <data name="NewConfigurationFromDeviceUnavailable" xml:space="preserve">
-    <value>Connect a DAC-70 first. </value>
+    <value>Connect a DAC-70 first.</value>
   </data>
   <data name="NewConfigurationName" xml:space="preserve">
     <value>Name</value>

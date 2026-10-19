@@ -3,40 +3,65 @@ using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.Resources;
+using DAC70Setup.BL.Models;
+using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Device;
 using LocalizationResourceManager.Maui;
 
 namespace DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration;
 
-public partial class CreateConfigurationPopupViewModel : ObservableObject, IDisposable
+public partial class CreateConfigurationPopupViewModel : ObservableObject, IQueryAttributable, IDisposable
 {
+    public const string CopiedConfigurationParameter = "CopiedConfiguration";
+
     private readonly DeviceConnectionService _deviceConnectionService;
     private readonly IPopupService _popupService;
     private readonly ILocalizationResourceManager _localizationResourceManager;
 
-    public CreateConfigurationPopupViewModel(DeviceConnectionService deviceConnectionService,
+    public CreateConfigurationPopupViewModel(ConfigurationsService configurationsService,
+        DeviceConnectionService deviceConnectionService,
         IPopupService popupService,
         ILocalizationResourceManager localizationResourceManager)
     {
+        ConfigurationsService = configurationsService;
         _deviceConnectionService = deviceConnectionService;
         _popupService = popupService;
         _localizationResourceManager = localizationResourceManager;
 
         Name = string.Empty;
         DeviceDetail = new LocalizedString(() => string.Empty);
+        CopiedConfiguration = configurationsService.SelectedConfiguration ?? configurationsService.Configurations.FirstOrDefault();
 
         _deviceConnectionService.PropertyChanged += OnDeviceConnectionServiceChanged;
 
         UpdateDevice();
-        IsFromDevice = IsDeviceAvailable;
+
+        if (IsDeviceAvailable)
+        {
+            Source = ConfigurationSource.Device;
+        }
     }
+
+    public ConfigurationsService ConfigurationsService { get; }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CreateCommand))]
     public partial string Name { get; set; }
 
     [ObservableProperty]
-    public partial bool IsFromDevice { get; set; }
+    [NotifyPropertyChangedFor(nameof(IsDeviceChosen), nameof(IsCopyChosen), nameof(IsEmptyChosen))]
+    [NotifyCanExecuteChangedFor(nameof(CreateCommand))]
+    public partial ConfigurationSource Source { get; set; }
+
+    public bool IsDeviceChosen => Source == ConfigurationSource.Device;
+
+    public bool IsCopyChosen => Source == ConfigurationSource.Copy;
+
+    public bool IsEmptyChosen => Source == ConfigurationSource.Empty;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CreateCommand))]
+    public partial Configuration? CopiedConfiguration { get; set; }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ChooseDeviceCommand))]
@@ -45,23 +70,37 @@ public partial class CreateConfigurationPopupViewModel : ObservableObject, IDisp
     [ObservableProperty]
     public partial LocalizedString DeviceDetail { get; private set; }
 
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue(CopiedConfigurationParameter, out object? value) && value is Configuration configuration)
+        {
+            CopiedConfiguration = configuration;
+        }
+    }
+
     [RelayCommand(CanExecute = nameof(IsDeviceAvailable))]
     private void ChooseDevice()
     {
-        IsFromDevice = true;
+        Source = ConfigurationSource.Device;
+    }
+
+    [RelayCommand(CanExecute = nameof(CanChooseCopy))]
+    private void ChooseCopy()
+    {
+        Source = ConfigurationSource.Copy;
     }
 
     [RelayCommand]
     private void ChooseEmpty()
     {
-        IsFromDevice = false;
+        Source = ConfigurationSource.Empty;
     }
 
     [RelayCommand(CanExecute = nameof(CanCreate))]
     private Task CreateAsync()
     {
         return _popupService.ClosePopupAsync(Shell.Current,
-            new CreateConfigurationResult(Name.Trim(), IsFromDevice));
+            new CreateConfigurationResult(Name.Trim(), Source, IsCopyChosen ? CopiedConfiguration : null));
     }
 
     [RelayCommand]
@@ -70,9 +109,14 @@ public partial class CreateConfigurationPopupViewModel : ObservableObject, IDisp
         return _popupService.ClosePopupAsync(Shell.Current);
     }
 
+    private bool CanChooseCopy()
+    {
+        return ConfigurationsService.Configurations.Count > 0;
+    }
+
     private bool CanCreate()
     {
-        return !string.IsNullOrWhiteSpace(Name);
+        return !string.IsNullOrWhiteSpace(Name) && (!IsCopyChosen || CopiedConfiguration != null);
     }
 
     private void OnDeviceConnectionServiceChanged(object? sender, PropertyChangedEventArgs e)
@@ -87,7 +131,11 @@ public partial class CreateConfigurationPopupViewModel : ObservableObject, IDisp
         string detailKey;
         if (!IsDeviceAvailable)
         {
-            IsFromDevice = false;
+            if (IsDeviceChosen)
+            {
+                Source = ConfigurationSource.Empty;
+            }
+
             detailKey = nameof(CreateConfigurationPopupSR.NewConfigurationFromDeviceUnavailable);
         }
         else if (_deviceConnectionService.SelectedDevice?.Snapshot.LastFullSync != null)

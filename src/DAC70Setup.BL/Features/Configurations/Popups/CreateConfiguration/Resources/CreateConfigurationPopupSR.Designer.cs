@@ -69,6 +69,33 @@ namespace DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.Resou
                 return ResourceManager.GetString("NewConfigurationCancel", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Copy a configuration.
+        /// </summary>
+        public static string NewConfigurationCopy {
+            get {
+                return ResourceManager.GetString("NewConfigurationCopy", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Its settings and their values..
+        /// </summary>
+        public static string NewConfigurationCopyDetail {
+            get {
+                return ResourceManager.GetString("NewConfigurationCopyDetail", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to There is no configuration to copy yet..
+        /// </summary>
+        public static string NewConfigurationCopyUnavailable {
+            get {
+                return ResourceManager.GetString("NewConfigurationCopyUnavailable", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Create.
@@ -125,7 +152,7 @@ namespace DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.Resou
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connect a DAC-70 first. .
+        ///   Looks up a localized string similar to Connect a DAC-70 first..
         /// </summary>
         public static string NewConfigurationFromDeviceUnavailable {
             get {

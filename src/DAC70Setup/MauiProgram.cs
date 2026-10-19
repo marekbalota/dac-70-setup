@@ -7,6 +7,8 @@ using DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration;
 using DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.Resources;
 using DAC70Setup.BL.Features.Configurations.Popups.DeleteConfiguration;
 using DAC70Setup.BL.Features.Configurations.Popups.DeleteConfiguration.Resources;
+using DAC70Setup.BL.Features.Configurations.Popups.RenameConfiguration;
+using DAC70Setup.BL.Features.Configurations.Popups.RenameConfiguration.Resources;
 using DAC70Setup.BL.Features.Configurations.Resources;
 using DAC70Setup.BL.Features.EditConfiguration;
 using DAC70Setup.BL.Features.EditConfiguration.Resources;
@@ -56,6 +58,7 @@ public static class MauiProgram
                 localization.AddResource(ConfigurationsPageSR.ResourceManager);
                 localization.AddResource(CreateConfigurationPopupSR.ResourceManager);
                 localization.AddResource(DeleteConfigurationPopupSR.ResourceManager);
+                localization.AddResource(RenameConfigurationPopupSR.ResourceManager);
                 localization.AddResource(EditSettingPageSR.ResourceManager);
                 localization.AddResource(SettingsPageSR.ResourceManager);
                 localization.RestoreLatestCulture(true);
@@ -106,5 +109,6 @@ public static class MauiProgram
 
         services.AddTransientPopup<CreateConfigurationPopup, CreateConfigurationPopupViewModel>();
         services.AddTransientPopup<DeleteConfigurationPopup, DeleteConfigurationPopupViewModel>();
+        services.AddTransientPopup<RenameConfigurationPopup, RenameConfigurationPopupViewModel>();
     }
 }

@@ -54,6 +54,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>SettingSelectionViewSR.resx</DependentUpon>
     </Compile>
+    <Compile Update="Features\Configurations\Popups\RenameConfiguration\Resources\RenameConfigurationPopupSR.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RenameConfigurationPopupSR.resx</DependentUpon>
+    </Compile>
     <Compile Update="Features\Configurations\Resources\ConfigurationsPageSR.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -109,6 +114,10 @@
     <EmbeddedResource Update="Controls\SettingSelection\Resources\SettingSelectionViewSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>SettingSelectionViewSR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Features\Configurations\Popups\RenameConfiguration\Resources\RenameConfigurationPopupSR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>RenameConfigurationPopupSR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Features\Configurations\Resources\ConfigurationsPageSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

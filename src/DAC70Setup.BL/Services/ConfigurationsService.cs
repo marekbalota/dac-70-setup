@@ -90,6 +90,18 @@ public partial class ConfigurationsService : ObservableObject
         return CreateNewConfigurationAsync(name, values);
     }
 
+    public Task CreateCopyAsync(string name, Configuration copiedConfiguration)
+    {
+        return CreateNewConfigurationAsync(name, copiedConfiguration.Settings);
+    }
+
+    public async Task RenameConfigurationAsync(Configuration configuration, string name)
+    {
+        await _repository.RenameConfigurationAsync(configuration.Id, name);
+
+        configuration.Name = name;
+    }
+
     public async Task DeleteConfigurationAsync(Configuration configuration)
     {
         await _repository.DeleteConfigurationAsync(configuration.Id);

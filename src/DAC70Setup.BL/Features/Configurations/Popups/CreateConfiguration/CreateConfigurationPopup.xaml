@@ -4,115 +4,170 @@
                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                xmlns:popups="clr-namespace:DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration"
+               xmlns:models="clr-namespace:DAC70Setup.BL.Models"
                xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
                x:Class="DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.CreateConfigurationPopup"
                x:DataType="popups:CreateConfigurationPopupViewModel"
                WidthRequest="340" Padding="20,20,20,16"
                Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
 
-    <VerticalStackLayout Spacing="16">
-        <Label Text="{localization:Translate NewConfigurationTitle}" FontFamily="PlexSansSemiBold" FontSize="18"
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="16">
+        <Label Grid.Row="0" Text="{localization:Translate NewConfigurationTitle}" FontFamily="PlexSansSemiBold" FontSize="18"
                TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
 
-        <VerticalStackLayout Spacing="6">
-            <Label Text="{localization:Translate NewConfigurationName}" Style="{StaticResource CardCaption}" />
-            <Entry Text="{Binding Name}" ReturnCommand="{Binding CreateCommand}" />
-        </VerticalStackLayout>
+        <ScrollView Grid.Row="1" VerticalOptions="Start">
+            <VerticalStackLayout Spacing="16">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="{localization:Translate NewConfigurationName}" Style="{StaticResource CardCaption}" />
+                    <Entry Text="{Binding Name}" ReturnCommand="{Binding CreateCommand}" />
+                </VerticalStackLayout>
 
-        <VerticalStackLayout Spacing="8">
-            <Label Text="{localization:Translate NewConfigurationStartWith}" Style="{StaticResource CardCaption}" />
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="{localization:Translate NewConfigurationStartWith}" Style="{StaticResource CardCaption}" />
 
-            <Border Padding="12" StrokeShape="RoundRectangle 12" StrokeThickness="1"
-                    Stroke="{AppThemeBinding Light={StaticResource OutlineLight}, Dark={StaticResource OutlineDark}}"
-                    Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ChooseDeviceCommand}" />
-                </Border.GestureRecognizers>
+                    <Border Padding="12" StrokeShape="RoundRectangle 12" StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light={StaticResource OutlineLight}, Dark={StaticResource OutlineDark}}"
+                            Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ChooseDeviceCommand}" />
+                        </Border.GestureRecognizers>
 
-                <Border.Triggers>
-                    <DataTrigger TargetType="Border" Binding="{Binding IsFromDevice}" Value="True">
-                        <Setter Property="StrokeThickness" Value="2" />
-                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
-                        <Setter Property="Background"
-                                Value="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="Border" Binding="{Binding IsDeviceAvailable}" Value="False">
-                        <Setter Property="Opacity" Value="0.5" />
-                    </DataTrigger>
-                </Border.Triggers>
-
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                    <Border Grid.Column="0" WidthRequest="18" HeightRequest="18" StrokeShape="RoundRectangle 9" StrokeThickness="1.5"
-                            VerticalOptions="Start" Margin="0,2,0,0" Background="Transparent"
-                            Stroke="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}">
                         <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding IsFromDevice}" Value="True">
+                            <DataTrigger TargetType="Border" Binding="{Binding IsDeviceChosen}" Value="True">
+                                <Setter Property="StrokeThickness" Value="2" />
                                 <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                <Setter Property="Background"
+                                        Value="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsDeviceAvailable}" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
                             </DataTrigger>
                         </Border.Triggers>
 
-                        <Ellipse WidthRequest="8" HeightRequest="8" IsVisible="{Binding IsFromDevice}"
-                                 HorizontalOptions="Center" VerticalOptions="Center"
-                                 Fill="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Border Grid.Column="0" WidthRequest="18" HeightRequest="18" StrokeShape="RoundRectangle 9" StrokeThickness="1.5"
+                                    VerticalOptions="Start" Margin="0,2,0,0" Background="Transparent"
+                                    Stroke="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsDeviceChosen}" Value="True">
+                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+
+                                <Ellipse WidthRequest="8" HeightRequest="8" IsVisible="{Binding IsDeviceChosen}"
+                                         HorizontalOptions="Center" VerticalOptions="Center"
+                                         Fill="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="{localization:Translate NewConfigurationFromDevice}" Style="{StaticResource RowLabel}" />
+                                <Label Text="{Binding DeviceDetail.Localized}" Style="{StaticResource CardCaption}" FontSize="12" />
+                            </VerticalStackLayout>
+                        </Grid>
                     </Border>
 
-                    <VerticalStackLayout Grid.Column="1" Spacing="2">
-                        <Label Text="{localization:Translate NewConfigurationFromDevice}" Style="{StaticResource RowLabel}" />
-                        <Label Text="{Binding DeviceDetail.Localized}" Style="{StaticResource CardCaption}" FontSize="12" />
-                    </VerticalStackLayout>
-                </Grid>
-            </Border>
+                    <Border Padding="12" StrokeShape="RoundRectangle 12" StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light={StaticResource OutlineLight}, Dark={StaticResource OutlineDark}}"
+                            Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ChooseCopyCommand}" />
+                        </Border.GestureRecognizers>
 
-            <Border Padding="12" StrokeShape="RoundRectangle 12" StrokeThickness="2"
-                    Stroke="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
-                    Background="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ChooseEmptyCommand}" />
-                </Border.GestureRecognizers>
-
-                <Border.Triggers>
-                    <DataTrigger TargetType="Border" Binding="{Binding IsFromDevice}" Value="True">
-                        <Setter Property="StrokeThickness" Value="1" />
-                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource OutlineLight}, Dark={StaticResource OutlineDark}}" />
-                        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
-                    </DataTrigger>
-                </Border.Triggers>
-
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                    <Border Grid.Column="0" WidthRequest="18" HeightRequest="18" StrokeShape="RoundRectangle 9" StrokeThickness="1.5"
-                            VerticalOptions="Start" Margin="0,2,0,0" Background="Transparent"
-                            Stroke="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}">
                         <Border.Triggers>
-                            <DataTrigger TargetType="Border" Binding="{Binding IsFromDevice}" Value="True">
-                                <Setter Property="Stroke"
-                                        Value="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}" />
+                            <DataTrigger TargetType="Border" Binding="{Binding IsCopyChosen}" Value="True">
+                                <Setter Property="StrokeThickness" Value="2" />
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                <Setter Property="Background"
+                                        Value="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Border" Binding="{Binding ConfigurationsService.Configurations.Count}" Value="0">
+                                <Setter Property="Opacity" Value="0.5" />
                             </DataTrigger>
                         </Border.Triggers>
 
-                        <Ellipse WidthRequest="8" HeightRequest="8" HorizontalOptions="Center" VerticalOptions="Center"
-                                 Fill="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}">
-                            <Ellipse.Triggers>
-                                <DataTrigger TargetType="Ellipse" Binding="{Binding IsFromDevice}" Value="True">
-                                    <Setter Property="IsVisible" Value="False" />
-                                </DataTrigger>
-                            </Ellipse.Triggers>
-                        </Ellipse>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Border Grid.Column="0" WidthRequest="18" HeightRequest="18" StrokeShape="RoundRectangle 9" StrokeThickness="1.5"
+                                    VerticalOptions="Start" Margin="0,2,0,0" Background="Transparent"
+                                    Stroke="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsCopyChosen}" Value="True">
+                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+
+                                <Ellipse WidthRequest="8" HeightRequest="8" IsVisible="{Binding IsCopyChosen}"
+                                         HorizontalOptions="Center" VerticalOptions="Center"
+                                         Fill="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="{localization:Translate NewConfigurationCopy}" Style="{StaticResource RowLabel}" />
+                                <Label Text="{localization:Translate NewConfigurationCopyDetail}" Style="{StaticResource CardCaption}" FontSize="12"
+                                       IsVisible="{Binding ConfigurationsService.Configurations.Count, Converter={toolkit:IntToBoolConverter}}" />
+                                <Label Text="{localization:Translate NewConfigurationCopyUnavailable}" Style="{StaticResource CardCaption}" FontSize="12" IsVisible="False">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding ConfigurationsService.Configurations.Count}" Value="0">
+                                            <Setter Property="IsVisible" Value="True" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <Picker ItemsSource="{Binding ConfigurationsService.Configurations}" ItemDisplayBinding="{Binding Name, x:DataType=models:Configuration}"
+                                        SelectedItem="{Binding CopiedConfiguration}" IsVisible="{Binding IsCopyChosen}" Margin="0,6,0,0"
+                                        FontFamily="PlexMono" FontSize="14"
+                                        TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}"
+                                        Background="{AppThemeBinding Light={StaticResource SurfaceRaisedLight}, Dark={StaticResource SurfaceRaisedDark}}" />
+                            </VerticalStackLayout>
+                        </Grid>
                     </Border>
 
-                    <VerticalStackLayout Grid.Column="1" Spacing="2">
-                        <Label Text="{localization:Translate NewConfigurationEmpty}" Style="{StaticResource RowLabel}" />
-                        <Label Text="{localization:Translate NewConfigurationEmptyDetail}" Style="{StaticResource CardCaption}" FontSize="12" />
-                    </VerticalStackLayout>
-                </Grid>
-            </Border>
-        </VerticalStackLayout>
+                    <Border Padding="12" StrokeShape="RoundRectangle 12" StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light={StaticResource OutlineLight}, Dark={StaticResource OutlineDark}}"
+                            Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ChooseEmptyCommand}" />
+                        </Border.GestureRecognizers>
 
-        <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding IsEmptyChosen}" Value="True">
+                                <Setter Property="StrokeThickness" Value="2" />
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                <Setter Property="Background"
+                                        Value="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Border Grid.Column="0" WidthRequest="18" HeightRequest="18" StrokeShape="RoundRectangle 9" StrokeThickness="1.5"
+                                    VerticalOptions="Start" Margin="0,2,0,0" Background="Transparent"
+                                    Stroke="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsEmptyChosen}" Value="True">
+                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+
+                                <Ellipse WidthRequest="8" HeightRequest="8" IsVisible="{Binding IsEmptyChosen}"
+                                         HorizontalOptions="Center" VerticalOptions="Center"
+                                         Fill="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="{localization:Translate NewConfigurationEmpty}" Style="{StaticResource RowLabel}" />
+                                <Label Text="{localization:Translate NewConfigurationEmptyDetail}" Style="{StaticResource CardCaption}" FontSize="12" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <HorizontalStackLayout Grid.Row="2" Spacing="10" HorizontalOptions="End">
             <Button Text="{localization:Translate NewConfigurationCancel}" Command="{Binding CancelCommand}"
                     Style="{StaticResource SecondaryButton}" StyleClass="DialogButton" />
 
             <Button Text="{localization:Translate NewConfigurationCreate}" Command="{Binding CreateCommand}"
                     Style="{StaticResource PrimaryButton}" StyleClass="DialogButton" />
         </HorizontalStackLayout>
-    </VerticalStackLayout>
+    </Grid>
 </toolkit:Popup>

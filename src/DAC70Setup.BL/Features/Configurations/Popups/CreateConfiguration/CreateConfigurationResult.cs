@@ -1,3 +1,5 @@
-﻿namespace DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration;
+﻿using DAC70Setup.BL.Models;
 
-public record CreateConfigurationResult(string Name, bool IsFromDevice);
+namespace DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration;
+
+public record CreateConfigurationResult(string Name, ConfigurationSource Source, Configuration? CopiedConfiguration);
