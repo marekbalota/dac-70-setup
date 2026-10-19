@@ -11,8 +11,11 @@
              x:Class="DAC70Setup.BL.Features.EditSetting.EditSettingPage"
              x:DataType="local:EditSettingPageViewModel"
              HideSoftInputOnTapped="True"
-             Shell.TabBarIsVisible="False"
-             Title="{Binding SettingName}">
+             Shell.TabBarIsVisible="False">
+
+    <Shell.TitleView>
+        <controls:PageTitleView Title="{Binding SettingName}" />
+    </Shell.TitleView>
 
     <ContentPage.Resources>
         <DataTemplate x:Key="EnumEditorTemplate">
@@ -80,17 +83,8 @@
                 SizeTemplate="{StaticResource SizeEditorTemplate}"/>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto,*,Auto" Background="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
-        <VerticalStackLayout Grid.Row="0" Spacing="0">
-            <controls:ConfigurationContextBar ConfigurationName="{Binding Configuration.Name}">
-                <Label Text="{Binding Configuration.Created, StringFormat='{0:d} · {0:t}'}"
-                       Style="{StaticResource ContextBarValue}" />
-            </controls:ConfigurationContextBar>
-
-            <BoxView Style="{StaticResource RowDivider}" />
-        </VerticalStackLayout>
-
-        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+    <Grid RowDefinitions="*,Auto" Background="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+        <Grid Grid.Row="0" RowDefinitions="Auto,*">
             <Border Grid.Row="0" Margin="15,15,15,0" Padding="12" StrokeThickness="1" StrokeShape="RoundRectangle 12"
                     IsVisible="{Binding DependencyNoticeText, Converter={toolkit:IsStringNotNullOrEmptyConverter}}"
                     Stroke="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
@@ -126,7 +120,7 @@
                     ItemTemplateSelector="{StaticResource ValueEditorTemplateSelector}" />
         </Grid>
 
-        <VerticalStackLayout Grid.Row="2" Spacing="0">
+        <VerticalStackLayout Grid.Row="1" Spacing="0">
             <BoxView Style="{StaticResource RowDivider}" />
 
             <Grid ColumnDefinitions="*,2*" ColumnSpacing="10" Padding="15,12"

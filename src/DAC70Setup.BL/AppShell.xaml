@@ -68,29 +68,32 @@
                                   Title="{localization:Translate Configurations}"
                                   Description="{localization:Translate ConfigurationsDesc}"
                                   IconGlyph="{x:Static fontAwesome:AwesomeSolidIconFont.Toolbox}">
-        <ShellContent Route="{x:Static nav:Routes.SelectedConfigurationSegment}"
-                      Title="{localization:Translate SelectedConfigurationTitle}"
-                      ContentTemplate="{DataTemplate selectedConfiguration:SelectedConfigurationPage}">
-            <ShellContent.Icon>
+        <Tab Route="{x:Static nav:Routes.SelectedConfigurationSegment}"
+             Title="{localization:Translate SelectedConfigurationTitle}">
+            <Tab.Icon>
                 <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Share}" />
-            </ShellContent.Icon>
-        </ShellContent>
+            </Tab.Icon>
 
-        <ShellContent Route="{x:Static nav:Routes.EditConfigurationSegment}"
-                      Title="{localization:Translate EditConfigurationTitle}"
-                      ContentTemplate="{DataTemplate editConfiguration:EditConfigurationPage}">
-            <ShellContent.Icon>
+            <ShellContent ContentTemplate="{DataTemplate selectedConfiguration:SelectedConfigurationPage}" />
+        </Tab>
+
+        <Tab Route="{x:Static nav:Routes.EditConfigurationSegment}"
+             Title="{localization:Translate EditConfigurationTitle}">
+            <Tab.Icon>
                 <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Gear}" />
-            </ShellContent.Icon>
-        </ShellContent>
+            </Tab.Icon>
 
-        <ShellContent Route="{x:Static nav:Routes.ConfigurationListSegment}"
-                      Title="{localization:Translate ConfigurationsTitle}"
-                      ContentTemplate="{DataTemplate configurations:ConfigurationsPage}">
-            <ShellContent.Icon>
+            <ShellContent ContentTemplate="{DataTemplate editConfiguration:EditConfigurationPage}" />
+        </Tab>
+
+        <Tab Route="{x:Static nav:Routes.ConfigurationListSegment}"
+             Title="{localization:Translate ConfigurationsTitle}">
+            <Tab.Icon>
                 <FontImageSource FontFamily="FA-S" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Toolbox}" />
-            </ShellContent.Icon>
-        </ShellContent>
+            </Tab.Icon>
+
+            <ShellContent ContentTemplate="{DataTemplate configurations:ConfigurationsPage}" />
+        </Tab>
     </controls:DescribedFlyoutItem>
 
     <controls:DescribedFlyoutItem Route="{x:Static nav:Routes.SettingsRoot}"

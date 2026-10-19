@@ -87,22 +87,6 @@
                 Value="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}" />
     </Style>
 
-    <!-- ── Context bar ─────────────────────────────────── -->
-    <Style x:Key="ContextBarTitle" TargetType="Label">
-        <Setter Property="FontFamily" Value="PlexSansSemiBold" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="LineBreakMode" Value="TailTruncation" />
-        <Setter Property="VerticalTextAlignment" Value="Center" />
-        <Setter Property="TextColor"
-                Value="{AppThemeBinding Light={StaticResource OnPrimaryContainerLight}, Dark={StaticResource OnPrimaryContainerDark}}" />
-    </Style>
-
-    <Style x:Key="ContextBarValue" TargetType="Label" BasedOn="{StaticResource ContextBarTitle}">
-        <Setter Property="FontFamily" Value="PlexMono" />
-        <Setter Property="FontSize" Value="12" />
-        <Setter Property="LineBreakMode" Value="NoWrap" />
-    </Style>
-
     <!-- ── Card ─────────────────────────────────────────────────────── -->
     <Style x:Key="Card" TargetType="Border">
         <Setter Property="StrokeShape" Value="RoundRectangle 16" />

@@ -8,24 +8,20 @@
              xmlns:deviceStatus="clr-namespace:DAC70Setup.BL.Controls.DeviceStatus"
              xmlns:selection="clr-namespace:DAC70Setup.BL.Controls.SettingSelection"
              x:Class="DAC70Setup.BL.Features.EditConfiguration.EditConfigurationPage"
-             x:DataType="local:EditConfigurationPageViewModel"
-             Title="{localization:Translate EditConfigurationTitle}">
+             x:DataType="local:EditConfigurationPageViewModel">
 
-    <Grid RowDefinitions="Auto,*">
-        <controls:ConfigurationContextBar Grid.Row="0" ConfigurationName="{Binding ConfigurationsService.SelectedConfiguration.Name}"
-                                          IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
-            <Label Text="{Binding ConfigurationsService.SelectedConfiguration.Created, StringFormat='{0:d} · {0:t}'}"
-                   Style="{StaticResource ContextBarValue}" />
-        </controls:ConfigurationContextBar>
+    <Shell.TitleView>
+        <controls:PageTitleView Title="{localization:Translate EditConfigurationTitle}"
+                ConfigurationName="{Binding ConfigurationsService.SelectedConfiguration.Name}" />
+    </Shell.TitleView>
 
-        <deviceStatus:DeviceStatusBar Grid.Row="1" Status="{Binding DeviceStatus}">
-            <Grid>
-                <controls:NoConfigurationSelectedView GoToConfigurationsCommand="{Binding GoToConfigurationsCommand}"
-                        IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNullConverter}}" />
+    <deviceStatus:DeviceStatusBar Status="{Binding DeviceStatus}">
+        <Grid>
+            <controls:NoConfigurationSelectedView GoToConfigurationsCommand="{Binding GoToConfigurationsCommand}"
+                    IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNullConverter}}" />
 
-                <selection:SettingSelectionView Selection="{Binding SettingSelection}"
-                        IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}" />
-            </Grid>
-        </deviceStatus:DeviceStatusBar>
-    </Grid>
+            <selection:SettingSelectionView Selection="{Binding SettingSelection}"
+                    IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}" />
+        </Grid>
+    </deviceStatus:DeviceStatusBar>
 </ContentPage>

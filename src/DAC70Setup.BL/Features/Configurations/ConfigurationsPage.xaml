@@ -7,10 +7,15 @@
              xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:deviceStatus="clr-namespace:DAC70Setup.BL.Controls.DeviceStatus"
+             xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
              x:Class="DAC70Setup.BL.Features.Configurations.ConfigurationsPage"
              x:Name="PageRoot"
-             x:DataType="local:ConfigurationsPageViewModel"
-             Title="{localization:Translate ConfigurationsTitle}">
+             x:DataType="local:ConfigurationsPageViewModel">
+
+    <Shell.TitleView>
+        <controls:PageTitleView Title="{localization:Translate ConfigurationsTitle}"
+                ConfigurationName="{Binding ConfigurationsService.SelectedConfiguration.Name}" />
+    </Shell.TitleView>
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Order="Primary" Priority="0" Command="{Binding CreateConfigurationCommand}">

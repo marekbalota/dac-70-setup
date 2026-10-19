@@ -8,51 +8,47 @@
              xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
              xmlns:deviceStatus="clr-namespace:DAC70Setup.BL.Controls.DeviceStatus"
              x:Class="DAC70Setup.BL.Features.SelectedConfiguration.SelectedConfigurationPage"
-             x:DataType="local:SelectedConfigurationPageViewModel"
-             Title="{localization:Translate SelectedConfigurationTitle}">
+             x:DataType="local:SelectedConfigurationPageViewModel">
 
-    <Grid RowDefinitions="Auto,*">
-        <controls:ConfigurationContextBar Grid.Row="0" ConfigurationName="{Binding ConfigurationsService.SelectedConfiguration.Name}"
-                                          IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
-            <Label Text="{Binding ConfigurationsService.SelectedConfiguration.Created, StringFormat='{0:d} · {0:t}'}"
-                   Style="{StaticResource ContextBarValue}" />
-        </controls:ConfigurationContextBar>
+    <Shell.TitleView>
+        <controls:PageTitleView Title="{localization:Translate SelectedConfigurationTitle}"
+                ConfigurationName="{Binding ConfigurationsService.SelectedConfiguration.Name}" />
+    </Shell.TitleView>
 
-        <deviceStatus:DeviceStatusBar Grid.Row="1" Status="{Binding DeviceStatus}">
-            <Grid>
-                <controls:NoConfigurationSelectedView GoToConfigurationsCommand="{Binding GoToConfigurationsCommand}"
-                        IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNullConverter}}" />
+    <deviceStatus:DeviceStatusBar Status="{Binding DeviceStatus}">
+        <Grid>
+            <controls:NoConfigurationSelectedView GoToConfigurationsCommand="{Binding GoToConfigurationsCommand}"
+                    IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNullConverter}}" />
 
-                <VerticalStackLayout Spacing="12" Padding="15,18"
-                                     IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
-                    <Button Text="{localization:Translate SendToDevice}" Command="{Binding SendToDeviceCommand}"
-                            Style="{StaticResource PrimaryButton}" ContentLayout="Left,10">
-                        <Button.ImageSource>
-                            <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.ArrowUpFromBracket}"
-                                             Color="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
-                        </Button.ImageSource>
-                    </Button>
+            <VerticalStackLayout Spacing="12" Padding="15,18"
+                                 IsVisible="{Binding ConfigurationsService.SelectedConfiguration, Converter={toolkit:IsNotNullConverter}}">
+                <Button Text="{localization:Translate SendToDevice}" Command="{Binding SendToDeviceCommand}"
+                        Style="{StaticResource PrimaryButton}" ContentLayout="Left,10">
+                    <Button.ImageSource>
+                        <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.ArrowUpFromBracket}"
+                                         Color="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+                    </Button.ImageSource>
+                </Button>
 
-                    <Button Text="{localization:Translate ExportToFile}" Command="{Binding ExportConfigurationCommand}"
-                            Style="{StaticResource SecondaryButton}" ContentLayout="Left,10">
-                        <Button.ImageSource>
-                            <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.FileExport}"
-                                             Color="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
-                        </Button.ImageSource>
-                    </Button>
+                <Button Text="{localization:Translate ExportToFile}" Command="{Binding ExportConfigurationCommand}"
+                        Style="{StaticResource SecondaryButton}" ContentLayout="Left,10">
+                    <Button.ImageSource>
+                        <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.FileExport}"
+                                         Color="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+                    </Button.ImageSource>
+                </Button>
 
-                    <BoxView HeightRequest="1" Margin="0,6"
-                             Color="{AppThemeBinding Light={StaticResource OutlineLight}, Dark={StaticResource OutlineDark}}" />
+                <BoxView HeightRequest="1" Margin="0,6"
+                         Color="{AppThemeBinding Light={StaticResource OutlineLight}, Dark={StaticResource OutlineDark}}" />
 
-                    <Button Text="{localization:Translate SynchronizeWithDevice}" Command="{Binding SynchronizeWithDeviceCommand}"
-                            Style="{StaticResource SecondaryButton}" ContentLayout="Left,10">
-                        <Button.ImageSource>
-                            <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.ArrowsRotate}"
-                                             Color="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
-                        </Button.ImageSource>
-                    </Button>
-                </VerticalStackLayout>
-            </Grid>
-        </deviceStatus:DeviceStatusBar>
-    </Grid>
+                <Button Text="{localization:Translate SynchronizeWithDevice}" Command="{Binding SynchronizeWithDeviceCommand}"
+                        Style="{StaticResource SecondaryButton}" ContentLayout="Left,10">
+                    <Button.ImageSource>
+                        <FontImageSource FontFamily="FA-S" Size="15" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.ArrowsRotate}"
+                                         Color="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+                    </Button.ImageSource>
+                </Button>
+            </VerticalStackLayout>
+        </Grid>
+    </deviceStatus:DeviceStatusBar>
 </ContentPage>
