@@ -12,6 +12,8 @@
         <x:Double x:Key="WideSelectionBarWidth">600</x:Double>
         <toolkit:CompareConverter x:Key="IsNarrowSelectionBarConverter" ComparisonOperator="Smaller"
                                   ComparingValue="{StaticResource WideSelectionBarWidth}" />
+        <toolkit:CompareConverter x:Key="IsWideSelectionBarConverter" ComparisonOperator="GreaterOrEqual"
+                                  ComparingValue="{StaticResource WideSelectionBarWidth}" />
     </ContentView.Resources>
 
     <Grid x:DataType="selection:SettingSelectionViewModel" RowDefinitions="*,Auto"
@@ -126,7 +128,12 @@
             <Grid x:Name="SelectionBar" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,*,Auto" RowSpacing="0" Padding="6,6,12,6">
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup x:Name="WidthStates">
-                        <VisualState x:Name="Wide" />
+                        <VisualState x:Name="Wide">
+                            <VisualState.StateTriggers>
+                                <StateTrigger
+                                        IsActive="{Binding Width, Source={x:Reference SelectionBar}, x:DataType=Grid, Converter={StaticResource IsWideSelectionBarConverter}}" />
+                            </VisualState.StateTriggers>
+                        </VisualState>
                         <VisualState x:Name="Narrow">
                             <VisualState.StateTriggers>
                                 <StateTrigger
