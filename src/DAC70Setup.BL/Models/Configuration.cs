@@ -15,10 +15,6 @@ public partial class Configuration : ObservableObject
         Id = id;
         Name = name;
         Created = created;
-        Settings.CollectionChanged += (_, _) =>
-        {
-            OnPropertyChanged(nameof(SettingsCountText));
-        };
     }
 
     public Guid Id { get; }
@@ -33,9 +29,6 @@ public partial class Configuration : ObservableObject
 
     [ObservableProperty]
     public partial bool IsSelected { get; set; }
-
-    // TODO: this needs to support translation
-    public string SettingsCountText => $"{Settings.Count} settings";
 
     public ObservableCollection<Dac70SettingValue> Settings { get; } = new ObservableCollection<Dac70SettingValue>();
 }

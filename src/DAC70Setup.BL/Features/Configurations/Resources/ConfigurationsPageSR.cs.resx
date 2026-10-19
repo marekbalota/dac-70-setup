@@ -129,4 +129,10 @@
   <data name="ConfigurationsCreate" xml:space="preserve">
     <value>Vytvořit</value>
   </data>
+  <data name="SettingsCount" xml:space="preserve">
+    <value>{0} nastavení</value>
+  </data>
+  <data name="SettingsCountOne" xml:space="preserve">
+    <value>{0} nastavení</value>
+  </data>
 </root>

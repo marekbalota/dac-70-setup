@@ -95,5 +95,23 @@ namespace DAC70Setup.BL.Features.Configurations.Resources {
                 return ResourceManager.GetString("NoExistingConfiguration", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} settings.
+        /// </summary>
+        public static string SettingsCount {
+            get {
+                return ResourceManager.GetString("SettingsCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} setting.
+        /// </summary>
+        public static string SettingsCountOne {
+            get {
+                return ResourceManager.GetString("SettingsCountOne", resourceCulture);
+            }
+        }
     }
 }

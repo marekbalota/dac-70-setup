@@ -115,7 +115,8 @@
 
                                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Start">
                                         <Label Text="{Binding Name}" Style="{StaticResource CardTitle}" />
-                                        <Label Text="{Binding SettingsCountText}" Style="{StaticResource CardCaption}" />
+                                        <Label Text="{localization:TranslateBinding Settings.Count, TranslateFormat=SettingsCount, TranslateOne=SettingsCountOne}"
+                                               Style="{StaticResource CardCaption}" />
                                     </VerticalStackLayout>
 
                                     <VerticalStackLayout Grid.Column="2" VerticalOptions="Start">

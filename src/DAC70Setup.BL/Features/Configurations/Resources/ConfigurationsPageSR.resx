@@ -129,4 +129,10 @@
   <data name="ConfigurationsCreate" xml:space="preserve">
     <value>Create</value>
   </data>
+  <data name="SettingsCount" xml:space="preserve">
+    <value>{0} settings</value>
+  </data>
+  <data name="SettingsCountOne" xml:space="preserve">
+    <value>{0} setting</value>
+  </data>
 </root>
