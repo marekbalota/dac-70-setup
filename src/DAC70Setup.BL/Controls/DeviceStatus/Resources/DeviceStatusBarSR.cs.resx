@@ -147,11 +147,8 @@
   <data name="DeviceLostDetailAlone" xml:space="preserve">
     <value>Připojte ho zpět.</value>
   </data>
-  <data name="DeviceSerial" xml:space="preserve">
-    <value>Sériové číslo: {0}</value>
-  </data>
-  <data name="DeviceNoSerial" xml:space="preserve">
-    <value>Bez sériového čísla</value>
+  <data name="DeviceNoInputSignal" xml:space="preserve">
+    <value>Bez vstupního signálu</value>
   </data>
   <data name="DevicePermissionDetail" xml:space="preserve">
     <value>Android potřebuje vaše povolení k jeho použití.</value>

@@ -5,6 +5,7 @@ using DAC70Setup.Core.Exceptions;
 using DAC70Setup.Core.Interfaces;
 using DAC70Setup.Core.Models;
 using DAC70Setup.Core.Models.Definitions;
+using DAC70Setup.Core.Models.Protocol;
 using DAC70Setup.Core.Models.Values;
 
 namespace DAC70Setup.BL.Services.Device;
@@ -16,6 +17,8 @@ public partial class DeviceConnectionService : ObservableObject
     private const int ReplyTimeoutMilliseconds = 3000;
     private const int SkippedReports = 10;
     private const int ComparedReplyBytes = 8;
+
+    private const int DeviceInfoReadCount = 2;
 
     private readonly SemaphoreSlim _semaphore = new(1, 1);
 
@@ -291,7 +294,7 @@ public partial class DeviceConnectionService : ObservableObject
             .GroupBy(definition => (definition.Key.Type, definition.ReadRequestId))
             .Select(group => group.ToList())
             .ToList();
-        int total = requests.Sum(request => request.Count);
+        int total = DeviceInfoReadCount + requests.Sum(request => request.Count);
         var snapshot = device.Snapshot;
 
         using var transferCancellation = new CancellationTokenSource();
@@ -302,7 +305,7 @@ public partial class DeviceConnectionService : ObservableObject
 
         try
         {
-            Progress = new TransferProgress(0, total, requests[0][0].Name);
+            Progress = new TransferProgress(0, total, Dac70FirmwareVersion.Name);
             State = DeviceState.Syncing;
 
             try
@@ -323,12 +326,37 @@ public partial class DeviceConnectionService : ObservableObject
             byte[]? previousReply = null;
             int completed = 0;
 
+            var firmwareReply = await RequestAsync(connection, Dac70FirmwareVersion.GetReadPayload(), previousReply, transferCancellation.Token);
+            completed++;
+
+            if (firmwareReply != null)
+            {
+                previousReply = firmwareReply;
+
+                if (Dac70FirmwareVersion.FromReadResponse(firmwareReply) is { } firmwareVersion)
+                {
+                    snapshot.FirmwareVersion = firmwareVersion;
+                }
+            }
+
+            Progress = new TransferProgress(completed, total, Dac70InputSignal.Name);
+            var signalReply = await RequestAsync(connection, Dac70InputSignal.GetReadPayload(), previousReply, transferCancellation.Token);
+            completed++;
+
+            if (signalReply != null)
+            {
+                previousReply = signalReply;
+
+                if (Dac70InputSignal.FromReadResponse(signalReply) is { } inputSignal)
+                {
+                    snapshot.InputSignal = inputSignal;
+                }
+            }
+
             foreach (var request in requests)
             {
                 Progress = new TransferProgress(completed, total, request[0].Name);
-                await connection.WriteReportAsync(request[0].GetReadPayload(), transferCancellation.Token);
-
-                var reply = await ReadReplyAsync(connection, previousReply, transferCancellation.Token);
+                var reply = await RequestAsync(connection, request[0].GetReadPayload(), previousReply, transferCancellation.Token);
                 completed += request.Count;
 
                 if (reply == null)
@@ -376,6 +404,14 @@ public partial class DeviceConnectionService : ObservableObject
         }
 
         return isComplete;
+    }
+
+    private static async Task<byte[]?> RequestAsync(IDac70Connection connection, byte[] payload, byte[]? previousReply,
+        CancellationToken cancellationToken)
+    {
+        await connection.WriteReportAsync(payload, cancellationToken);
+
+        return await ReadReplyAsync(connection, previousReply, cancellationToken);
     }
 
     private static async Task<byte[]?> ReadReplyAsync(IDac70Connection connection, byte[]? previousReply, CancellationToken cancellationToken)
@@ -465,9 +501,8 @@ public partial class DeviceConnectionService : ObservableObject
 
         foreach (var device in discovered)
         {
-            if (_devices.FirstOrDefault(row => row.Device.Id == device.Id) is { } existing)
+            if (_devices.Any(row => row.Device.Id == device.Id))
             {
-                existing.Device = device;
                 continue;
             }
 

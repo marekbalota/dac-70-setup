@@ -18,6 +18,16 @@ public partial class DeviceSnapshot : ObservableObject
     [ObservableProperty]
     public partial DateTime? LastFullSync { get; private set; }
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasDeviceInfo))]
+    public partial Dac70FirmwareVersion? FirmwareVersion { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasDeviceInfo))]
+    public partial Dac70InputSignal? InputSignal { get; set; }
+
+    public bool HasDeviceInfo => FirmwareVersion != null || InputSignal != null;
+
     public void SetValue(Dac70SettingValue value)
     {
         var valueBytes = value.GetValueBytes();

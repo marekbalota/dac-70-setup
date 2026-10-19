@@ -87,34 +87,56 @@
                     <BoxView Style="{StaticResource RowDivider}" />
 
                     <VerticalStackLayout IsVisible="{Binding IsSyncInfoVisible}">
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Padding="15,8"
-                              Background="{AppThemeBinding Light={StaticResource SurfaceRaisedLight}, Dark={StaticResource SurfaceRaisedDark}}">
-                            <Grid.Triggers>
-                                <DataTrigger TargetType="Grid" Binding="{Binding IsSyncWarning}" Value="True">
+                        <FlexLayout Wrap="Wrap" AlignItems="Center" Padding="15,8"
+                                    Background="{AppThemeBinding Light={StaticResource SurfaceRaisedLight}, Dark={StaticResource SurfaceRaisedDark}}">
+                            <FlexLayout.Triggers>
+                                <DataTrigger TargetType="FlexLayout" Binding="{Binding IsSyncWarning}" Value="True">
                                     <Setter Property="Background"
                                             Value="{AppThemeBinding Light={StaticResource WarningContainerLight}, Dark={StaticResource WarningContainerDark}}" />
                                 </DataTrigger>
-                            </Grid.Triggers>
+                            </FlexLayout.Triggers>
 
-                            <Label Grid.Column="0" FontFamily="FA-S" FontSize="11" Text="{x:Static fontAwesome:AwesomeSolidIconFont.Clock}"
-                                   VerticalTextAlignment="Center"
-                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}">
-                                <Label.Triggers>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsSyncWarning}" Value="True">
-                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WarningLight}, Dark={StaticResource WarningDark}}" />
-                                    </DataTrigger>
-                                </Label.Triggers>
-                            </Label>
+                            <HorizontalStackLayout Spacing="6" Margin="0,0,14,0"
+                                                   IsVisible="{Binding Snapshot.FirmwareVersion, Converter={toolkit:IsNotNullConverter}}">
+                                <Label Text="{x:Static fontAwesome:AwesomeSolidIconFont.Microchip}" FontFamily="FA-S" FontSize="11" VerticalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}" />
+                                <Label Text="{Binding Snapshot.FirmwareVersion, StringFormat='{0}'}" Style="{StaticResource CardCaption}"
+                                       FontFamily="PlexMono" FontSize="12" VerticalTextAlignment="Center" />
+                            </HorizontalStackLayout>
 
-                            <Label Grid.Column="1" Text="{Binding SyncText.Localized}" Style="{StaticResource CardCaption}" FontSize="12"
-                                   VerticalTextAlignment="Center">
-                                <Label.Triggers>
-                                    <DataTrigger TargetType="Label" Binding="{Binding IsSyncWarning}" Value="True">
-                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WarningLight}, Dark={StaticResource WarningDark}}" />
-                                    </DataTrigger>
-                                </Label.Triggers>
-                            </Label>
-                        </Grid>
+                            <HorizontalStackLayout Spacing="6" Margin="0,0,14,0"
+                                                   IsVisible="{Binding Snapshot.InputSignal, Converter={toolkit:IsNotNullConverter}}">
+                                <Label Text="{x:Static fontAwesome:AwesomeSolidIconFont.Video}" FontFamily="FA-S" FontSize="11" VerticalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}" />
+                                <Label Text="{Binding Snapshot.InputSignal, StringFormat='{0}'}" Style="{StaticResource CardCaption}"
+                                       FontFamily="PlexMono" FontSize="12" VerticalTextAlignment="Center"
+                                       IsVisible="{Binding Snapshot.InputSignal.HasSignal}" />
+                                <Label Text="{localization:Translate DeviceNoInputSignal}" Style="{StaticResource CardCaption}"
+                                       FontSize="12" VerticalTextAlignment="Center"
+                                       IsVisible="{Binding Snapshot.InputSignal.HasSignal, Converter={toolkit:InvertedBoolConverter}}" />
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Spacing="6">
+                                <Label FontFamily="FA-S" FontSize="11" Text="{x:Static fontAwesome:AwesomeSolidIconFont.Clock}"
+                                       VerticalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsSyncWarning}" Value="True">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WarningLight}, Dark={StaticResource WarningDark}}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <Label Text="{Binding SyncText.Localized}" Style="{StaticResource CardCaption}" FontSize="12"
+                                       VerticalTextAlignment="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsSyncWarning}" Value="True">
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WarningLight}, Dark={StaticResource WarningDark}}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </HorizontalStackLayout>
+                        </FlexLayout>
 
                         <BoxView Style="{StaticResource RowDivider}" />
                     </VerticalStackLayout>
@@ -168,8 +190,19 @@
                                                         </DataTrigger>
                                                     </Label.Triggers>
                                                 </Label>
-                                                <Label Text="{localization:TranslateBinding Device.SerialNumber, TranslateFormat=DeviceSerial, TargetNullText=DeviceNoSerial}"
-                                                       Style="{StaticResource CardCaption}" FontSize="12" />
+                                                <HorizontalStackLayout Spacing="10">
+                                                    <Label Text="{Binding Snapshot.FirmwareVersion, StringFormat='FW {0}'}" Style="{StaticResource CardCaption}"
+                                                           FontFamily="PlexMono" FontSize="12"
+                                                           IsVisible="{Binding Snapshot.FirmwareVersion, Converter={toolkit:IsNotNullConverter}}" />
+                                                    <Grid IsVisible="{Binding Snapshot.InputSignal, Converter={toolkit:IsNotNullConverter}}">
+                                                        <Label Text="{Binding Snapshot.InputSignal, StringFormat='{0}'}" Style="{StaticResource CardCaption}"
+                                                               FontFamily="PlexMono" FontSize="12" IsVisible="{Binding Snapshot.InputSignal.HasSignal}" />
+                                                        <Label Text="{localization:Translate DeviceNoInputSignal}" Style="{StaticResource CardCaption}" FontSize="12"
+                                                               IsVisible="{Binding Snapshot.InputSignal.HasSignal, Converter={toolkit:InvertedBoolConverter}}" />
+                                                    </Grid>
+                                                    <Label Text="{localization:Translate DeviceNotSynced}" Style="{StaticResource CardCaption}" FontSize="12"
+                                                           IsVisible="{Binding Snapshot.HasDeviceInfo, Converter={toolkit:InvertedBoolConverter}}" />
+                                                </HorizontalStackLayout>
                                             </VerticalStackLayout>
 
                                             <Label Grid.Column="1" FontFamily="FA-S" FontSize="14" Text="{x:Static fontAwesome:AwesomeSolidIconFont.Check}"

@@ -29,21 +29,8 @@ public partial class UsbTransport
     private partial IReadOnlyList<Dac70Device> GetAttachedDevices()
     {
         return FindUsbDevices()
-            .Select(usbDevice => new Dac70Device(usbDevice.DeviceName, ReadSerialNumber(usbDevice)))
+            .Select(usbDevice => new Dac70Device(usbDevice.DeviceName))
             .ToList();
-    }
-
-    private static string? ReadSerialNumber(UsbDevice usbDevice)
-    {
-        try
-        {
-            string? serialNumber = usbDevice.SerialNumber;
-            return string.IsNullOrWhiteSpace(serialNumber) ? null : serialNumber;
-        }
-        catch (Java.Lang.SecurityException)
-        {
-            return null;
-        }
     }
 
     public partial async Task<IDac70Connection> ConnectAsync(Dac70Device device, CancellationToken cancellationToken)

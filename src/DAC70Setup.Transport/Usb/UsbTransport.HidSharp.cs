@@ -18,21 +18,8 @@ public partial class UsbTransport
     private partial IReadOnlyList<Dac70Device> GetAttachedDevices()
     {
         return DeviceList.Local.GetHidDevices(Dac70UsbIdentity.VendorId, Dac70UsbIdentity.ProductId)
-            .Select(hidDevice => new Dac70Device(hidDevice.DevicePath, ReadSerialNumber(hidDevice)))
+            .Select(hidDevice => new Dac70Device(hidDevice.DevicePath))
             .ToList();
-    }
-
-    private static string? ReadSerialNumber(HidDevice hidDevice)
-    {
-        try
-        {
-            string? serialNumber = hidDevice.GetSerialNumber();
-            return string.IsNullOrWhiteSpace(serialNumber) ? null : serialNumber;
-        }
-        catch (IOException)
-        {
-            return null;
-        }
     }
 
     public partial Task<IDac70Connection> ConnectAsync(Dac70Device device, CancellationToken cancellationToken)

@@ -19,8 +19,6 @@ public partial class DeviceStatusBarViewModel : ObservableObject
 
     private Func<Task>? _action;
 
-    private DeviceSnapshot? _observedSnapshot;
-
     public DeviceStatusBarViewModel(DeviceConnectionService deviceConnectionService,
         ILocalizationResourceManager localizationResourceManager)
     {
@@ -29,7 +27,7 @@ public partial class DeviceStatusBarViewModel : ObservableObject
 
         _deviceConnectionService.PropertyChanged += OnDeviceConnectionServiceChanged;
 
-        ObserveSelectedSnapshot();
+        Snapshot = _deviceConnectionService.SelectedDevice?.Snapshot;
         UpdateBar();
     }
 
@@ -52,6 +50,9 @@ public partial class DeviceStatusBarViewModel : ObservableObject
     public ReadOnlyObservableCollection<AttachedDevice> Devices => _deviceConnectionService.Devices;
 
     public bool IsNumberShown => Devices.Count > 1;
+
+    [ObservableProperty]
+    public partial DeviceSnapshot? Snapshot { get; private set; }
 
     private bool _isPickerAvailable;
     public bool IsPickerAvailable
@@ -161,7 +162,7 @@ public partial class DeviceStatusBarViewModel : ObservableObject
 
         if (e.PropertyName == nameof(DeviceConnectionService.SelectedDevice))
         {
-            ObserveSelectedSnapshot();
+            Snapshot = _deviceConnectionService.SelectedDevice?.Snapshot;
         }
 
         if (e.PropertyName == nameof(DeviceConnectionService.Devices))
@@ -194,18 +195,16 @@ public partial class DeviceStatusBarViewModel : ObservableObject
         UpdateSyncInfo();
     }
 
-    private void ObserveSelectedSnapshot()
+    partial void OnSnapshotChanged(DeviceSnapshot? oldValue, DeviceSnapshot? newValue)
     {
-        if (_observedSnapshot != null)
+        if (oldValue != null)
         {
-            _observedSnapshot.PropertyChanged -= OnSnapshotPropertyChanged;
+            oldValue.PropertyChanged -= OnSnapshotPropertyChanged;
         }
 
-        _observedSnapshot = _deviceConnectionService.SelectedDevice?.Snapshot;
-
-        if (_observedSnapshot != null)
+        if (newValue != null)
         {
-            _observedSnapshot.PropertyChanged += OnSnapshotPropertyChanged;
+            newValue.PropertyChanged += OnSnapshotPropertyChanged;
         }
     }
 

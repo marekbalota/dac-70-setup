@@ -147,11 +147,8 @@
   <data name="DeviceLostDetailAlone" xml:space="preserve">
     <value>Plug it back in.</value>
   </data>
-  <data name="DeviceSerial" xml:space="preserve">
-    <value>Serial: {0}</value>
-  </data>
-  <data name="DeviceNoSerial" xml:space="preserve">
-    <value>No serial number</value>
+  <data name="DeviceNoInputSignal" xml:space="preserve">
+    <value>No input signal</value>
   </data>
   <data name="DevicePermissionDetail" xml:space="preserve">
     <value>Android needs your permission to use it.</value>

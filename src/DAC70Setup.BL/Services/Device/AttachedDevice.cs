@@ -11,8 +11,7 @@ public partial class AttachedDevice : ObservableObject
         Number = number;
     }
 
-    [ObservableProperty]
-    public partial Dac70Device Device { get; set; }
+    public Dac70Device Device { get; }
 
     public int Number { get; }
 

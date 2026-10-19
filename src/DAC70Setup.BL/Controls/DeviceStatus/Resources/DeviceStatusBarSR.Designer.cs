@@ -160,11 +160,11 @@ namespace DAC70Setup.BL.Controls.DeviceStatus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No serial number.
+        ///   Looks up a localized string similar to No input signal.
         /// </summary>
-        public static string DeviceNoSerial {
+        public static string DeviceNoInputSignal {
             get {
-                return ResourceManager.GetString("DeviceNoSerial", resourceCulture);
+                return ResourceManager.GetString("DeviceNoInputSignal", resourceCulture);
             }
         }
         
@@ -228,15 +228,6 @@ namespace DAC70Setup.BL.Controls.DeviceStatus.Resources {
         public static string DeviceSending {
             get {
                 return ResourceManager.GetString("DeviceSending", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Serial: {0}.
-        /// </summary>
-        public static string DeviceSerial {
-            get {
-                return ResourceManager.GetString("DeviceSerial", resourceCulture);
             }
         }
         
