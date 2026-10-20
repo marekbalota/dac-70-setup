@@ -35,5 +35,5 @@ public record Dac70InputSignal(int Width, int Height, double FrameRate, bool IsI
     }
 
     public override string ToString() =>
-        string.Create(CultureInfo.InvariantCulture, $"{Width}x{Height}{(IsInterlaced ? 'i' : 'p')} {FrameRate:0.00}");
+        string.Create(CultureInfo.InvariantCulture, $"{Width}x{Height} {FrameRate:0.00}{(IsInterlaced ? 'i' : 'p')}");
 }
