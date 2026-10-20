@@ -6,8 +6,8 @@ public partial class DeleteConfigurationPopup : Popup<bool>
 {
     public DeleteConfigurationPopup(DeleteConfigurationPopupViewModel viewModel)
     {
-        BindingContext = viewModel;
-
         InitializeComponent();
+
+        BindingContext = viewModel;
     }
 }

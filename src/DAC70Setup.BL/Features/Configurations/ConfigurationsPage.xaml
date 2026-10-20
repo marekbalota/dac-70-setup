@@ -95,10 +95,10 @@
 
                             <Border.Behaviors>
                                 <toolkit:TouchBehavior LongPressDuration="500"
-                                        Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.OpenConfigurationCommand}"
-                                        CommandParameter="{Binding Source={x:Reference CardBorder}, Path=BindingContext}"
-                                        LongPressCommand="{Binding Source={x:Reference PageRoot}, Path=BindingContext.ToggleSelectionCommand}"
-                                        LongPressCommandParameter="{Binding Source={x:Reference CardBorder}, Path=BindingContext}" />
+                                        Command="{Binding ViewModel.OpenConfigurationCommand, Source={x:Reference PageRoot}, x:DataType=local:ConfigurationsPage}"
+                                        CommandParameter="{Binding BindingContext, Source={x:Reference CardBorder}, x:DataType=Border}"
+                                        LongPressCommand="{Binding ViewModel.ToggleSelectionCommand, Source={x:Reference PageRoot}, x:DataType=local:ConfigurationsPage}"
+                                        LongPressCommandParameter="{Binding BindingContext, Source={x:Reference CardBorder}, x:DataType=Border}" />
                             </Border.Behaviors>
 
                             <Grid ColumnDefinitions="4,*">
@@ -106,7 +106,7 @@
                                          Color="{AppThemeBinding Light={StaticResource SuccessLight}, Dark={StaticResource SuccessDark}}" />
 
                                 <Grid Grid.Column="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="11"
-                                      Padding="{OnIdiom Phone=13, Default=13, Desktop=11}">
+                                      Padding="{OnPlatform Default=13, WinUI=11, MacCatalyst=11}">
                                     <Border Grid.Column="0" WidthRequest="34" HeightRequest="34" StrokeThickness="0"
                                             StrokeShape="RoundRectangle 10" VerticalOptions="Start"
                                             Background="{AppThemeBinding Light={StaticResource PrimaryContainerLight}, Dark={StaticResource PrimaryContainerDark}}">

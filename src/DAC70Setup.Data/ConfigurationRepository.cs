@@ -65,7 +65,7 @@ public class ConfigurationRepository : IConfigurationRepository
                 Id = configuration.Id,
                 Name = configuration.Name,
                 Created = configuration.Created
-            });
+            }, typeof(ConfigurationRow));
 
             foreach (var setting in configuration.Settings)
             {
@@ -92,7 +92,7 @@ public class ConfigurationRepository : IConfigurationRepository
         var row = await connection.GetAsync<ConfigurationRow>(id);
         row.Name = name;
 
-        await connection.UpdateAsync(row);
+        await connection.UpdateAsync(row, typeof(ConfigurationRow));
     }
 
     public async Task UpsertSettingsAsync(Guid configId, IReadOnlyList<SettingDto> settings)
@@ -119,7 +119,7 @@ public class ConfigurationRepository : IConfigurationRepository
         if (existing != null)
         {
             existing.ValueBytes = setting.ValueBytes;
-            transaction.Update(existing);
+            transaction.Update(existing, typeof(SettingRow));
         }
         else
         {
@@ -129,7 +129,7 @@ public class ConfigurationRepository : IConfigurationRepository
                 MessageType = messageType,
                 SettingId = settingId,
                 ValueBytes = setting.ValueBytes
-            });
+            }, typeof(SettingRow));
         }
     }
 

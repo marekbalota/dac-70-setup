@@ -6,8 +6,8 @@ public partial class RenameConfigurationPopup : Popup<string>
 {
     public RenameConfigurationPopup(RenameConfigurationPopupViewModel viewModel)
     {
-        BindingContext = viewModel;
-
         InitializeComponent();
+
+        BindingContext = viewModel;
     }
 }

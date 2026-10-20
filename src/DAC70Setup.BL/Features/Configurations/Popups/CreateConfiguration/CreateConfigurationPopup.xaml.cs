@@ -9,9 +9,10 @@ public partial class CreateConfigurationPopup : Popup<CreateConfigurationResult>
     public CreateConfigurationPopup(CreateConfigurationPopupViewModel viewModel)
     {
         _viewModel = viewModel;
-        BindingContext = viewModel;
 
         InitializeComponent();
+
+        BindingContext = viewModel;
 
         Closed += OnClosed;
     }
