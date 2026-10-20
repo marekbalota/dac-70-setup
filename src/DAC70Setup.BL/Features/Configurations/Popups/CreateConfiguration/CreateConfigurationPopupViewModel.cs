@@ -32,6 +32,11 @@ public partial class CreateConfigurationPopupViewModel : ObservableObject, IQuer
         DeviceDetail = new LocalizedString(() => string.Empty);
         CopiedConfiguration = configurationsService.SelectedConfiguration ?? configurationsService.Configurations.FirstOrDefault();
 
+        string copyDetailKey = configurationsService.Configurations.Count > 0
+            ? nameof(CreateConfigurationPopupSR.NewConfigurationCopyDetail)
+            : nameof(CreateConfigurationPopupSR.NewConfigurationCopyUnavailable);
+        CopyDetail = new LocalizedString(() => _localizationResourceManager[copyDetailKey]);
+
         _deviceConnectionService.PropertyChanged += OnDeviceConnectionServiceChanged;
 
         UpdateDevice();
@@ -62,6 +67,8 @@ public partial class CreateConfigurationPopupViewModel : ObservableObject, IQuer
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CreateCommand))]
     public partial Configuration? CopiedConfiguration { get; set; }
+
+    public LocalizedString CopyDetail { get; }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ChooseDeviceCommand))]
