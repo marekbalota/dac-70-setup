@@ -7,9 +7,11 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
              xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
+             xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui"
              x:Class="DAC70Setup.BL.Features.Settings.SettingsPage"
              x:Name="PageRoot"
-             x:DataType="local:SettingsPageViewModel">
+             x:DataType="local:SettingsPageViewModel"
+             droid:NavigationBar.Color="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
 
     <Shell.TitleView>
         <controls:PageTitleView Title="{localization:Translate SettingsTitle}" />

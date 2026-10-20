@@ -34,7 +34,7 @@ public partial class MainWindow
         platformWindow.DispatcherQueue.TryEnqueue(() =>
         {
             var application = Application.Current!;
-            string key = application.RequestedTheme == AppTheme.Dark ? "OnPrimaryDark" : "OnPrimaryLight";
+            string key = application.RequestedTheme == AppTheme.Dark ? "OnHeaderDark" : "OnHeaderLight";
             var foreground = (Color)application.Resources[key];
 
             var titleBar = platformWindow.AppWindow.TitleBar;

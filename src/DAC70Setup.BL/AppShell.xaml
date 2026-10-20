@@ -9,25 +9,34 @@
        xmlns:editConfiguration="clr-namespace:DAC70Setup.BL.Features.EditConfiguration"
        xmlns:selectedConfiguration="clr-namespace:DAC70Setup.BL.Features.SelectedConfiguration"
        xmlns:settings="clr-namespace:DAC70Setup.BL.Features.Settings"
+       xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
        x:Class="DAC70Setup.BL.AppShell"
        FlyoutBehavior="Flyout"
        FlyoutWidth="280"
        FlyoutHeaderBehavior="Fixed"
        FlyoutBackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
-       BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
-       TitleColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
+       BackgroundColor="{AppThemeBinding Light={StaticResource HeaderLight}, Dark={StaticResource HeaderDark}}"
+       TitleColor="{AppThemeBinding Light={StaticResource OnHeaderLight}, Dark={StaticResource OnHeaderDark}}"
        TabBarBackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
        TabBarForegroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
        TabBarTitleColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
        TabBarUnselectedColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}"
-       ForegroundColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}">
+       ForegroundColor="{AppThemeBinding Light={StaticResource OnHeaderLight}, Dark={StaticResource OnHeaderDark}}">
 
     <Shell.FlyoutHeader>
-        <VerticalStackLayout Padding="20,26,20,18"
-                             Background="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}">
+        <VerticalStackLayout x:Name="FlyoutHeaderPanel" Padding="20,26,20,18"
+                             BackgroundColor="{AppThemeBinding Light={StaticResource HeaderLight}, Dark={StaticResource HeaderDark}}">
             <Label Text="{localization:Translate AppTitle}" Style="{StaticResource PageTitle}" />
         </VerticalStackLayout>
     </Shell.FlyoutHeader>
+
+    <!-- With MauiAndroidSystemBarsUseMauiChrome in .NET 11, MAUI colours both system bars itself, so this behavior,
+         the NavigationBar setters and OnNavigated in AppShell.xaml.cs can be removed. -->
+    <Shell.Behaviors>
+        <!-- A behavior is not an Element, so an AppThemeBinding on it never updates; the header panel's colour does. -->
+        <toolkit:StatusBarBehavior StatusBarStyle="LightContent"
+                                   StatusBarColor="{Binding BackgroundColor, Source={x:Reference FlyoutHeaderPanel}, x:DataType=VerticalStackLayout}" />
+    </Shell.Behaviors>
 
     <Shell.ItemTemplate>
         <DataTemplate x:DataType="controls:DescribedFlyoutItem">

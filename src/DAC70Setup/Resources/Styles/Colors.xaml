@@ -23,6 +23,12 @@
     <Color x:Key="OnPrimaryLight">#FFFFFF</Color>
     <Color x:Key="OnPrimaryDark">#0B142B</Color>
 
+    <Color x:Key="HeaderLight">#2C46B8</Color>
+    <Color x:Key="HeaderDark">#1F2D57</Color>
+
+    <Color x:Key="OnHeaderLight">#F1F4FF</Color>
+    <Color x:Key="OnHeaderDark">#F1F4FF</Color>
+
     <Color x:Key="OnPrimaryContainerLight">#12315C</Color>
     <Color x:Key="OnPrimaryContainerDark">#C9D8FF</Color>
 

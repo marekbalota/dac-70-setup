@@ -4,8 +4,8 @@
         x:Class="DAC70Setup.MainWindow">
 
     <Window.TitleBar>
-        <TitleBar BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
-                  ForegroundColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+        <TitleBar BackgroundColor="{AppThemeBinding Light={StaticResource HeaderLight}, Dark={StaticResource HeaderDark}}"
+                  ForegroundColor="{AppThemeBinding Light={StaticResource OnHeaderLight}, Dark={StaticResource OnHeaderDark}}" />
     </Window.TitleBar>
 
 </Window>

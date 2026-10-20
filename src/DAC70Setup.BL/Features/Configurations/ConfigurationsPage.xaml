@@ -21,21 +21,21 @@
         <ToolbarItem Order="Primary" Priority="0" Text="{localization:Translate ConfigurationsCreate}" Command="{Binding CreateConfigurationCommand}">
             <ToolbarItem.IconImageSource>
                 <FontImageSource FontFamily="FA-S" Size="22" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Plus}"
-                                 Color="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+                                 Color="{AppThemeBinding Light={StaticResource OnHeaderLight}, Dark={StaticResource OnHeaderDark}}" />
             </ToolbarItem.IconImageSource>
         </ToolbarItem>
 
         <ToolbarItem Order="Primary" Priority="1" Text="{localization:Translate ConfigurationsRename}" Command="{Binding RenameConfigurationCommand}">
             <ToolbarItem.IconImageSource>
                 <FontImageSource FontFamily="FA-S" Size="22" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Pen}"
-                                 Color="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+                                 Color="{AppThemeBinding Light={StaticResource OnHeaderLight}, Dark={StaticResource OnHeaderDark}}" />
             </ToolbarItem.IconImageSource>
         </ToolbarItem>
 
         <ToolbarItem Order="Primary" Priority="2" Text="{localization:Translate ConfigurationsDelete}" Command="{Binding DeleteConfigurationCommand}">
             <ToolbarItem.IconImageSource>
                 <FontImageSource FontFamily="FA-S" Size="22" Glyph="{x:Static fontAwesome:AwesomeSolidIconFont.Trash}"
-                                 Color="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+                                 Color="{AppThemeBinding Light={StaticResource OnHeaderLight}, Dark={StaticResource OnHeaderDark}}" />
             </ToolbarItem.IconImageSource>
         </ToolbarItem>
     </ContentPage.ToolbarItems>
