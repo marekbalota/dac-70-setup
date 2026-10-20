@@ -72,12 +72,14 @@
             </VisualStateManager.VisualStateGroups>
 
             <CollectionView.EmptyView>
-                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="5" Padding="10">
-                    <Label Text="{x:Static fontAwesome:AwesomeSolidIconFont.Toolbox}" FontFamily="FA-S" FontSize="34" HorizontalOptions="Center"
-                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}" />
-                    <Label Text="{localization:Translate NoExistingConfiguration}"
-                           Style="{StaticResource EmptyStateTitle}" />
-                </VerticalStackLayout>
+                <Grid HorizontalOptions="Center" VerticalOptions="Center">
+                    <VerticalStackLayout Spacing="5" Padding="10">
+                        <Label Text="{x:Static fontAwesome:AwesomeSolidIconFont.Toolbox}" FontFamily="FA-S" FontSize="34" HorizontalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}" />
+                        <Label Text="{localization:Translate NoExistingConfiguration}"
+                               Style="{StaticResource EmptyStateTitle}" />
+                    </VerticalStackLayout>
+                </Grid>
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
