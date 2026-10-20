@@ -1,13 +1,11 @@
-﻿using DAC70Setup.Core.Models.Definitions;
-
-namespace DAC70Setup.BL.Controls.SettingSelection;
+﻿namespace DAC70Setup.BL.Controls.SettingSelection;
 
 public class SettingRowGroup : List<SettingRowItem>
 {
-    public SettingRowGroup(PanelType panel, IEnumerable<SettingRowItem> items) : base(items)
+    public SettingRowGroup(string panelName, IEnumerable<SettingRowItem> items) : base(items)
     {
-        Panel = panel;
+        PanelName = panelName;
     }
 
-    public PanelType Panel { get; }
+    public string PanelName { get; }
 }

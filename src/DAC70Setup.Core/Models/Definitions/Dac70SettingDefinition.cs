@@ -1,4 +1,5 @@
-﻿using DAC70Setup.Core.Models.Protocol;
+﻿using System.Diagnostics;
+using DAC70Setup.Core.Models.Protocol;
 using DAC70Setup.Core.Models.Values;
 
 namespace DAC70Setup.Core.Models.Definitions;
@@ -15,6 +16,16 @@ public abstract class Dac70SettingDefinition
     public SettingKey Key { get; }
 
     public PanelType Panel { get; }
+
+    public string PanelName => Panel switch
+    {
+        PanelType.Video => "Video",
+        PanelType.ImageAdjust => "Image Adjust",
+        PanelType.Audio => "Audio",
+        PanelType.ProcAmp => "Proc Amp",
+        PanelType.Setting => "Setting",
+        _ => throw new UnreachableException()
+    };
 
     public string Name { get; }
 

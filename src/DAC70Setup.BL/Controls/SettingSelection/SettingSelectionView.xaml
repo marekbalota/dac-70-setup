@@ -22,7 +22,7 @@
             <CollectionView.GroupHeaderTemplate>
                 <DataTemplate x:DataType="selection:SettingRowGroup">
                     <VerticalStackLayout>
-                        <Label Text="{Binding Panel}" Style="{StaticResource GroupHeader}" />
+                        <Label Text="{Binding PanelName}" Style="{StaticResource GroupHeader}" />
                         <BoxView Style="{StaticResource RowDivider}" />
                     </VerticalStackLayout>
                 </DataTemplate>

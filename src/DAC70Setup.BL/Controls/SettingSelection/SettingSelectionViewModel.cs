@@ -35,8 +35,7 @@ public partial class SettingSelectionViewModel : ObservableObject
             .ToList();
 
         Groups = _rows
-            .GroupBy(row => row.Definition.Panel)
-            .OrderBy(group => group.Key)
+            .GroupBy(row => row.Definition.PanelName)
             .Select(group => new SettingRowGroup(group.Key, group))
             .ToList();
 
