@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               xmlns:popups="clr-namespace:DAC70Setup.BL.Features.SelectedConfiguration.Popups.ExportConfiguration"
+               xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
+               xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
+               xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
+               x:Class="DAC70Setup.BL.Features.SelectedConfiguration.Popups.ExportConfiguration.ExportConfigurationPopup"
+               x:DataType="popups:ExportConfigurationPopupViewModel"
+               WidthRequest="340" Padding="20,20,20,16"
+               Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
+               CanBeDismissedByTappingOutsideOfPopup="{Binding IsSaving, Converter={toolkit:InvertedBoolConverter}}">
+
+    <VerticalStackLayout Spacing="16">
+        <Label Text="{localization:Translate ExportConfigurationTitle}" FontFamily="PlexSansSemiBold" FontSize="18"
+               TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+
+        <VerticalStackLayout Spacing="8" IsVisible="{Binding IsSaved, Converter={toolkit:InvertedBoolConverter}}">
+            <Label Text="{localization:Translate ExportConfigurationFormat}" Style="{StaticResource CardCaption}" />
+
+            <controls:ChoiceCard Title="{localization:Translate ExportConfigurationYaml}" IsChosen="{Binding IsYamlChosen}"
+                                 Command="{Binding ChooseYamlCommand}" />
+
+            <controls:ChoiceCard Title="{localization:Translate ExportConfigurationJson}" IsChosen="{Binding IsJsonChosen}"
+                                 Command="{Binding ChooseJsonCommand}" />
+        </VerticalStackLayout>
+
+        <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsSaving}">
+            <ActivityIndicator IsRunning="{Binding IsSaving}" WidthRequest="16" HeightRequest="16"
+                               Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+            <Label Text="{localization:Translate ExportConfigurationSaving}" Style="{StaticResource CardCaption}" VerticalOptions="Center" />
+        </HorizontalStackLayout>
+
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" IsVisible="{Binding IsSaved}">
+            <Label Grid.Column="0" Text="{x:Static fontAwesome:AwesomeSolidIconFont.CircleCheck}" FontFamily="FA-S" FontSize="20"
+                   TextColor="{AppThemeBinding Light={StaticResource SuccessLight}, Dark={StaticResource SuccessDark}}" />
+            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                <Label Text="{localization:Translate ExportConfigurationSaved}" Style="{StaticResource RowLabel}" />
+                <Label Text="{Binding SavedFilePath}" Style="{StaticResource CardCaption}" FontFamily="PlexMono" FontSize="12"
+                       LineBreakMode="CharacterWrap" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" IsVisible="{Binding ErrorMessage, Converter={toolkit:IsNotNullConverter}}">
+            <Label Grid.Column="0" Text="{x:Static fontAwesome:AwesomeSolidIconFont.CircleExclamation}" FontFamily="FA-S" FontSize="20"
+                   TextColor="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}" />
+            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                <Label Text="{localization:Translate ExportConfigurationFailed}" Style="{StaticResource RowLabel}" />
+                <Label Text="{Binding ErrorMessage}" Style="{StaticResource CardCaption}" FontSize="12"
+                       IsVisible="{Binding ErrorMessage, Converter={toolkit:IsStringNotNullOrEmptyConverter}}" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <HorizontalStackLayout Spacing="10" HorizontalOptions="End"
+                               IsVisible="{Binding IsSaved, Converter={toolkit:InvertedBoolConverter}}">
+            <Button Text="{localization:Translate ExportConfigurationCancel}" Command="{Binding CloseCommand}"
+                    Style="{StaticResource SecondaryButton}" StyleClass="DialogButton" />
+
+            <Button Text="{localization:Translate ExportConfigurationExport}" Command="{Binding ExportCommand}"
+                    Style="{StaticResource PrimaryButton}" StyleClass="DialogButton" />
+        </HorizontalStackLayout>
+
+        <Button Text="{localization:Translate ExportConfigurationClose}" Command="{Binding CloseCommand}" IsVisible="{Binding IsSaved}"
+                Style="{StaticResource PrimaryButton}" StyleClass="DialogButton" HorizontalOptions="End" />
+    </VerticalStackLayout>
+</toolkit:Popup>

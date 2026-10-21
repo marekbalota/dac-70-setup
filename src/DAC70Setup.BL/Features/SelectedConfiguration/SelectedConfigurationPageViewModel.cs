@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel;
+using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DAC70Setup.BL.Controls.DeviceStatus;
+using DAC70Setup.BL.Features.SelectedConfiguration.Popups.ExportConfiguration;
 using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Device;
 using DAC70Setup.BL.Services.Navigation;
@@ -13,14 +15,18 @@ public partial class SelectedConfigurationPageViewModel : ObservableObject
 {
     private readonly INavigationService _navigationService;
     private readonly DeviceConnectionService _deviceConnectionService;
+    private readonly IPopupService _popupService;
 
     public SelectedConfigurationPageViewModel(ConfigurationsService configurationsService,
         INavigationService navigationService,
-        DeviceConnectionService deviceConnectionService, ILocalizationResourceManager localizationResourceManager)
+        DeviceConnectionService deviceConnectionService,
+        IPopupService popupService,
+        ILocalizationResourceManager localizationResourceManager)
     {
         ConfigurationsService = configurationsService;
         _navigationService = navigationService;
         _deviceConnectionService = deviceConnectionService;
+        _popupService = popupService;
 
         DeviceStatus = new DeviceStatusBarViewModel(deviceConnectionService, localizationResourceManager);
 
@@ -52,10 +58,19 @@ public partial class SelectedConfigurationPageViewModel : ObservableObject
         return ConfigurationsService.SelectedConfiguration != null && _deviceConnectionService.CanSend;
     }
 
-    // TODO: save the selected configuration to a file the user picks.
     [RelayCommand]
-    private void ExportConfiguration()
+    private async Task ExportConfigurationAsync()
     {
+        if (ConfigurationsService.SelectedConfiguration is not { } configuration)
+        {
+            return;
+        }
+
+        await _popupService.ShowPopupAsync<ExportConfigurationPopupViewModel>(Shell.Current, options: null,
+            shellParameters: new Dictionary<string, object>
+            {
+                [ExportConfigurationPopupViewModel.ConfigurationParameter] = configuration
+            });
     }
 
     [RelayCommand(CanExecute = nameof(CanSynchronizeWithDevice))]

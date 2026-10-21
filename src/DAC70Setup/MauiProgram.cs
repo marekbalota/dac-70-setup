@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Storage;
 using DAC70Setup.BL;
 using DAC70Setup.BL.Controls.DeviceStatus.Resources;
 using DAC70Setup.BL.Controls.SettingSelection.Resources;
@@ -15,6 +16,8 @@ using DAC70Setup.BL.Features.EditConfiguration.Resources;
 using DAC70Setup.BL.Features.EditSetting;
 using DAC70Setup.BL.Features.EditSetting.Resources;
 using DAC70Setup.BL.Features.SelectedConfiguration;
+using DAC70Setup.BL.Features.SelectedConfiguration.Popups.ExportConfiguration;
+using DAC70Setup.BL.Features.SelectedConfiguration.Popups.ExportConfiguration.Resources;
 using DAC70Setup.BL.Features.SelectedConfiguration.Resources;
 using DAC70Setup.BL.Features.Settings;
 using DAC70Setup.BL.Features.Settings.Resources;
@@ -22,6 +25,7 @@ using DAC70Setup.BL.Mappers;
 using DAC70Setup.BL.Resources;
 using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Device;
+using DAC70Setup.BL.Services.ImportExport;
 using DAC70Setup.BL.Services.Navigation;
 using DAC70Setup.Core.Interfaces;
 using DAC70Setup.Data;
@@ -59,6 +63,7 @@ public static class MauiProgram
                 localization.AddResource(CreateConfigurationPopupSR.ResourceManager);
                 localization.AddResource(DeleteConfigurationPopupSR.ResourceManager);
                 localization.AddResource(RenameConfigurationPopupSR.ResourceManager);
+                localization.AddResource(ExportConfigurationPopupSR.ResourceManager);
                 localization.AddResource(EditSettingPageSR.ResourceManager);
                 localization.AddResource(SettingsPageSR.ResourceManager);
                 localization.RestoreLatestCulture(true);
@@ -82,6 +87,11 @@ public static class MauiProgram
         services.AddSingleton<SettingMapper>();
         services.AddSingleton<ConfigurationMapper>();
         services.AddSingleton<ConfigurationsService>();
+
+        services.AddSingleton<IFileSaver>(FileSaver.Default);
+        services.AddSingleton<YamlConfigurationSerializer>();
+        services.AddSingleton<JsonConfigurationSerializer>();
+        services.AddSingleton<ConfigurationImportExportService>();
 
         services.AddSingleton<IDac70Transport, UsbTransport>();
         services.AddSingleton<DeviceConnectionService>();
@@ -110,5 +120,6 @@ public static class MauiProgram
         services.AddTransientPopup<CreateConfigurationPopup, CreateConfigurationPopupViewModel>();
         services.AddTransientPopup<DeleteConfigurationPopup, DeleteConfigurationPopupViewModel>();
         services.AddTransientPopup<RenameConfigurationPopup, RenameConfigurationPopupViewModel>();
+        services.AddTransientPopup<ExportConfigurationPopup, ExportConfigurationPopupViewModel>();
     }
 }

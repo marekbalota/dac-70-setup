@@ -34,6 +34,7 @@
     <PackageReference Include="LocalizationResourceManager.Maui" Version="1.2.6" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.90" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.90" />
+    <PackageReference Include="YamlDotNet" Version="18.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -83,6 +84,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>EditSettingPageSR.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Features\SelectedConfiguration\Popups\ExportConfiguration\Resources\ExportConfigurationPopupSR.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ExportConfigurationPopupSR.resx</DependentUpon>
     </Compile>
     <Compile Update="Resources\AppShellSR.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -138,6 +144,10 @@
     <EmbeddedResource Update="Features\EditSetting\Resources\EditSettingPageSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>EditSettingPageSR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Features\SelectedConfiguration\Popups\ExportConfiguration\Resources\ExportConfigurationPopupSR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExportConfigurationPopupSR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\AppShellSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

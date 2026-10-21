@@ -12,6 +12,9 @@
         <!-- HidSharp opens the DAC-70 through IOKit; the sandbox refuses IOHIDDeviceOpen without this. -->
         <key>com.apple.security.device.usb</key>
         <true/>
+        <!-- Lets the app export and import configurations into/from a file. -->
+        <key>com.apple.security.files.user-selected.read-write</key>
+        <true/>
     </dict>
 </plist>
 
