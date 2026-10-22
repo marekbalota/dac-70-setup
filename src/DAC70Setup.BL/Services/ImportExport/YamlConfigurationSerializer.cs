@@ -1,18 +1,17 @@
 ﻿using System.Globalization;
 using System.Text;
-using DAC70Setup.Core.Models.Definitions;
 using DAC70Setup.Core.Models.Values;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
-using static DAC70Setup.BL.Services.ImportExport.IConfigurationSerializer;
+using YamlDotNet.RepresentationModel;
 
 namespace DAC70Setup.BL.Services.ImportExport;
 
-public class YamlConfigurationSerializer : IConfigurationSerializer
+public class YamlConfigurationSerializer : ConfigurationSerializer
 {
-    public string FileExtension => ".yaml";
+    public override string FileExtension => ".yaml";
 
-    public void Write(Stream stream, IReadOnlyList<Dac70SettingValue> values)
+    public override void Write(Stream stream, IReadOnlyList<Dac70SettingValue> values)
     {
         using var writer = new StreamWriter(stream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false), leaveOpen: true);
 
@@ -21,11 +20,7 @@ public class YamlConfigurationSerializer : IConfigurationSerializer
         emitter.Emit(new DocumentStart());
         emitter.Emit(new MappingStart());
 
-        var orderedValues = Dac70SettingCatalog.All
-            .Select(definition => values.FirstOrDefault(value => value.Definition.Key == definition.Key))
-            .OfType<Dac70SettingValue>();
-
-        foreach (var panel in orderedValues.GroupBy(value => value.Definition.PanelName))
+        foreach (var panel in GroupByPanel(values))
         {
             emitter.Emit(new Scalar(panel.Key));
             emitter.Emit(new MappingStart());
@@ -57,6 +52,56 @@ public class YamlConfigurationSerializer : IConfigurationSerializer
         emitter.Emit(new MappingEnd());
         emitter.Emit(new DocumentEnd(true));
         emitter.Emit(new StreamEnd());
+    }
+
+    protected override IEnumerable<(string Panel, string Key, string? Value)> ReadSettings(Stream stream)
+    {
+        var yaml = new YamlStream();
+
+        try
+        {
+            using var reader = new StreamReader(stream, leaveOpen: true);
+            yaml.Load(reader);
+        }
+        catch (Exception exception) when (exception is YamlException or ArgumentException)
+        {
+            throw new InvalidDataException(exception.Message, exception);
+        }
+
+        if (yaml.Documents.Count == 0)
+        {
+            yield break;
+        }
+
+        if (yaml.Documents[0].RootNode is not YamlMappingNode root)
+        {
+            throw new InvalidDataException("The file is not a mapping of panels.");
+        }
+
+        foreach (var (panelNode, settingsNode) in root.Children)
+        {
+            if (panelNode is not YamlScalarNode { Value: { } panel } || settingsNode is not YamlMappingNode settings)
+            {
+                continue;
+            }
+
+            foreach (var (keyNode, valueNode) in settings.Children)
+            {
+                if (keyNode is not YamlScalarNode { Value: { } key })
+                {
+                    continue;
+                }
+
+                if (valueNode is YamlScalarNode { Style: ScalarStyle.Plain, Value: null or "" or "~" or "null" or "Null" or "NULL" })
+                {
+                    continue;
+                }
+
+                string? text = (valueNode as YamlScalarNode)?.Value?.Trim();
+
+                yield return (panel.Trim(), key.Trim(), text);
+            }
+        }
     }
 
     private static void EmitSetting(Emitter emitter, string key, string value)

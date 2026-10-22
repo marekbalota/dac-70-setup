@@ -21,6 +21,6 @@ public partial class CreateConfigurationPopup : Popup<CreateConfigurationResult>
     {
         Closed -= OnClosed;
 
-        _viewModel.Dispose();
+        _viewModel.StopObservingDevice();
     }
 }

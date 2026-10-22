@@ -6,11 +6,13 @@
                xmlns:popups="clr-namespace:DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration"
                xmlns:models="clr-namespace:DAC70Setup.BL.Models"
                xmlns:controls="clr-namespace:DAC70Setup.BL.Controls"
+               xmlns:fontAwesome="clr-namespace:DAC70Setup.BL.Resources"
                xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
                x:Class="DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.CreateConfigurationPopup"
                x:DataType="popups:CreateConfigurationPopupViewModel"
                WidthRequest="340" Padding="20,20,20,16"
-               Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+               Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
+               CanBeDismissedByTappingOutsideOfPopup="{Binding IsReadingFile, Converter={toolkit:InvertedBoolConverter}}">
 
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="16">
         <Label Grid.Row="0" Text="{localization:Translate NewConfigurationTitle}" FontFamily="PlexSansSemiBold" FontSize="18"
@@ -39,6 +41,75 @@
 
                     <controls:ChoiceCard Title="{localization:Translate NewConfigurationEmpty}" Detail="{localization:Translate NewConfigurationEmptyDetail}"
                                          IsChosen="{Binding IsEmptyChosen}" Command="{Binding ChooseEmptyCommand}" />
+
+                    <controls:ChoiceCard Title="{localization:Translate NewConfigurationFromFile}" Detail="{localization:Translate NewConfigurationFromFileDetail}"
+                                         IsChosen="{Binding IsFileChosen}" Command="{Binding ChooseFromFileCommand}">
+                        <VerticalStackLayout Spacing="6" Margin="0,8,0,0">
+                            <Border Padding="12,9" StrokeShape="RoundRectangle 8" StrokeThickness="0"
+                                    Background="{AppThemeBinding Light={StaticResource SurfaceRaisedLight}, Dark={StaticResource SurfaceRaisedDark}}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ChooseFileCommand}" />
+                                </Border.GestureRecognizers>
+
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0" Text="{x:Static fontAwesome:AwesomeSolidIconFont.FileImport}" FontFamily="FA-S" FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="1" Text="{localization:Translate NewConfigurationChooseFile}" FontSize="14" VerticalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}"
+                                           IsVisible="{Binding ImportFileName, Converter={toolkit:IsStringNullOrEmptyConverter}}" />
+                                    <Label Grid.Column="1" Text="{Binding ImportFileName}" FontFamily="PlexMono" FontSize="13" LineBreakMode="MiddleTruncation"
+                                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}"
+                                           IsVisible="{Binding ImportFileName, Converter={toolkit:IsStringNotNullOrEmptyConverter}}" VerticalOptions="Center" />
+                                    <Label Grid.Column="2" Text="{localization:Translate NewConfigurationChangeFile}" FontFamily="PlexSansMedium" FontSize="13"
+                                           TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
+                                           IsVisible="{Binding ImportFileName, Converter={toolkit:IsStringNotNullOrEmptyConverter}}" VerticalOptions="Center" />
+                                </Grid>
+                            </Border>
+
+                            <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsReadingFile}">
+                                <ActivityIndicator IsRunning="{Binding IsReadingFile}" WidthRequest="16" HeightRequest="16"
+                                                   Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                <Label Text="{localization:Translate NewConfigurationFileReading}" Style="{StaticResource CardCaption}"
+                                       FontSize="12" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <Label Text="{localization:TranslateBinding ImportedValues.Count, TranslateFormat=NewConfigurationFileSettings, TranslateOne=NewConfigurationFileSettingsOne}"
+                                   FontFamily="PlexSansMedium" FontSize="12"
+                                   TextColor="{AppThemeBinding Light={StaticResource SuccessLight}, Dark={StaticResource SuccessDark}}"
+                                   IsVisible="{Binding ImportedValues, Converter={toolkit:IsNotNullConverter}}" />
+
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding ImportNotes}" Spacing="2">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="localization:LocalizedString">
+                                        <Label Text="{Binding Localized}" Style="{StaticResource CardCaption}" FontSize="12" />
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+
+                            <HorizontalStackLayout Spacing="6" HorizontalOptions="Start"
+                                                   IsVisible="{Binding ImportNotesToggle, Converter={toolkit:IsNotNullConverter}}">
+                                <HorizontalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ToggleImportNotesCommand}" />
+                                </HorizontalStackLayout.GestureRecognizers>
+
+                                <Label Text="{Binding ImportNotesToggle.Localized}" FontFamily="PlexSansMedium" FontSize="12" VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                <Label Text="{x:Static fontAwesome:AwesomeSolidIconFont.ChevronDown}" FontFamily="FA-S" FontSize="9" VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding AreAllImportNotesShown}" Value="True">
+                                            <Setter Property="Text" Value="{x:Static fontAwesome:AwesomeSolidIconFont.ChevronUp}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </HorizontalStackLayout>
+
+                            <Label Text="{Binding ImportError.Localized}" FontSize="12"
+                                   TextColor="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource ErrorDark}}"
+                                   IsVisible="{Binding ImportError, Converter={toolkit:IsNotNullConverter}}" />
+                        </VerticalStackLayout>
+                    </controls:ChoiceCard>
                 </VerticalStackLayout>
             </VerticalStackLayout>
         </ScrollView>

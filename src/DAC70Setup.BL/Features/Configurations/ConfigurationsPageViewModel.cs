@@ -103,6 +103,16 @@ public partial class ConfigurationsPageViewModel : ObservableObject
             return;
         }
 
+        if (result.Source == ConfigurationSource.File)
+        {
+            if (result.ImportedValues is { } importedValues)
+            {
+                await ConfigurationsService.CreateFromFileAsync(result.Name, importedValues);
+            }
+
+            return;
+        }
+
         if (_deviceConnectionService.SelectedDevice?.Snapshot.LastFullSync == null
             && !await _deviceConnectionService.SyncAsync())
         {

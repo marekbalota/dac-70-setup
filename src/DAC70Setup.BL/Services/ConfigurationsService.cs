@@ -63,10 +63,10 @@ public partial class ConfigurationsService : ObservableObject
 
     public Task CreateNewConfigurationAsync(string name)
     {
-        return CreateNewConfigurationAsync(name, []);
+        return CreateNewConfigurationAsyncInt(name, []);
     }
 
-    private async Task CreateNewConfigurationAsync(string name, IEnumerable<Dac70SettingValue> values)
+    private async Task CreateNewConfigurationAsyncInt(string name, IEnumerable<Dac70SettingValue> values)
     {
         var configuration = new Configuration(name, DateTime.Now);
 
@@ -87,12 +87,17 @@ public partial class ConfigurationsService : ObservableObject
             .OfType<Dac70SettingValue>()
             .ToList();
 
-        return CreateNewConfigurationAsync(name, values);
+        return CreateNewConfigurationAsyncInt(name, values);
     }
 
     public Task CreateCopyAsync(string name, Configuration copiedConfiguration)
     {
-        return CreateNewConfigurationAsync(name, copiedConfiguration.Settings);
+        return CreateNewConfigurationAsyncInt(name, copiedConfiguration.Settings);
+    }
+
+    public Task CreateFromFileAsync(string name, IEnumerable<Dac70SettingValue> importedValues)
+    {
+        return CreateNewConfigurationAsyncInt(name, importedValues);
     }
 
     public async Task RenameConfigurationAsync(Configuration configuration, string name)

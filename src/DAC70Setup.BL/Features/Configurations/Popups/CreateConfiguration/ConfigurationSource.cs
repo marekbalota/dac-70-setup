@@ -4,5 +4,6 @@ public enum ConfigurationSource
 {
     Empty,
     Device,
-    Copy
+    Copy,
+    File
 }

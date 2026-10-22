@@ -1,15 +1,13 @@
 ﻿using System.Text.Json;
-using DAC70Setup.Core.Models.Definitions;
 using DAC70Setup.Core.Models.Values;
-using static DAC70Setup.BL.Services.ImportExport.IConfigurationSerializer;
 
 namespace DAC70Setup.BL.Services.ImportExport;
 
-public class JsonConfigurationSerializer : IConfigurationSerializer
+public class JsonConfigurationSerializer : ConfigurationSerializer
 {
-    public string FileExtension => ".json";
+    public override string FileExtension => ".json";
 
-    public void Write(Stream stream, IReadOnlyList<Dac70SettingValue> values)
+    public override void Write(Stream stream, IReadOnlyList<Dac70SettingValue> values)
     {
         var options = new JsonWriterOptions
         {
@@ -17,15 +15,11 @@ public class JsonConfigurationSerializer : IConfigurationSerializer
             NewLine = "\n"
         };
 
-        var orderedValues = Dac70SettingCatalog.All
-            .Select(definition => values.FirstOrDefault(value => value.Definition.Key == definition.Key))
-            .OfType<Dac70SettingValue>();
-
         using (var writer = new Utf8JsonWriter(stream, options))
         {
             writer.WriteStartObject();
 
-            foreach (var panel in orderedValues.GroupBy(value => value.Definition.PanelName))
+            foreach (var panel in GroupByPanel(values))
             {
                 writer.WriteStartObject(panel.Key);
 
@@ -57,5 +51,55 @@ public class JsonConfigurationSerializer : IConfigurationSerializer
         }
 
         stream.WriteByte((byte)'\n');
+    }
+
+    protected override IEnumerable<(string Panel, string Key, string? Value)> ReadSettings(Stream stream)
+    {
+        JsonDocument document;
+        try
+        {
+            document = JsonDocument.Parse(stream, new JsonDocumentOptions
+            {
+                CommentHandling = JsonCommentHandling.Skip,
+                AllowTrailingCommas = true
+            });
+        }
+        catch (JsonException exception)
+        {
+            throw new InvalidDataException(exception.Message, exception);
+        }
+
+        using (document)
+        {
+            if (document.RootElement.ValueKind != JsonValueKind.Object)
+            {
+                throw new InvalidDataException("The file is not a mapping of panels.");
+            }
+
+            foreach (JsonProperty panel in document.RootElement.EnumerateObject())
+            {
+                if (panel.Value.ValueKind != JsonValueKind.Object)
+                {
+                    continue;
+                }
+
+                foreach (JsonProperty setting in panel.Value.EnumerateObject())
+                {
+                    if (setting.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+
+                    string? text = setting.Value.ValueKind switch
+                    {
+                        JsonValueKind.String => setting.Value.GetString()?.Trim(),
+                        JsonValueKind.Number or JsonValueKind.True or JsonValueKind.False => setting.Value.GetRawText(),
+                        _ => null
+                    };
+
+                    yield return (panel.Name.Trim(), setting.Name.Trim(), text);
+                }
+            }
+        }
     }
 }

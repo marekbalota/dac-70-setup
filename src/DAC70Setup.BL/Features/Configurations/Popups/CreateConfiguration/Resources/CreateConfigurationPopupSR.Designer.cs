@@ -69,7 +69,25 @@ namespace DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.Resou
                 return ResourceManager.GetString("NewConfigurationCancel", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change.
+        /// </summary>
+        public static string NewConfigurationChangeFile {
+            get {
+                return ResourceManager.GetString("NewConfigurationChangeFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose file….
+        /// </summary>
+        public static string NewConfigurationChooseFile {
+            get {
+                return ResourceManager.GetString("NewConfigurationChooseFile", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Copy a configuration.
         /// </summary>
@@ -78,7 +96,7 @@ namespace DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.Resou
                 return ResourceManager.GetString("NewConfigurationCopy", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Its settings and their values..
         /// </summary>
@@ -87,7 +105,7 @@ namespace DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.Resou
                 return ResourceManager.GetString("NewConfigurationCopyDetail", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to There is no configuration to copy yet..
         /// </summary>
@@ -125,6 +143,96 @@ namespace DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.Resou
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show fewer.
+        /// </summary>
+        public static string NewConfigurationFileFewerNotes {
+            get {
+                return ResourceManager.GetString("NewConfigurationFileFewerNotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} › {1}: &quot;{2}&quot; is not a valid value, skipped..
+        /// </summary>
+        public static string NewConfigurationFileInvalidValue {
+            get {
+                return ResourceManager.GetString("NewConfigurationFileInvalidValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} › {1} is missing, set to {2}..
+        /// </summary>
+        public static string NewConfigurationFileMissingValue {
+            get {
+                return ResourceManager.GetString("NewConfigurationFileMissingValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show {0} more.
+        /// </summary>
+        public static string NewConfigurationFileMoreNotes {
+            get {
+                return ResourceManager.GetString("NewConfigurationFileMoreNotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file has no DAC-70 settings..
+        /// </summary>
+        public static string NewConfigurationFileNoSettings {
+            get {
+                return ResourceManager.GetString("NewConfigurationFileNoSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reading the file….
+        /// </summary>
+        public static string NewConfigurationFileReading {
+            get {
+                return ResourceManager.GetString("NewConfigurationFileReading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} settings.
+        /// </summary>
+        public static string NewConfigurationFileSettings {
+            get {
+                return ResourceManager.GetString("NewConfigurationFileSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1 setting.
+        /// </summary>
+        public static string NewConfigurationFileSettingsOne {
+            get {
+                return ResourceManager.GetString("NewConfigurationFileSettingsOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} › {1}: unknown setting, skipped..
+        /// </summary>
+        public static string NewConfigurationFileUnknownSetting {
+            get {
+                return ResourceManager.GetString("NewConfigurationFileUnknownSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file could not be read. Check that it is a valid YAML or JSON..
+        /// </summary>
+        public static string NewConfigurationFileUnreadable {
+            get {
+                return ResourceManager.GetString("NewConfigurationFileUnreadable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Use data from the device.
         /// </summary>
         public static string NewConfigurationFromDevice {
@@ -157,6 +265,24 @@ namespace DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.Resou
         public static string NewConfigurationFromDeviceUnavailable {
             get {
                 return ResourceManager.GetString("NewConfigurationFromDeviceUnavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import from a file.
+        /// </summary>
+        public static string NewConfigurationFromFile {
+            get {
+                return ResourceManager.GetString("NewConfigurationFromFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accepts files of format YAML and JSON..
+        /// </summary>
+        public static string NewConfigurationFromFileDetail {
+            get {
+                return ResourceManager.GetString("NewConfigurationFromFileDetail", resourceCulture);
             }
         }
         

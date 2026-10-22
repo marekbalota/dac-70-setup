@@ -120,6 +120,12 @@
   <data name="NewConfigurationCancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="NewConfigurationChangeFile" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="NewConfigurationChooseFile" xml:space="preserve">
+    <value>Choose file…</value>
+  </data>
   <data name="NewConfigurationCreate" xml:space="preserve">
     <value>Create</value>
   </data>
@@ -138,6 +144,36 @@
   <data name="NewConfigurationEmptyDetail" xml:space="preserve">
     <value>Add settings on the Edit tab.</value>
   </data>
+  <data name="NewConfigurationFileFewerNotes" xml:space="preserve">
+    <value>Show fewer</value>
+  </data>
+  <data name="NewConfigurationFileInvalidValue" xml:space="preserve">
+    <value>{0} › {1}: "{2}" is not a valid value, skipped.</value>
+  </data>
+  <data name="NewConfigurationFileMissingValue" xml:space="preserve">
+    <value>{0} › {1} is missing, set to {2}.</value>
+  </data>
+  <data name="NewConfigurationFileMoreNotes" xml:space="preserve">
+    <value>Show {0} more</value>
+  </data>
+  <data name="NewConfigurationFileNoSettings" xml:space="preserve">
+    <value>The file has no DAC-70 settings.</value>
+  </data>
+  <data name="NewConfigurationFileReading" xml:space="preserve">
+    <value>Reading the file…</value>
+  </data>
+  <data name="NewConfigurationFileSettings" xml:space="preserve">
+    <value>{0} settings</value>
+  </data>
+  <data name="NewConfigurationFileSettingsOne" xml:space="preserve">
+    <value>1 setting</value>
+  </data>
+  <data name="NewConfigurationFileUnknownSetting" xml:space="preserve">
+    <value>{0} › {1}: unknown setting, skipped.</value>
+  </data>
+  <data name="NewConfigurationFileUnreadable" xml:space="preserve">
+    <value>The file could not be read. Check that it is a valid YAML or JSON.</value>
+  </data>
   <data name="NewConfigurationFromDevice" xml:space="preserve">
     <value>Use data from the device</value>
   </data>
@@ -149,6 +185,12 @@
   </data>
   <data name="NewConfigurationFromDeviceUnavailable" xml:space="preserve">
     <value>Connect a DAC-70 first.</value>
+  </data>
+  <data name="NewConfigurationFromFile" xml:space="preserve">
+    <value>Import from a file</value>
+  </data>
+  <data name="NewConfigurationFromFileDetail" xml:space="preserve">
+    <value>Accepts files of format YAML and JSON.</value>
   </data>
   <data name="NewConfigurationName" xml:space="preserve">
     <value>Name</value>

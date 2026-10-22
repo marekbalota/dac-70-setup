@@ -88,7 +88,8 @@ public static class MauiProgram
         services.AddSingleton<ConfigurationMapper>();
         services.AddSingleton<ConfigurationsService>();
 
-        services.AddSingleton<IFileSaver>(FileSaver.Default);
+        services.AddSingleton(FileSaver.Default);
+        services.AddSingleton(FilePicker.Default);
         services.AddSingleton<YamlConfigurationSerializer>();
         services.AddSingleton<JsonConfigurationSerializer>();
         services.AddSingleton<ConfigurationImportExportService>();

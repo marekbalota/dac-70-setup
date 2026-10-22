@@ -120,6 +120,12 @@
   <data name="NewConfigurationCancel" xml:space="preserve">
     <value>Zrušit</value>
   </data>
+  <data name="NewConfigurationChangeFile" xml:space="preserve">
+    <value>Změnit</value>
+  </data>
+  <data name="NewConfigurationChooseFile" xml:space="preserve">
+    <value>Vybrat soubor…</value>
+  </data>
   <data name="NewConfigurationCreate" xml:space="preserve">
     <value>Vytvořit</value>
   </data>
@@ -138,6 +144,36 @@
   <data name="NewConfigurationEmptyDetail" xml:space="preserve">
     <value>Nastavení přidáte na kartě Editace.</value>
   </data>
+  <data name="NewConfigurationFileFewerNotes" xml:space="preserve">
+    <value>Zobrazit méně</value>
+  </data>
+  <data name="NewConfigurationFileInvalidValue" xml:space="preserve">
+    <value>{0} › {1}: „{2}“ není platná hodnota, přeskočeno.</value>
+  </data>
+  <data name="NewConfigurationFileMissingValue" xml:space="preserve">
+    <value>{0} › {1} chybí, nastaveno na {2}.</value>
+  </data>
+  <data name="NewConfigurationFileMoreNotes" xml:space="preserve">
+    <value>Zobrazit dalších {0}</value>
+  </data>
+  <data name="NewConfigurationFileNoSettings" xml:space="preserve">
+    <value>Soubor neobsahuje žádná nastavení pro DAC-70.</value>
+  </data>
+  <data name="NewConfigurationFileReading" xml:space="preserve">
+    <value>Načítání souboru…</value>
+  </data>
+  <data name="NewConfigurationFileSettings" xml:space="preserve">
+    <value>{0} nastavení</value>
+  </data>
+  <data name="NewConfigurationFileSettingsOne" xml:space="preserve">
+    <value>1 nastavení</value>
+  </data>
+  <data name="NewConfigurationFileUnknownSetting" xml:space="preserve">
+    <value>{0} › {1}: neznámé nastavení, přeskočeno.</value>
+  </data>
+  <data name="NewConfigurationFileUnreadable" xml:space="preserve">
+    <value>Soubor se nepodařilo načíst. Zkontrolujte, že jde o platný YAML nebo JSON.</value>
+  </data>
   <data name="NewConfigurationFromDevice" xml:space="preserve">
     <value>Použít data ze zařízení</value>
   </data>
@@ -149,6 +185,12 @@
   </data>
   <data name="NewConfigurationFromDeviceUnavailable" xml:space="preserve">
     <value>Nejdřív připojte DAC-70.</value>
+  </data>
+  <data name="NewConfigurationFromFile" xml:space="preserve">
+    <value>Importovat ze souboru</value>
+  </data>
+  <data name="NewConfigurationFromFileDetail" xml:space="preserve">
+    <value>Podporuje soubory typu YAML a JSON.</value>
   </data>
   <data name="NewConfigurationName" xml:space="preserve">
     <value>Název</value>
