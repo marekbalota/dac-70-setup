@@ -18,6 +18,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
+    <SatelliteResourceLanguages>en;cs</SatelliteResourceLanguages>
+
     <MauiXamlInflator>SourceGen</MauiXamlInflator>
     <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
 
@@ -92,7 +94,6 @@
 
     <!-- Images -->
     <MauiImage Include="Resources\Images\*" />
-    <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 
     <!-- Custom Fonts -->
     <MauiFont Include="Resources\Fonts\*" />
