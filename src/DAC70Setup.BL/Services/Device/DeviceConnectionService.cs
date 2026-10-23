@@ -14,10 +14,6 @@ public partial class DeviceConnectionService : ObservableObject
 {
     private const string SelectedTransportIdKey = "SelectedTransportId";
 
-    private const int ReplyTimeoutMilliseconds = 3000;
-    private const int SkippedReports = 10;
-    private const int ComparedReplyBytes = 8;
-
     private const int DeviceInfoReadCount = 2;
 
     private readonly SemaphoreSlim _semaphore = new(1, 1);
@@ -305,7 +301,7 @@ public partial class DeviceConnectionService : ObservableObject
 
         try
         {
-            Progress = new TransferProgress(0, total, Dac70FirmwareVersion.Name);
+            Progress = new TransferProgress(0, total, Dac70InputSignal.Name);
             State = DeviceState.Syncing;
 
             try
@@ -323,48 +319,42 @@ public partial class DeviceConnectionService : ObservableObject
                 return false;
             }
 
-            byte[]? previousReply = null;
+            var session = await Dac70ReadSession.CreateAsync(connection, transferCancellation.Token);
             int completed = 0;
 
-            var firmwareReply = await RequestAsync(connection, Dac70FirmwareVersion.GetReadPayload(), previousReply, transferCancellation.Token);
+            var signalReply = await session.ReadAsync(Dac70InputSignal.GetReadPayload(), transferCancellation.Token);
+            completed++;
+
+            Progress = new TransferProgress(completed, total, Dac70FirmwareVersion.Name);
+            var firmwareReply = await session.ReadFirmwareVersionAsync(transferCancellation.Token);
             completed++;
 
             if (firmwareReply != null)
             {
-                previousReply = firmwareReply;
-
                 if (Dac70FirmwareVersion.FromReadResponse(firmwareReply) is { } firmwareVersion)
                 {
                     snapshot.FirmwareVersion = firmwareVersion;
                 }
+
+                // If null the device was repeating the Input Signal at the start and needs to be read again
+                signalReply ??= await session.ReadAsync(Dac70InputSignal.GetReadPayload(), transferCancellation.Token);
             }
 
-            Progress = new TransferProgress(completed, total, Dac70InputSignal.Name);
-            var signalReply = await RequestAsync(connection, Dac70InputSignal.GetReadPayload(), previousReply, transferCancellation.Token);
-            completed++;
-
-            if (signalReply != null)
+            if (signalReply != null && Dac70InputSignal.FromReadResponse(signalReply) is { } inputSignal)
             {
-                previousReply = signalReply;
-
-                if (Dac70InputSignal.FromReadResponse(signalReply) is { } inputSignal)
-                {
-                    snapshot.InputSignal = inputSignal;
-                }
+                snapshot.InputSignal = inputSignal;
             }
 
             foreach (var request in requests)
             {
                 Progress = new TransferProgress(completed, total, request[0].Name);
-                var reply = await RequestAsync(connection, request[0].GetReadPayload(), previousReply, transferCancellation.Token);
+                var reply = await session.ReadAsync(request[0].GetReadPayload(), transferCancellation.Token);
                 completed += request.Count;
 
                 if (reply == null)
                 {
                     continue;
                 }
-
-                previousReply = reply;
 
                 foreach (var definition in request)
                 {
@@ -404,51 +394,6 @@ public partial class DeviceConnectionService : ObservableObject
         }
 
         return isComplete;
-    }
-
-    private static async Task<byte[]?> RequestAsync(IDac70Connection connection, byte[] payload, byte[]? previousReply,
-        CancellationToken cancellationToken)
-    {
-        await connection.WriteReportAsync(payload, cancellationToken);
-
-        return await ReadReplyAsync(connection, previousReply, cancellationToken);
-    }
-
-    private static async Task<byte[]?> ReadReplyAsync(IDac70Connection connection, byte[]? previousReply, CancellationToken cancellationToken)
-    {
-        using var replyCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        replyCancellation.CancelAfter(ReplyTimeoutMilliseconds);
-
-        byte[]? reply = null;
-        int count = 0;
-
-        try
-        {
-            while (true)
-            {
-                var report = await connection.ReadReportAsync(replyCancellation.Token);
-                count++;
-
-                if (previousReply == null && count < SkippedReports)
-                {
-                    continue;
-                }
-
-                if (previousReply != null && report.AsSpan(0, ComparedReplyBytes).SequenceEqual(previousReply.AsSpan(0, ComparedReplyBytes)))
-                {
-                    continue;
-                }
-
-                previousReply = report;
-                reply = report;
-            }
-        }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-        {
-            // The reply timeout exceeded
-        }
-
-        return reply;
     }
 
     private async Task SelectDeviceAsyncInt(IDac70Transport transport, AttachedDevice device)
