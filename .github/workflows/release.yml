@@ -143,5 +143,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: >
           gh release create "v$env:VERSION" --draft --verify-tag
-          --title "DAC-70 Setup $env:VERSION" --notes ""
+          --title "v$env:VERSION" --notes ""
           (Get-ChildItem release).FullName
