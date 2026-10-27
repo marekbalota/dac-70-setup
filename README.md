@@ -130,3 +130,7 @@ The DAC-70 communicates as a USB HID device (vendor ID `0x1164`, product ID `0xB
 ## License
 
 Copyright 2026 Marek Balota. Released under the BSD 3-Clause License, see [LICENSE](LICENSE).
+
+This is an independent project, not affiliated with, endorsed by or sponsored by Datavideo.
+Datavideo is a registered trademark of Datavideo Technologies Co., Ltd. The names Datavideo,
+DAC-70 and DAC-70 Center are used only to identify the supported device and the software it replaces.
