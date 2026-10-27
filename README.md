@@ -1,8 +1,8 @@
 # DAC-70 Setup
 
 A cross-platform app for configuring the [Datavideo DAC-70](https://www.datavideo.com/eu/product/DAC-70)
-cross converter over USB. It replaces __DAC-70 Center__, the official Windows-only setup
-utility, and runs on Android and Windows.
+cross converter over USB. Its settings can be kept as named
+configurations and applied to the converter again at any time.
 
 The app is built with .NET MAUI as part of a bachelor's thesis at the Faculty of Informatics,
 Masaryk University.
@@ -110,6 +110,8 @@ The DAC-70 communicates as a USB HID device (vendor ID `0x1164`, product ID `0xB
 
 ## Known limitations
 
+- Firmware updates and factory reset are not supported. Use __DAC-70 Center__, the official
+  Windows-only setup utility, for those.
 - Settings of the `61` type cannot be read back from the device. The app marks them as
   *not readable*; they can still be edited and sent to the device.
 - The macOS build has not been tested with a real device yet.
@@ -133,4 +135,4 @@ Copyright 2026 Marek Balota. Released under the BSD 3-Clause License, see [LICEN
 
 This is an independent project, not affiliated with, endorsed by or sponsored by Datavideo.
 Datavideo is a registered trademark of Datavideo Technologies Co., Ltd. The names Datavideo,
-DAC-70 and DAC-70 Center are used only to identify the supported device and the software it replaces.
+DAC-70 and DAC-70 Center are used only to identify the supported device and its official software.
