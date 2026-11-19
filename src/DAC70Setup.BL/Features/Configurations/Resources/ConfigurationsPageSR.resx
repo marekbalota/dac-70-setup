@@ -138,4 +138,10 @@
   <data name="ConfigurationsRename" xml:space="preserve">
     <value>Rename</value>
   </data>
+  <data name="DeleteConfigurationTitle" xml:space="preserve">
+    <value>Delete configuration</value>
+  </data>
+  <data name="DeleteConfigurationMessage" xml:space="preserve">
+    <value>Are you sure you want to delete the configuration "{0}"?</value>
+  </data>
 </root>

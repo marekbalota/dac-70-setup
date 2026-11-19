@@ -178,7 +178,7 @@
     <value>Použít data ze zařízení</value>
   </data>
   <data name="NewConfigurationFromDeviceNotSynced" xml:space="preserve">
-    <value>Nejdřív se synchronizuje s DAC-70. Trvá to asi 45 sekund.</value>
+    <value>Nejdřív se synchronizuje s DAC-70.</value>
   </data>
   <data name="NewConfigurationFromDeviceSynced" xml:space="preserve">
     <value>Data z poslední synchronizace.</value>

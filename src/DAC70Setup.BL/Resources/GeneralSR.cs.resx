@@ -104,7 +104,10 @@
     <data name="GoToConfigurations" xml:space="preserve">
         <value>Přejít na konfigurace</value>
     </data>
-    <data name="SynchronizeWithDevice" xml:space="preserve">
-        <value>Synchronizovat se zařízením</value>
+    <data name="DownloadFromDevice" xml:space="preserve">
+        <value>Stáhnout ze zařízení</value>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Zrušit</value>
     </data>
 </root>

@@ -70,11 +70,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CreateConfigurationPopupSR.resx</DependentUpon>
     </Compile>
-    <Compile Update="Features\Configurations\Popups\DeleteConfiguration\Resources\DeleteConfigurationPopupSR.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>DeleteConfigurationPopupSR.resx</DependentUpon>
-    </Compile>
     <Compile Update="Features\EditConfiguration\Resources\EditConfigurationPageSR.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -132,10 +127,6 @@
     <EmbeddedResource Update="Features\Configurations\Popups\CreateConfiguration\Resources\CreateConfigurationPopupSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>CreateConfigurationPopupSR.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Features\Configurations\Popups\DeleteConfiguration\Resources\DeleteConfigurationPopupSR.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>DeleteConfigurationPopupSR.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Features\EditConfiguration\Resources\EditConfigurationPageSR.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

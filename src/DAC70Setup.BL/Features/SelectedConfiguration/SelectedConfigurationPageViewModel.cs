@@ -2,8 +2,10 @@
 using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DAC70Setup.BL.Controls.Confirmation;
 using DAC70Setup.BL.Controls.DeviceStatus;
 using DAC70Setup.BL.Features.SelectedConfiguration.Popups.ExportConfiguration;
+using DAC70Setup.BL.Features.SelectedConfiguration.Resources;
 using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Device;
 using DAC70Setup.BL.Services.Navigation;
@@ -73,13 +75,33 @@ public partial class SelectedConfigurationPageViewModel : ObservableObject
             });
     }
 
-    [RelayCommand(CanExecute = nameof(CanSynchronizeWithDevice))]
-    private async Task SynchronizeWithDeviceAsync()
+    [RelayCommand(CanExecute = nameof(CanUseDevice))]
+    private async Task DownloadFromDeviceAsync()
     {
         await _deviceConnectionService.SyncAsync();
     }
 
-    private bool CanSynchronizeWithDevice()
+    [RelayCommand(CanExecute = nameof(CanUseDevice))]
+    private async Task FactoryResetAsync()
+    {
+        var popupResult = await _popupService.ShowPopupAsync<ConfirmationPopupViewModel, bool>(
+            Shell.Current,
+            shellParameters: new Dictionary<string, object>
+            {
+                [ConfirmationPopupViewModel.TitleKeyParameter] = nameof(SelectedConfigurationPageSR.FactoryReset),
+                [ConfirmationPopupViewModel.MessageKeyParameter] = nameof(SelectedConfigurationPageSR.FactoryResetConfirmMessage),
+                [ConfirmationPopupViewModel.ConfirmTextKeyParameter] = nameof(SelectedConfigurationPageSR.FactoryResetConfirmAccept)
+            });
+
+        if (popupResult.WasDismissedByTappingOutsideOfPopup || popupResult.Result != true)
+        {
+            return;
+        }
+
+        await _deviceConnectionService.FactoryResetAsync();
+    }
+
+    private bool CanUseDevice()
     {
         return _deviceConnectionService.CanSend;
     }
@@ -87,6 +109,7 @@ public partial class SelectedConfigurationPageViewModel : ObservableObject
     private void OnSendConditionsChanged(object? sender, PropertyChangedEventArgs e)
     {
         SendToDeviceCommand.NotifyCanExecuteChanged();
-        SynchronizeWithDeviceCommand.NotifyCanExecuteChanged();
+        DownloadFromDeviceCommand.NotifyCanExecuteChanged();
+        FactoryResetCommand.NotifyCanExecuteChanged();
     }
 }

@@ -71,6 +71,33 @@ namespace DAC70Setup.BL.Features.SelectedConfiguration.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Factory reset.
+        /// </summary>
+        public static string FactoryReset {
+            get {
+                return ResourceManager.GetString("FactoryReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset.
+        /// </summary>
+        public static string FactoryResetConfirmAccept {
+            get {
+                return ResourceManager.GetString("FactoryResetConfirmAccept", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All settings on the selected DAC-70 will be restored to their factory defaults. The device will disconnect and restart..
+        /// </summary>
+        public static string FactoryResetConfirmMessage {
+            get {
+                return ResourceManager.GetString("FactoryResetConfirmMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Operations.
         /// </summary>
         public static string SelectedConfigurationTitle {

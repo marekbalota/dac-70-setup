@@ -138,4 +138,10 @@
   <data name="ConfigurationsRename" xml:space="preserve">
     <value>Přejmenovat</value>
   </data>
+  <data name="DeleteConfigurationTitle" xml:space="preserve">
+    <value>Smazat konfiguraci</value>
+  </data>
+  <data name="DeleteConfigurationMessage" xml:space="preserve">
+    <value>Opravdu chcete smazat konfiguraci „{0}“?</value>
+  </data>
 </root>

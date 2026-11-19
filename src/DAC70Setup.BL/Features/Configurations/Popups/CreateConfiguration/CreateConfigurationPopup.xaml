@@ -10,13 +10,10 @@
                xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
                x:Class="DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.CreateConfigurationPopup"
                x:DataType="popups:CreateConfigurationPopupViewModel"
-               WidthRequest="340" Padding="20,20,20,16"
-               Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
                CanBeDismissedByTappingOutsideOfPopup="{Binding IsReadingFile, Converter={toolkit:InvertedBoolConverter}}">
 
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="16">
-        <Label Grid.Row="0" Text="{localization:Translate NewConfigurationTitle}" FontFamily="PlexSansSemiBold" FontSize="18"
-               TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+        <Label Grid.Row="0" Text="{localization:Translate NewConfigurationTitle}" Style="{StaticResource PopupTitle}" />
 
         <ScrollView Grid.Row="1" VerticalOptions="Start">
             <VerticalStackLayout Spacing="16">

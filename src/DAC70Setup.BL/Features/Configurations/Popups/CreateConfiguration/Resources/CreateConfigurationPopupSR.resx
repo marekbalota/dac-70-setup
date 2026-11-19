@@ -178,7 +178,7 @@
     <value>Use data from the device</value>
   </data>
   <data name="NewConfigurationFromDeviceNotSynced" xml:space="preserve">
-    <value>Synchronizes with the DAC-70 first. Takes about 45 seconds.</value>
+    <value>Synchronizes with the DAC-70 first.</value>
   </data>
   <data name="NewConfigurationFromDeviceSynced" xml:space="preserve">
     <value>Data from the last sync.</value>

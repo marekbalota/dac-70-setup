@@ -1,10 +1,11 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DAC70Setup.BL.Controls.Confirmation;
 using DAC70Setup.BL.Controls.DeviceStatus;
 using DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration;
-using DAC70Setup.BL.Features.Configurations.Popups.DeleteConfiguration;
 using DAC70Setup.BL.Features.Configurations.Popups.RenameConfiguration;
+using DAC70Setup.BL.Features.Configurations.Resources;
 using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Device;
@@ -156,11 +157,16 @@ public partial class ConfigurationsPageViewModel : ObservableObject
             return;
         }
 
-        var popupResult = await _popupService.ShowPopupAsync<DeleteConfigurationPopupViewModel, bool>(
+        string configurationName = configuration.Name;
+
+        var popupResult = await _popupService.ShowPopupAsync<ConfirmationPopupViewModel, bool>(
             Shell.Current,
             shellParameters: new Dictionary<string, object>
             {
-                [DeleteConfigurationPopupViewModel.ConfigurationNameParameter] = configuration.Name
+                [ConfirmationPopupViewModel.TitleKeyParameter] = nameof(ConfigurationsPageSR.DeleteConfigurationTitle),
+                [ConfirmationPopupViewModel.MessageKeyParameter] = nameof(ConfigurationsPageSR.DeleteConfigurationMessage),
+                [ConfirmationPopupViewModel.MessageArgumentsParameter] = new object[] { configurationName },
+                [ConfirmationPopupViewModel.ConfirmTextKeyParameter] = nameof(ConfigurationsPageSR.ConfigurationsDelete)
             });
 
         if (popupResult.WasDismissedByTappingOutsideOfPopup || popupResult.Result != true)

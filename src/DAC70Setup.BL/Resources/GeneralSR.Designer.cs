@@ -61,11 +61,11 @@ namespace DAC70Setup.BL.Resources {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Synchronize with device.
+        ///   Looks up a localized string similar to Download from device.
         /// </summary>
-        public static string SynchronizeWithDevice {
+        public static string DownloadFromDevice {
             get {
-                return ResourceManager.GetString("SynchronizeWithDevice", resourceCulture);
+                return ResourceManager.GetString("DownloadFromDevice", resourceCulture);
             }
         }
 
@@ -84,6 +84,15 @@ namespace DAC70Setup.BL.Resources {
         public static string NoConfigurationSelected {
             get {
                 return ResourceManager.GetString("NoConfigurationSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
             }
         }
     }
