@@ -1,7 +1,7 @@
 ﻿using DAC70Setup.Core.Interfaces;
 using DAC70Setup.Core.Models.Protocol;
 
-namespace DAC70Setup.BL.Services.Device;
+namespace DAC70Setup.Core.Protocol;
 
 /// <summary>
 /// The DAC-70 repeats its last reply and a reply does not name its request,
