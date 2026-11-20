@@ -16,14 +16,17 @@ public partial class ConfigurationsService : ObservableObject
     private readonly IConfigurationRepository _repository;
     private readonly ConfigurationMapper _configurationMapper;
     private readonly SettingMapper _settingMapper;
+    private readonly IPreferences _preferences;
 
     public ConfigurationsService(IConfigurationRepository repository,
         ConfigurationMapper configurationMapper,
-        SettingMapper settingMapper)
+        SettingMapper settingMapper,
+        IPreferences preferences)
     {
         _repository = repository;
         _configurationMapper = configurationMapper;
         _settingMapper = settingMapper;
+        _preferences = preferences;
     }
 
     public ObservableCollection<Configuration> Configurations { get; } = [];
@@ -54,7 +57,7 @@ public partial class ConfigurationsService : ObservableObject
             Configurations.Add(_configurationMapper.Map(configuration));
         }
 
-        string storedId = Preferences.Default.Get(SelectedConfigurationIdKey, string.Empty);
+        string storedId = _preferences.Get(SelectedConfigurationIdKey, string.Empty);
         if (Guid.TryParse(storedId, out Guid id))
         {
             SelectedConfiguration = Configurations.FirstOrDefault(configuration => configuration.Id == id);
@@ -115,14 +118,14 @@ public partial class ConfigurationsService : ObservableObject
         if (SelectedConfiguration == configuration)
         {
             SelectedConfiguration = null;
-            Preferences.Default.Remove(SelectedConfigurationIdKey);
+            _preferences.Remove(SelectedConfigurationIdKey);
         }
     }
 
     public void SelectConfiguration(Configuration configuration)
     {
         SelectedConfiguration = configuration;
-        Preferences.Default.Set(SelectedConfigurationIdKey, configuration.Id.ToString());
+        _preferences.Set(SelectedConfigurationIdKey, configuration.Id.ToString());
     }
 
     public Task SaveSettingAsync(Configuration configuration, Dac70SettingValue value)

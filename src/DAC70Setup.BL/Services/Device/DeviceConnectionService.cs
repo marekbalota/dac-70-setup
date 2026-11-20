@@ -7,6 +7,7 @@ using DAC70Setup.Core.Models;
 using DAC70Setup.Core.Models.Definitions;
 using DAC70Setup.Core.Models.Protocol;
 using DAC70Setup.Core.Models.Values;
+using DAC70Setup.Core.Protocol;
 
 namespace DAC70Setup.BL.Services.Device;
 
@@ -17,15 +18,20 @@ public partial class DeviceConnectionService : ObservableObject
     private const int DeviceInfoReadCount = 2;
 
     private readonly SemaphoreSlim _semaphore = new(1, 1);
+    private readonly IPreferences _preferences;
+    private readonly IDispatcher _dispatcher;
 
     private CancellationTokenSource? _transferCancellation;
 
-    public DeviceConnectionService(IEnumerable<IDac70Transport> transports)
+    public DeviceConnectionService(IEnumerable<IDac70Transport> transports, IPreferences preferences, IDispatcher dispatcher)
     {
+        _preferences = preferences;
+        _dispatcher = dispatcher;
+
         Transports = transports.Where(transport => transport.IsSupported).ToList();
         Devices = new ReadOnlyObservableCollection<AttachedDevice>(_devices);
 
-        string savedId = Preferences.Default.Get(SelectedTransportIdKey, string.Empty);
+        string savedId = _preferences.Get(SelectedTransportIdKey, string.Empty);
         SelectedTransport = Transports.FirstOrDefault(transport => transport.Id == savedId)
             ?? Transports.FirstOrDefault();
 
@@ -103,7 +109,7 @@ public partial class DeviceConnectionService : ObservableObject
 
             SelectedTransport = transport;
             transport.DevicesChanged += OnDevicesChanged;
-            Preferences.Default.Set(SelectedTransportIdKey, transport.Id);
+            _preferences.Set(SelectedTransportIdKey, transport.Id);
 
             SelectedDevice = null;
             _devices.Clear();
@@ -528,6 +534,6 @@ public partial class DeviceConnectionService : ObservableObject
 
     private void OnDevicesChanged(object? sender, EventArgs e)
     {
-        MainThread.BeginInvokeOnMainThread(() => _ = RefreshDevicesAsync());
+        _dispatcher.Dispatch(() => _ = RefreshDevicesAsync());
     }
 }

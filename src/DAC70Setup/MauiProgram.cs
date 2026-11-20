@@ -86,6 +86,7 @@ public static class MauiProgram
     {
         string databasePath = Path.Combine(FileSystem.AppDataDirectory, "dac70setup.db3");
         services.AddSingleton<IConfigurationRepository>(new ConfigurationRepository(databasePath));
+        services.AddSingleton(Preferences.Default);
 
         services.AddSingleton<SettingMapper>();
         services.AddSingleton<ConfigurationMapper>();
