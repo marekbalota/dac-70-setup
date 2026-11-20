@@ -8,13 +8,10 @@
                xmlns:localization="clr-namespace:LocalizationResourceManager.Maui;assembly=LocalizationResourceManager.Maui"
                x:Class="DAC70Setup.BL.Features.SelectedConfiguration.Popups.ExportConfiguration.ExportConfigurationPopup"
                x:DataType="popups:ExportConfigurationPopupViewModel"
-               WidthRequest="340" Padding="20,20,20,16"
-               Background="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
                CanBeDismissedByTappingOutsideOfPopup="{Binding IsSaving, Converter={toolkit:InvertedBoolConverter}}">
 
     <VerticalStackLayout Spacing="16">
-        <Label Text="{localization:Translate ExportConfigurationTitle}" FontFamily="PlexSansSemiBold" FontSize="18"
-               TextColor="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+        <Label Text="{localization:Translate ExportConfigurationTitle}" Style="{StaticResource PopupTitle}" />
 
         <VerticalStackLayout Spacing="8" IsVisible="{Binding IsSaved, Converter={toolkit:InvertedBoolConverter}}">
             <Label Text="{localization:Translate ExportConfigurationFormat}" Style="{StaticResource CardCaption}" />

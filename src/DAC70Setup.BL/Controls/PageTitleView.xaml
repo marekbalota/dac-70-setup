@@ -7,18 +7,18 @@
              x:Class="DAC70Setup.BL.Controls.PageTitleView"
              x:Name="Root">
 
-    <HorizontalStackLayout BindingContext="{x:Reference Root}" x:DataType="controls:PageTitleView" Spacing="10"
-                           Margin="{OnPlatform Default=0, WinUI='10,0,0,0'}" VerticalOptions="Center">
-        <Label Text="{x:Static fontAwesome:AwesomeSolidIconFont.Sliders}" Style="{StaticResource PageTitle}"
+    <Grid BindingContext="{x:Reference Root}" x:DataType="controls:PageTitleView" ColumnDefinitions="Auto,*" ColumnSpacing="10"
+          Margin="{OnPlatform Default=0, WinUI='10,0,0,0'}" VerticalOptions="Center">
+        <Label Grid.Column="0" Text="{x:Static fontAwesome:AwesomeSolidIconFont.Sliders}" Style="{StaticResource PageTitle}"
                FontFamily="FA-S" FontSize="{OnPlatform Default=16, WinUI=18}" VerticalOptions="Center"
                IsVisible="{Binding ConfigurationName, Converter={toolkit:IsStringNotNullOrEmptyConverter}}" />
 
-        <Label Text="{Binding ConfigurationName}" Style="{StaticResource PageTitle}" FontSize="{OnPlatform Default=20, WinUI=24}"
+        <Label Grid.Column="1" Text="{Binding ConfigurationName}" Style="{StaticResource PageTitle}" FontSize="{OnPlatform Default=20, WinUI=24}"
                LineBreakMode="TailTruncation" VerticalOptions="Center"
                IsVisible="{Binding ConfigurationName, Converter={toolkit:IsStringNotNullOrEmptyConverter}}" />
 
-        <Label Text="{Binding Title}" Style="{StaticResource PageTitle}" FontSize="{OnPlatform Default=20, WinUI=24}"
+        <Label Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Title}" Style="{StaticResource PageTitle}" FontSize="{OnPlatform Default=20, WinUI=24}"
                LineBreakMode="TailTruncation" VerticalOptions="Center"
                IsVisible="{Binding ConfigurationName, Converter={toolkit:IsStringNullOrEmptyConverter}}" />
-    </HorizontalStackLayout>
+    </Grid>
 </ContentView>

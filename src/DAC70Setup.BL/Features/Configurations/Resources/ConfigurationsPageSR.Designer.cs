@@ -122,5 +122,23 @@ namespace DAC70Setup.BL.Features.Configurations.Resources {
                 return ResourceManager.GetString("SettingsCountOne", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete the configuration &quot;{0}&quot;?.
+        /// </summary>
+        public static string DeleteConfigurationMessage {
+            get {
+                return ResourceManager.GetString("DeleteConfigurationMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete configuration.
+        /// </summary>
+        public static string DeleteConfigurationTitle {
+            get {
+                return ResourceManager.GetString("DeleteConfigurationTitle", resourceCulture);
+            }
+        }
     }
 }

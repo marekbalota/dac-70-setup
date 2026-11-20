@@ -2,6 +2,7 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:droid="clr-namespace:CommunityToolkit.Maui.PlatformConfiguration.AndroidSpecific;assembly=CommunityToolkit.Maui">
 
     <!-- ── Page ─────────────────────────────────────────────────────── -->
@@ -178,6 +179,20 @@
     </Style>
 
     <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}" />
+
+    <!-- ── Popups ───────────────────────────────────────────────────── -->
+    <Style TargetType="toolkit:Popup" ApplyToDerivedTypes="True">
+        <Setter Property="WidthRequest" Value="340" />
+        <Setter Property="Background"
+                Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+    </Style>
+
+    <Style x:Key="PopupTitle" TargetType="Label">
+        <Setter Property="FontFamily" Value="PlexSansSemiBold" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="TextColor"
+                Value="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
+    </Style>
 
     <!-- ── Inputs ───────────────────────────────────────────────────── -->
     <Style TargetType="Entry">

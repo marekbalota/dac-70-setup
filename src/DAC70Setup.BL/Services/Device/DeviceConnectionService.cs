@@ -175,6 +175,22 @@ public partial class DeviceConnectionService : ObservableObject
         }
     }
 
+    public async Task FactoryResetAsync()
+    {
+        await _semaphore.WaitAsync();
+        try
+        {
+            if (SelectedTransport is { } transport && SelectedDevice is { } device && CanSend)
+            {
+                await FactoryResetAsyncInt(transport, device);
+            }
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+
     private async Task RefreshDevicesAsyncInt(IDac70Transport transport)
     {
         bool isDeviceAdded = UpdateDevices(await transport.DiscoverAsync(CancellationToken.None).ToListAsync());
@@ -394,6 +410,42 @@ public partial class DeviceConnectionService : ObservableObject
         }
 
         return isComplete;
+    }
+
+    private async Task FactoryResetAsyncInt(IDac70Transport transport, AttachedDevice device)
+    {
+        IDac70Connection? connection = null;
+
+        try
+        {
+            try
+            {
+                connection = await transport.ConnectAsync(device.Device, CancellationToken.None);
+            }
+            catch (Dac70PermissionDeniedException)
+            {
+                State = DeviceState.PermissionRequired;
+                return;
+            }
+            catch (IOException)
+            {
+                State = DeviceState.ConnectionFailed;
+                return;
+            }
+
+            await connection.WriteReportAsync(Dac70FactoryReset.GetPayload(), CancellationToken.None);
+        }
+        catch (IOException)
+        {
+            State = DeviceState.ConnectionFailed;
+        }
+        finally
+        {
+            if (connection != null)
+            {
+                await connection.DisposeAsync();
+            }
+        }
     }
 
     private async Task SelectDeviceAsyncInt(IDac70Transport transport, AttachedDevice device)

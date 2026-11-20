@@ -1,13 +1,12 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Storage;
 using DAC70Setup.BL;
+using DAC70Setup.BL.Controls.Confirmation;
 using DAC70Setup.BL.Controls.DeviceStatus.Resources;
 using DAC70Setup.BL.Controls.SettingSelection.Resources;
 using DAC70Setup.BL.Features.Configurations;
 using DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration;
 using DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.Resources;
-using DAC70Setup.BL.Features.Configurations.Popups.DeleteConfiguration;
-using DAC70Setup.BL.Features.Configurations.Popups.DeleteConfiguration.Resources;
 using DAC70Setup.BL.Features.Configurations.Popups.RenameConfiguration;
 using DAC70Setup.BL.Features.Configurations.Popups.RenameConfiguration.Resources;
 using DAC70Setup.BL.Features.Configurations.Resources;
@@ -41,7 +40,10 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
         builder.UseMauiApp<App>()
-            .UseMauiCommunityToolkit()
+            .UseMauiCommunityToolkit(options =>
+            {
+                options.SetPopupDefaults(new DefaultPopupSettings { Padding = new Thickness(20, 20, 20, 16) });
+            })
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("Font_Awesome_7_Free-Solid-900.otf", "FA-S");
@@ -61,7 +63,6 @@ public static class MauiProgram
                 localization.AddResource(EditConfigurationPageSR.ResourceManager);
                 localization.AddResource(ConfigurationsPageSR.ResourceManager);
                 localization.AddResource(CreateConfigurationPopupSR.ResourceManager);
-                localization.AddResource(DeleteConfigurationPopupSR.ResourceManager);
                 localization.AddResource(RenameConfigurationPopupSR.ResourceManager);
                 localization.AddResource(ExportConfigurationPopupSR.ResourceManager);
                 localization.AddResource(EditSettingPageSR.ResourceManager);
@@ -118,8 +119,8 @@ public static class MauiProgram
 
         services.AddTransientWithShellRoute<EditSettingPage, EditSettingPageViewModel>(Routes.EditSetting);
 
+        services.AddTransientPopup<ConfirmationPopup, ConfirmationPopupViewModel>();
         services.AddTransientPopup<CreateConfigurationPopup, CreateConfigurationPopupViewModel>();
-        services.AddTransientPopup<DeleteConfigurationPopup, DeleteConfigurationPopupViewModel>();
         services.AddTransientPopup<RenameConfigurationPopup, RenameConfigurationPopupViewModel>();
         services.AddTransientPopup<ExportConfigurationPopup, ExportConfigurationPopupViewModel>();
     }

@@ -126,4 +126,13 @@
   <data name="ExportToFile" xml:space="preserve">
     <value>Exportovat do souboru</value>
   </data>
+  <data name="FactoryReset" xml:space="preserve">
+    <value>Tovární nastavení</value>
+  </data>
+  <data name="FactoryResetConfirmMessage" xml:space="preserve">
+    <value>Vybrané zařízení DAC-70 bude obnoveno do továrního nastavení. Zařízení se odpojí a restartuje.</value>
+  </data>
+  <data name="FactoryResetConfirmAccept" xml:space="preserve">
+    <value>Obnovit</value>
+  </data>
 </root>

@@ -242,7 +242,7 @@ namespace DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.Resou
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Synchronizes with the DAC-70 first. Takes about 45 seconds..
+        ///   Looks up a localized string similar to Synchronizes with the DAC-70 first..
         /// </summary>
         public static string NewConfigurationFromDeviceNotSynced {
             get {

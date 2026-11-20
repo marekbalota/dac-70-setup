@@ -15,6 +15,7 @@ Masaryk University.
 - Read the current settings from a connected DAC-70
 - Apply a whole configuration, or only selected settings, to a connected DAC-70
 - Export a configuration to a YAML or JSON file and import it back
+- Reset a connected DAC-70 to its factory settings
 - English and Czech user interface
 - Light and dark theme
 
@@ -110,8 +111,6 @@ The DAC-70 communicates as a USB HID device (vendor ID `0x1164`, product ID `0xB
 
 ## Known limitations
 
-- Firmware updates and factory reset are not supported. Use __DAC-70 Center__, the official
-  Windows-only setup utility, for those.
 - Settings of the `61` type cannot be read back from the device. The app marks them as
   *not readable*; they can still be edited and sent to the device.
 - The macOS build has not been tested with a real device yet.
