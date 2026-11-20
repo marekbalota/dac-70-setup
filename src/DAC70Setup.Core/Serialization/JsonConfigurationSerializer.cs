@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using DAC70Setup.Core.Models.Values;
 
-namespace DAC70Setup.BL.Services.ImportExport;
+namespace DAC70Setup.Core.Serialization;
 
 public class JsonConfigurationSerializer : ConfigurationSerializer
 {

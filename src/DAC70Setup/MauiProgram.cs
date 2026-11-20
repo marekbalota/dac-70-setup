@@ -27,6 +27,7 @@ using DAC70Setup.BL.Services.Device;
 using DAC70Setup.BL.Services.ImportExport;
 using DAC70Setup.BL.Services.Navigation;
 using DAC70Setup.Core.Interfaces;
+using DAC70Setup.Core.Serialization;
 using DAC70Setup.Data;
 using DAC70Setup.Transport.Usb;
 using LocalizationResourceManager.Maui;

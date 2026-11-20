@@ -5,7 +5,7 @@ using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.RepresentationModel;
 
-namespace DAC70Setup.BL.Services.ImportExport;
+namespace DAC70Setup.Core.Serialization;
 
 public class YamlConfigurationSerializer : ConfigurationSerializer
 {
