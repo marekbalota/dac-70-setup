@@ -18,6 +18,14 @@ public class FakeDac70Connection : IDac70Connection
     /// </summary>
     public int StaleReadsAfterRequest { get; set; }
 
+    public List<byte[]> WrittenReports { get; } = [];
+
+    /// <summary>
+    /// Runs before each write with the number of reports written so far,
+    /// so a test can make that write fail or cancel the transfer.
+    /// </summary>
+    public Action<int>? BeforeWrite { get; set; }
+
     public void Answer(byte[] request, byte[] reply)
     {
         _answers.Add((request, reply));
@@ -25,7 +33,9 @@ public class FakeDac70Connection : IDac70Connection
 
     public Task WriteReportAsync(ReadOnlyMemory<byte> report, CancellationToken cancellationToken)
     {
+        BeforeWrite?.Invoke(WrittenReports.Count);
         cancellationToken.ThrowIfCancellationRequested();
+        WrittenReports.Add(report.ToArray());
 
         var (_, reply) = _answers.FirstOrDefault(candidate => report.Span.SequenceEqual(candidate.Request));
 

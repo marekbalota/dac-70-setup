@@ -1,6 +1,9 @@
 ﻿using DAC70Setup.BL.Services.Device;
 using DAC70Setup.Core.Exceptions;
 using DAC70Setup.Core.Interfaces;
+using DAC70Setup.Core.Models.Definitions;
+using DAC70Setup.Core.Models.Protocol;
+using DAC70Setup.Core.Models.Values;
 using DAC70Setup.Tests.Fakes;
 
 namespace DAC70Setup.Tests.BL.Services.Device;
@@ -9,6 +12,7 @@ public class DeviceConnectionServiceTests
 {
     private readonly FakeDac70Transport _transport = new();
     private readonly FakePreferences _preferences = new();
+    private readonly List<Dac70SettingValue> _values = CreateValues();
 
     [Fact]
     public void Constructor_OnlyUnsupportedTransports_HasNoTransport()
@@ -191,8 +195,186 @@ public class DeviceConnectionServiceTests
         Assert.Equal("device-1", Assert.Single(service.Devices).Device.Id);
     }
 
+    [Fact]
+    public async Task SendValuesAsync_WritesEveryValueInOrderAndRemembersThem()
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+
+        await service.SendValuesAsync(_values);
+
+        Assert.Equal(_values.Select(value => value.GetPayload()), device.WrittenReports);
+        var snapshot = service.SelectedDevice!.Snapshot;
+        Assert.Equal(_values.Select(value => value.DisplayValueText),
+            _values.Select(value => snapshot.Values[value.Definition.Key].DisplayValueText));
+        Assert.Equal(DeviceState.Ready, service.State);
+        Assert.Null(service.Progress);
+    }
+
+    [Fact]
+    public async Task SendValuesAsync_NoSelectedDevice_SendsNothing()
+    {
+        var device = _transport.Attach("device-1");
+        _transport.Attach("device-2");
+        var service = CreateService();
+        await service.RefreshDevicesAsync();
+
+        await service.SendValuesAsync(_values);
+
+        Assert.Empty(device.WrittenReports);
+        Assert.Equal(DeviceState.ChoiceRequired, service.State);
+    }
+
+    [Theory]
+    [InlineData(typeof(IOException), DeviceState.ConnectionFailed)]
+    [InlineData(typeof(Dac70PermissionDeniedException), DeviceState.PermissionRequired)]
+    public async Task SendValuesAsync_ConnectFails_ReportsWhy(Type exceptionType, DeviceState expectedState)
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+        _transport.ConnectException = (Exception)Activator.CreateInstance(exceptionType)!;
+
+        await service.SendValuesAsync(_values);
+
+        Assert.Empty(device.WrittenReports);
+        Assert.Equal(expectedState, service.State);
+        Assert.Null(service.Progress);
+    }
+
+    // The progress stays so the user can see how far the send got
+    [Fact]
+    public async Task SendValuesAsync_WriteFailsPartway_KeepsProgressAndOnlyTheSentValues()
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+        device.BeforeWrite = written =>
+        {
+            if (written == 1)
+            {
+                throw new IOException();
+            }
+        };
+
+        await service.SendValuesAsync(_values);
+
+        Assert.Equal(DeviceState.SendInterrupted, service.State);
+        Assert.Equal(new TransferProgress(1, 3, _values[1].Definition.Name), service.Progress);
+        Assert.Equal([_values[0].Definition.Key], service.SelectedDevice!.Snapshot.Values.Keys);
+    }
+
+    [Fact]
+    public async Task RefreshDevicesAsync_DeviceUnpluggedAfterInterruptedSend_StaysInterrupted()
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+        device.BeforeWrite = written =>
+        {
+            if (written == 1)
+            {
+                throw new IOException();
+            }
+        };
+        await service.SendValuesAsync(_values);
+        Assert.Equal(DeviceState.SendInterrupted, service.State);
+
+        _transport.Detach("device-1");
+        await service.RefreshDevicesAsync();
+
+        Assert.Null(service.SelectedDevice);
+        Assert.Equal(DeviceState.SendInterrupted, service.State);
+        Assert.NotNull(service.Progress);
+    }
+
+    [Fact]
+    public async Task SendValuesAsync_CancelledAfterFirstValue_KeepsProgressAndAllowsSendingAgain()
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+        device.BeforeWrite = written =>
+        {
+            if (written == 1)
+            {
+                service.CancelTransfer();
+            }
+        };
+
+        await service.SendValuesAsync(_values);
+
+        Assert.Single(device.WrittenReports);
+        Assert.Equal(DeviceState.SendCancelled, service.State);
+        Assert.Equal(new TransferProgress(1, 3, _values[1].Definition.Name), service.Progress);
+        Assert.True(service.CanSend);
+    }
+
+    [Fact]
+    public async Task SendValuesAsync_CancelledBeforeFirstValue_IsReadyAgain()
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+        device.BeforeWrite = _ => service.CancelTransfer();
+
+        await service.SendValuesAsync(_values);
+
+        Assert.Empty(device.WrittenReports);
+        Assert.Equal(DeviceState.Ready, service.State);
+        Assert.Null(service.Progress);
+    }
+
+    [Fact]
+    public async Task FactoryResetAsync_WritesTheResetReport()
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+
+        await service.FactoryResetAsync();
+
+        Assert.Equal(Dac70FactoryReset.GetPayload(), Assert.Single(device.WrittenReports));
+        Assert.Equal(DeviceState.Ready, service.State);
+    }
+
+    [Theory]
+    [InlineData(typeof(IOException), DeviceState.ConnectionFailed)]
+    [InlineData(typeof(Dac70PermissionDeniedException), DeviceState.PermissionRequired)]
+    public async Task FactoryResetAsync_ConnectFails_ReportsWhy(Type exceptionType, DeviceState expectedState)
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+        _transport.ConnectException = (Exception)Activator.CreateInstance(exceptionType)!;
+
+        await service.FactoryResetAsync();
+
+        Assert.Empty(device.WrittenReports);
+        Assert.Equal(expectedState, service.State);
+    }
+
+    [Fact]
+    public async Task FactoryResetAsync_WriteFails_ConnectionFailed()
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+        device.BeforeWrite = _ => throw new IOException();
+
+        await service.FactoryResetAsync();
+
+        Assert.Equal(DeviceState.ConnectionFailed, service.State);
+    }
+
     private DeviceConnectionService CreateService(params IDac70Transport[] transports)
     {
         return new DeviceConnectionService(transports.Length > 0 ? transports : [_transport], _preferences, new FakeDispatcher());
+    }
+
+    // One device, selected and ready
+    private async Task<(DeviceConnectionService Service, FakeDac70Connection Device)> CreateServiceWithDeviceAsync()
+    {
+        var device = _transport.Attach("device-1");
+        var service = CreateService();
+        await service.RefreshDevicesAsync();
+
+        return (service, device);
+    }
+
+    private static List<Dac70SettingValue> CreateValues()
+    {
+        var inputSource = Catalog.Get<EnumSettingDefinition>("Input Source");
+        var audioSource = Catalog.Get<EnumSettingDefinition>("Audio Source");
+
+        return
+        [
+            new EnumSettingValue(inputSource) { SelectedOption = Catalog.GetOption(inputSource, "SDI") },
+            new EnumSettingValue(audioSource) { SelectedOption = Catalog.GetOption(audioSource, "L/R Audio") },
+            new RangeSettingValue(Catalog.Get<RangeSettingDefinition>("Brightness")) { Value = 0x90 }
+        ];
     }
 }
