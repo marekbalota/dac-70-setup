@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DAC70Setup.BL\DAC70Setup.BL.csproj" />
     <ProjectReference Include="..\DAC70Setup.Core\DAC70Setup.Core.csproj" />
   </ItemGroup>
 
