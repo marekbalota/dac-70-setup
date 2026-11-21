@@ -1,6 +1,6 @@
 ﻿using DAC70Setup.Core.Interfaces;
 
-namespace DAC70Setup.Tests;
+namespace DAC70Setup.Tests.Fakes;
 
 /// <summary>
 /// Behaves like the DAC-70: it repeats its last reply and answers only the requests a test gave it replies for.

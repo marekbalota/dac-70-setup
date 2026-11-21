@@ -1,5 +1,6 @@
 ﻿using DAC70Setup.Core.Models.Protocol;
 using DAC70Setup.Core.Protocol;
+using DAC70Setup.Tests.Fakes;
 
 namespace DAC70Setup.Tests.Core.Protocol;
 
