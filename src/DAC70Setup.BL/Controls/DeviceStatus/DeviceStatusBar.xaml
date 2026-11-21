@@ -86,11 +86,11 @@
 
                     <BoxView Style="{StaticResource RowDivider}" />
 
-                    <VerticalStackLayout IsVisible="{Binding IsSyncInfoVisible}">
+                    <VerticalStackLayout IsVisible="{Binding IsDownloadInfoVisible}">
                         <FlexLayout Wrap="Wrap" AlignItems="Center" Padding="15,8"
                                     Background="{AppThemeBinding Light={StaticResource SurfaceRaisedLight}, Dark={StaticResource SurfaceRaisedDark}}">
                             <FlexLayout.Triggers>
-                                <DataTrigger TargetType="FlexLayout" Binding="{Binding IsSyncWarning}" Value="True">
+                                <DataTrigger TargetType="FlexLayout" Binding="{Binding IsDownloadWarning}" Value="True">
                                     <Setter Property="Background"
                                             Value="{AppThemeBinding Light={StaticResource WarningContainerLight}, Dark={StaticResource WarningContainerDark}}" />
                                 </DataTrigger>
@@ -121,16 +121,16 @@
                                        VerticalTextAlignment="Center"
                                        TextColor="{AppThemeBinding Light={StaticResource OnSurfaceMutedLight}, Dark={StaticResource OnSurfaceMutedDark}}">
                                     <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding IsSyncWarning}" Value="True">
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsDownloadWarning}" Value="True">
                                             <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WarningLight}, Dark={StaticResource WarningDark}}" />
                                         </DataTrigger>
                                     </Label.Triggers>
                                 </Label>
 
-                                <Label Text="{Binding SyncText.Localized}" Style="{StaticResource CardCaption}" FontSize="12"
+                                <Label Text="{Binding DownloadText.Localized}" Style="{StaticResource CardCaption}" FontSize="12"
                                        VerticalTextAlignment="Center">
                                     <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding IsSyncWarning}" Value="True">
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsDownloadWarning}" Value="True">
                                             <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource WarningLight}, Dark={StaticResource WarningDark}}" />
                                         </DataTrigger>
                                     </Label.Triggers>
@@ -200,7 +200,7 @@
                                                         <Label Text="{localization:Translate DeviceNoInputSignal}" Style="{StaticResource CardCaption}" FontSize="12"
                                                                IsVisible="{Binding Snapshot.InputSignal.HasSignal, Converter={toolkit:InvertedBoolConverter}}" />
                                                     </Grid>
-                                                    <Label Text="{localization:Translate DeviceNotSynced}" Style="{StaticResource CardCaption}" FontSize="12"
+                                                    <Label Text="{localization:Translate DeviceNotDownloaded}" Style="{StaticResource CardCaption}" FontSize="12"
                                                            IsVisible="{Binding Snapshot.HasDeviceInfo, Converter={toolkit:InvertedBoolConverter}}" />
                                                 </HorizontalStackLayout>
                                             </VerticalStackLayout>

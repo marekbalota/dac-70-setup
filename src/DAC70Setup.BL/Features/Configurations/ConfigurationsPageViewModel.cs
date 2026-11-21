@@ -114,8 +114,8 @@ public partial class ConfigurationsPageViewModel : ObservableObject
             return;
         }
 
-        if (_deviceConnectionService.SelectedDevice?.Snapshot.LastFullSync == null
-            && !await _deviceConnectionService.SyncAsync())
+        if (_deviceConnectionService.SelectedDevice?.Snapshot.LastDownload == null
+            && !await _deviceConnectionService.DownloadAsync())
         {
             return;
         }

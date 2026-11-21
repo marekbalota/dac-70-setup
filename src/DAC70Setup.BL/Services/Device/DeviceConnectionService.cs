@@ -162,15 +162,15 @@ public partial class DeviceConnectionService : ObservableObject
         }
     }
 
-    /// <returns>True when every readable setting was read, false when the sync did not run or stopped early.</returns>
-    public async Task<bool> SyncAsync()
+    /// <returns>True when every readable setting was read, false when the download did not run or stopped early.</returns>
+    public async Task<bool> DownloadAsync()
     {
         await _semaphore.WaitAsync();
         try
         {
             if (SelectedTransport is { } transport && SelectedDevice is { } device && CanSend)
             {
-                return await SyncAsyncInt(transport, device);
+                return await DownloadAsyncInt(transport, device);
             }
 
             return false;
@@ -305,7 +305,7 @@ public partial class DeviceConnectionService : ObservableObject
         }
     }
 
-    private async Task<bool> SyncAsyncInt(IDac70Transport transport, AttachedDevice device)
+    private async Task<bool> DownloadAsyncInt(IDac70Transport transport, AttachedDevice device)
     {
         var requests = Dac70SettingCatalog.All
             .Where(definition => definition.IsReadable)
@@ -324,7 +324,7 @@ public partial class DeviceConnectionService : ObservableObject
         try
         {
             Progress = new TransferProgress(0, total, Dac70InputSignal.Name);
-            State = DeviceState.Syncing;
+            State = DeviceState.Downloading;
 
             try
             {
@@ -387,7 +387,7 @@ public partial class DeviceConnectionService : ObservableObject
                 }
             }
 
-            snapshot.CompleteFullSync(DateTime.Now);
+            snapshot.CompleteDownload(DateTime.Now);
             isComplete = true;
         }
         catch (OperationCanceledException)
@@ -407,7 +407,7 @@ public partial class DeviceConnectionService : ObservableObject
 
             _transferCancellation = null;
 
-            if (State == DeviceState.Syncing)
+            if (State == DeviceState.Downloading)
             {
                 State = DeviceState.Ready;
             }

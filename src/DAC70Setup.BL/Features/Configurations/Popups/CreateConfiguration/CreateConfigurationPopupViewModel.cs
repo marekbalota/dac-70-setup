@@ -280,13 +280,13 @@ public partial class CreateConfigurationPopupViewModel : ObservableObject, IQuer
 
             detailKey = nameof(CreateConfigurationPopupSR.NewConfigurationFromDeviceUnavailable);
         }
-        else if (_deviceConnectionService.SelectedDevice?.Snapshot.LastFullSync != null)
+        else if (_deviceConnectionService.SelectedDevice?.Snapshot.LastDownload != null)
         {
-            detailKey = nameof(CreateConfigurationPopupSR.NewConfigurationFromDeviceSynced);
+            detailKey = nameof(CreateConfigurationPopupSR.NewConfigurationFromDeviceDownloaded);
         }
         else
         {
-            detailKey = nameof(CreateConfigurationPopupSR.NewConfigurationFromDeviceNotSynced);
+            detailKey = nameof(CreateConfigurationPopupSR.NewConfigurationFromDeviceNotDownloaded);
         }
 
         DeviceDetail = new LocalizedString(() => _localizationResourceManager[detailKey]);

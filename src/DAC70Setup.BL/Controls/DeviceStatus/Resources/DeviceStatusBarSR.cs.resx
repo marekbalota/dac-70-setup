@@ -177,16 +177,16 @@
   <data name="DeviceTransport" xml:space="preserve">
     <value>Připojit přes</value>
   </data>
-  <data name="DeviceSyncing" xml:space="preserve">
-    <value>Čtení {0} z {1} · {2}</value>
+  <data name="DeviceDownloading" xml:space="preserve">
+    <value>Stahování {0} z {1} · {2}</value>
   </data>
-  <data name="DeviceSyncRunning" xml:space="preserve">
-    <value>Synchronizuji se zařízením…</value>
+  <data name="DeviceDownloadRunning" xml:space="preserve">
+    <value>Stahuji ze zařízení…</value>
   </data>
-  <data name="DeviceNotSynced" xml:space="preserve">
-    <value>Se zařízením zatím nesynchronizováno</value>
+  <data name="DeviceNotDownloaded" xml:space="preserve">
+    <value>Ze zařízení zatím nestaženo</value>
   </data>
-  <data name="DeviceSyncedAt" xml:space="preserve">
-    <value>Synchronizováno se zařízením v {0}</value>
+  <data name="DeviceDownloadedAt" xml:space="preserve">
+    <value>Staženo ze zařízení v {0}</value>
   </data>
 </root>

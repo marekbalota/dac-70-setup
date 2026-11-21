@@ -242,20 +242,20 @@ namespace DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration.Resou
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Synchronizes with the DAC-70 first..
+        ///   Looks up a localized string similar to Downloads from the DAC-70 first.
         /// </summary>
-        public static string NewConfigurationFromDeviceNotSynced {
+        public static string NewConfigurationFromDeviceNotDownloaded {
             get {
-                return ResourceManager.GetString("NewConfigurationFromDeviceNotSynced", resourceCulture);
+                return ResourceManager.GetString("NewConfigurationFromDeviceNotDownloaded", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Data from the last sync..
+        ///   Looks up a localized string similar to Data from the last download.
         /// </summary>
-        public static string NewConfigurationFromDeviceSynced {
+        public static string NewConfigurationFromDeviceDownloaded {
             get {
-                return ResourceManager.GetString("NewConfigurationFromDeviceSynced", resourceCulture);
+                return ResourceManager.GetString("NewConfigurationFromDeviceDownloaded", resourceCulture);
             }
         }
         

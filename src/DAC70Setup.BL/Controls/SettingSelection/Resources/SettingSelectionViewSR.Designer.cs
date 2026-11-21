@@ -97,11 +97,11 @@ namespace DAC70Setup.BL.Controls.SettingSelection.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to not synced.
+        ///   Looks up a localized string similar to not downloaded.
         /// </summary>
-        public static string SettingNotSynced {
+        public static string SettingNotDownloaded {
             get {
-                return ResourceManager.GetString("SettingNotSynced", resourceCulture);
+                return ResourceManager.GetString("SettingNotDownloaded", resourceCulture);
             }
         }
         

@@ -241,38 +241,38 @@ namespace DAC70Setup.BL.Controls.DeviceStatus.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reading {0} of {1} · {2}.
+        ///   Looks up a localized string similar to Downloading {0} of {1} · {2}.
         /// </summary>
-        public static string DeviceSyncing {
+        public static string DeviceDownloading {
             get {
-                return ResourceManager.GetString("DeviceSyncing", resourceCulture);
+                return ResourceManager.GetString("DeviceDownloading", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Synchronizing with device….
+        ///   Looks up a localized string similar to Downloading from device….
         /// </summary>
-        public static string DeviceSyncRunning {
+        public static string DeviceDownloadRunning {
             get {
-                return ResourceManager.GetString("DeviceSyncRunning", resourceCulture);
+                return ResourceManager.GetString("DeviceDownloadRunning", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not synced with device yet.
+        ///   Looks up a localized string similar to Not downloaded from device yet.
         /// </summary>
-        public static string DeviceNotSynced {
+        public static string DeviceNotDownloaded {
             get {
-                return ResourceManager.GetString("DeviceNotSynced", resourceCulture);
+                return ResourceManager.GetString("DeviceNotDownloaded", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Synced with device at {0}.
+        ///   Looks up a localized string similar to Downloaded from device at {0}.
         /// </summary>
-        public static string DeviceSyncedAt {
+        public static string DeviceDownloadedAt {
             get {
-                return ResourceManager.GetString("DeviceSyncedAt", resourceCulture);
+                return ResourceManager.GetString("DeviceDownloadedAt", resourceCulture);
             }
         }
     }

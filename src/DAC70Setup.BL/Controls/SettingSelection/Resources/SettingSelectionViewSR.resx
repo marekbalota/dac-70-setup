@@ -120,8 +120,8 @@
   <data name="SettingNotReadable" xml:space="preserve">
     <value>not readable</value>
   </data>
-  <data name="SettingNotSynced" xml:space="preserve">
-    <value>not synced</value>
+  <data name="SettingNotDownloaded" xml:space="preserve">
+    <value>not downloaded</value>
   </data>
   <data name="SelectedSettingsCount" xml:space="preserve">
     <value>{0} selected</value>

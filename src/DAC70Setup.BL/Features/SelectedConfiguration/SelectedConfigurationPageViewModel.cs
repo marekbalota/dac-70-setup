@@ -78,7 +78,7 @@ public partial class SelectedConfigurationPageViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanUseDevice))]
     private async Task DownloadFromDeviceAsync()
     {
-        await _deviceConnectionService.SyncAsync();
+        await _deviceConnectionService.DownloadAsync();
     }
 
     [RelayCommand(CanExecute = nameof(CanUseDevice))]
