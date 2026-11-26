@@ -162,7 +162,7 @@ public partial class DeviceConnectionService : ObservableObject
         }
     }
 
-    /// <returns>True when every readable setting was read, false when the download did not run or stopped early.</returns>
+    /// <returns>True when every readable setting was read, false when the download did not run, stopped early or a setting got no reply.</returns>
     public async Task<bool> DownloadAsync()
     {
         await _semaphore.WaitAsync();
@@ -367,6 +367,8 @@ public partial class DeviceConnectionService : ObservableObject
                 snapshot.InputSignal = inputSignal;
             }
 
+            bool isEverySettingRead = true;
+
             foreach (var request in requests)
             {
                 Progress = new TransferProgress(completed, total, request[0].Name);
@@ -375,6 +377,8 @@ public partial class DeviceConnectionService : ObservableObject
 
                 if (reply == null)
                 {
+                    // The other settings are still read and kept, but the download does not count as complete
+                    isEverySettingRead = false;
                     continue;
                 }
 
@@ -387,8 +391,11 @@ public partial class DeviceConnectionService : ObservableObject
                 }
             }
 
-            snapshot.CompleteDownload(DateTime.Now);
-            isComplete = true;
+            if (isEverySettingRead)
+            {
+                snapshot.CompleteDownload(DateTime.Now);
+                isComplete = true;
+            }
         }
         catch (OperationCanceledException)
         {
