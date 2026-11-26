@@ -10,6 +10,10 @@ namespace DAC70Setup.Tests.BL.Services.Device;
 
 public class DeviceConnectionServiceTests
 {
+    private static readonly byte[] FirmwareReply = Report.Create(0x13, 0x3E, 0x34, 0x12);
+    private static readonly byte[] InputSignalReply = Report.Create(0x13, 0x3E, 0x07, 0x80, 0x04, 0x38, 59, 94, 0x01);
+    private static readonly int ReadableSettingCount = Dac70SettingCatalog.All.Count(definition => definition.IsReadable);
+
     private readonly FakeDac70Transport _transport = new();
     private readonly FakePreferences _preferences = new();
     private readonly List<Dac70SettingValue> _values = CreateValues();
@@ -350,6 +354,99 @@ public class DeviceConnectionServiceTests
         Assert.Equal(DeviceState.ConnectionFailed, service.State);
     }
 
+    [Fact]
+    public async Task DownloadAsync_ReadsEverySettingTheFirmwareAndTheInputSignal()
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+        AnswerDownloadReads(device);
+        var inputSource = Catalog.Get<EnumSettingDefinition>("Input Source");
+        var brightness = Catalog.Get<RangeSettingDefinition>("Brightness");
+
+        bool isComplete = await service.DownloadAsync();
+
+        var snapshot = service.SelectedDevice!.Snapshot;
+        Assert.True(isComplete);
+        Assert.Equal(ReadableSettingCount, snapshot.Values.Count);
+        Assert.Contains(inputSource.Key, snapshot.Values.Keys);
+        Assert.Contains(brightness.Key, snapshot.Values.Keys);
+        // The four Proc Amp settings share one request
+        Assert.Single(device.WrittenReports, report => report.SequenceEqual(brightness.GetReadPayload()));
+        Assert.Equal(Dac70FirmwareVersion.FromReadResponse(FirmwareReply), snapshot.FirmwareVersion);
+        Assert.Equal(Dac70InputSignal.FromReadResponse(InputSignalReply), snapshot.InputSignal);
+        Assert.NotNull(snapshot.LastDownload);
+        Assert.Equal(DeviceState.Ready, service.State);
+        Assert.Null(service.Progress);
+    }
+
+    // Takes 6 s: the setting without an answer waits out the session's reply timeout
+    [Fact]
+    public async Task DownloadAsync_SettingWithoutReply_IsIncompleteButKeepsTheRest()
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+        var inputSource = Catalog.Get<EnumSettingDefinition>("Input Source");
+        AnswerDownloadReads(device, unanswered: inputSource);
+
+        bool isComplete = await service.DownloadAsync();
+
+        var snapshot = service.SelectedDevice!.Snapshot;
+        Assert.False(isComplete);
+        Assert.Null(snapshot.LastDownload);
+        Assert.Equal(ReadableSettingCount - 1, snapshot.Values.Count);
+        Assert.DoesNotContain(inputSource.Key, snapshot.Values.Keys);
+        Assert.Equal(DeviceState.Ready, service.State);
+    }
+
+    [Fact]
+    public async Task DownloadAsync_CancelledPartway_ReturnsFalseAndKeepsTheValuesReadSoFar()
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+        AnswerDownloadReads(device);
+        device.BeforeWrite = _ =>
+        {
+            if (service.SelectedDevice!.Snapshot.Values.Count > 0)
+            {
+                service.CancelTransfer();
+            }
+        };
+
+        bool isComplete = await service.DownloadAsync();
+
+        var snapshot = service.SelectedDevice!.Snapshot;
+        Assert.False(isComplete);
+        Assert.Single(snapshot.Values);
+        Assert.Null(snapshot.LastDownload);
+        Assert.Equal(DeviceState.Ready, service.State);
+        Assert.Null(service.Progress);
+    }
+
+    [Fact]
+    public async Task DownloadAsync_WriteFails_ReturnsFalseAndConnectionFailed()
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+        device.BeforeWrite = _ => throw new IOException();
+
+        bool isComplete = await service.DownloadAsync();
+
+        Assert.False(isComplete);
+        Assert.Equal(DeviceState.ConnectionFailed, service.State);
+        Assert.Null(service.Progress);
+    }
+
+    [Theory]
+    [InlineData(typeof(IOException), DeviceState.ConnectionFailed)]
+    [InlineData(typeof(Dac70PermissionDeniedException), DeviceState.PermissionRequired)]
+    public async Task DownloadAsync_ConnectFails_ReturnsFalseAndReportsWhy(Type exceptionType, DeviceState expectedState)
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+        _transport.ConnectException = (Exception)Activator.CreateInstance(exceptionType)!;
+
+        bool isComplete = await service.DownloadAsync();
+
+        Assert.False(isComplete);
+        Assert.Empty(device.WrittenReports);
+        Assert.Equal(expectedState, service.State);
+    }
+
     private DeviceConnectionService CreateService(params IDac70Transport[] transports)
     {
         return new DeviceConnectionService(transports.Length > 0 ? transports : [_transport], _preferences, new FakeDispatcher());
@@ -376,5 +473,17 @@ public class DeviceConnectionServiceTests
             new EnumSettingValue(audioSource) { SelectedOption = Catalog.GetOption(audioSource, "L/R Audio") },
             new RangeSettingValue(Catalog.Get<RangeSettingDefinition>("Brightness")) { Value = 0x90 }
         ];
+    }
+
+    private static void AnswerDownloadReads(FakeDac70Connection device, Dac70SettingDefinition? unanswered = null)
+    {
+        device.Answer(Dac70FirmwareVersion.GetReadPayload(), FirmwareReply);
+        device.Answer(Dac70InputSignal.GetReadPayload(), InputSignalReply);
+
+        foreach (var definition in Dac70SettingCatalog.All.Where(definition => definition.IsReadable && definition != unanswered))
+        {
+            byte value = definition is EnumSettingDefinition enumDefinition ? enumDefinition.Options[0].Value : (byte)0;
+            device.Answer(definition.GetReadPayload(), Report.Create(0x13, 0x3E, value));
+        }
     }
 }
