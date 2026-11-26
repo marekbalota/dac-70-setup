@@ -16,6 +16,7 @@ public class DeviceConnectionServiceTests
 
     private readonly FakeDac70Transport _transport = new();
     private readonly FakePreferences _preferences = new();
+    private readonly FakeDispatcher _dispatcher = new();
     private readonly List<Dac70SettingValue> _values = CreateValues();
 
     [Fact]
@@ -188,14 +189,17 @@ public class DeviceConnectionServiceTests
         Assert.Equal(DeviceState.ChoiceRequired, service.State);
     }
 
+    // USB raises the event on a background thread, so the refresh must wait for the UI thread
     [Fact]
-    public void DevicesChanged_RefreshesTheDevices()
+    public void DevicesChanged_RefreshesTheDevicesOnTheUiThread()
     {
         var service = CreateService();
-
         _transport.Attach("device-1");
+
         _transport.RaiseDevicesChanged();
 
+        Assert.Empty(service.Devices);
+        _dispatcher.RunQueued();
         Assert.Equal("device-1", Assert.Single(service.Devices).Device.Id);
     }
 
@@ -449,7 +453,7 @@ public class DeviceConnectionServiceTests
 
     private DeviceConnectionService CreateService(params IDac70Transport[] transports)
     {
-        return new DeviceConnectionService(transports.Length > 0 ? transports : [_transport], _preferences, new FakeDispatcher());
+        return new DeviceConnectionService(transports.Length > 0 ? transports : [_transport], _preferences, _dispatcher);
     }
 
     // One device, selected and ready
