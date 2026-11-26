@@ -1,0 +1,49 @@
+name: Test
+
+# Runs the tests on every pull request into main and on every push to main. The release workflow
+# calls it as well, so a release is only built from code whose tests pass.
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_call:
+
+permissions:
+  contents: read
+
+# A newer push to the same pull request replaces the run still going. Called from the release,
+# github.workflow is "Release", so a push to main never cancels the tests of a release.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  test:
+    runs-on: windows-2025
+    # A hung test fails the run instead of holding the runner for hours
+    timeout-minutes: 15
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.4xx'
+
+      # The tests use the plain net10.0 build of BL, but restoring BL also restores its
+      # Android, iOS and Mac Catalyst targets, which need the workload
+      - name: Install the MAUI workload
+        run: dotnet workload install maui
+
+      - name: Run the tests
+        run: dotnet test --project src/DAC70Setup.Tests/DAC70Setup.Tests.csproj

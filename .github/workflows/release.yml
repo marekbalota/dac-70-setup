@@ -1,8 +1,9 @@
 name: Release
 
-# Started by hand from the Actions tab. Raises the version in DAC70Setup.csproj, builds the
-# Android APK and the Windows zip, and only when both succeed commits the new version, tags it
-# and attaches the files to a draft GitHub release, which is published by hand after review.
+# Started by hand from the Actions tab. Runs the tests first, then raises the version in
+# DAC70Setup.csproj, builds the Android APK and the Windows zip, and only when both succeed
+# commits the new version, tags it and attaches the files to a draft GitHub release, which is
+# published by hand after review.
 on:
   workflow_dispatch:
     inputs:
@@ -27,7 +28,11 @@ defaults:
     shell: pwsh
 
 jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+
   release:
+    needs: test
     if: github.ref == 'refs/heads/main'
     runs-on: windows-2025
     env:
