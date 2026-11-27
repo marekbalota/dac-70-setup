@@ -1,9 +1,12 @@
 name: Release
 
-# Started by hand from the Actions tab. Runs the tests first, then raises the version in
-# DAC70Setup.csproj, builds the Android APK, the Windows zip and the Windows installer, and only
-# when all of them succeed commits the new version, tags it and attaches the files to a draft
-# GitHub release, which is published by hand after review.
+# Started by hand from the Actions tab. Runs the tests first, then builds the Android APK, the
+# Windows zip, the Windows installer and the Mac app with the raised version, and only when all of
+# them succeed commits the new version to DAC70Setup.csproj, tags it and attaches the files to a
+# draft GitHub release, which is published by hand after review.
+#
+# Started on another branch than main, it only builds the files and attaches them to the run as
+# artifacts, without committing, tagging or releasing anything.
 on:
   workflow_dispatch:
     inputs:
@@ -27,24 +30,28 @@ defaults:
   run:
     shell: pwsh
 
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  PROJECT: src/DAC70Setup/DAC70Setup.csproj
+
 jobs:
   test:
     uses: ./.github/workflows/test.yml
 
-  release:
-    needs: test
-    if: github.ref == 'refs/heads/main'
-    runs-on: windows-2025
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      version-code: ${{ steps.version.outputs.version-code }}
     env:
-      DOTNET_NOLOGO: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: true
-      PROJECT: src/DAC70Setup/DAC70Setup.csproj
       BUMP: ${{ inputs.bump }}
 
     steps:
       - uses: actions/checkout@v7
 
-      - name: Raise the version
+      - name: Work out the version
+        id: version
         run: |
           $PSNativeCommandUseErrorActionPreference = $true
           $text = [IO.File]::ReadAllText($env:PROJECT)
@@ -78,12 +85,20 @@ jobs:
               throw "Tag v$version already exists."
           }
 
-          $text = $text -replace '<ApplicationDisplayVersion>[^<]*</ApplicationDisplayVersion>', "<ApplicationDisplayVersion>$version</ApplicationDisplayVersion>"
-          $text = $text -replace '<ApplicationVersion>[^<]*</ApplicationVersion>', "<ApplicationVersion>$versionCode</ApplicationVersion>"
-          [IO.File]::WriteAllText($env:PROJECT, $text, [Text.UTF8Encoding]::new($true))
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "version-code=$versionCode" >> $env:GITHUB_OUTPUT
+          "Building $version (versionCode $versionCode)"
 
-          "VERSION=$version" >> $env:GITHUB_ENV
-          "Releasing $version (versionCode $versionCode)"
+  windows:
+    name: Android and Windows
+    needs: [test, version]
+    runs-on: windows-2025
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      VERSION_CODE: ${{ needs.version.outputs.version-code }}
+
+    steps:
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-dotnet@v6
         with:
@@ -109,6 +124,8 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: >
           dotnet publish $env:PROJECT -c Release -f net10.0-android -o publish/android
+          "-p:ApplicationDisplayVersion=$env:VERSION"
+          "-p:ApplicationVersion=$env:VERSION_CODE"
           -p:AndroidKeyStore=true
           "-p:AndroidSigningKeyStore=$env:RUNNER_TEMP\release.keystore"
           -p:AndroidSigningKeyAlias=dac70setup
@@ -121,7 +138,10 @@ jobs:
           & "$($buildTools.FullName)\apksigner.bat" verify -v --print-certs publish/android/cz.muni.fi.xbalota.dac70setup-Signed.apk
 
       - name: Publish Windows
-        run: dotnet publish $env:PROJECT -c Release -f net10.0-windows10.0.19041.0 -o publish/windows/DAC70Setup
+        run: >
+          dotnet publish $env:PROJECT -c Release -f net10.0-windows10.0.19041.0 -o publish/windows/DAC70Setup
+          "-p:ApplicationDisplayVersion=$env:VERSION"
+          "-p:ApplicationVersion=$env:VERSION_CODE"
 
       - name: Package the release files
         run: |
@@ -137,6 +157,79 @@ jobs:
           $iscc = Get-Item "C:\Program Files*\Inno Setup *\ISCC.exe" | Select-Object -Last 1
           & $iscc.FullName "/DAppVersion=$env:VERSION" "/DSourceDir=$PWD\publish\windows\DAC70Setup" "/O$PWD\release" installer/DAC70Setup.iss
 
+      - uses: actions/upload-artifact@v7
+        with:
+          name: android-windows
+          path: release/
+          if-no-files-found: error
+
+  mac:
+    name: Mac Catalyst
+    needs: [test, version]
+    runs-on: xcode-27
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      VERSION_CODE: ${{ needs.version.outputs.version-code }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Select Xcode
+        run: sudo xcode-select --switch /Applications/Xcode_27.2.app
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.4xx'
+
+      - name: Install the MAUI workload
+        run: dotnet workload install maui --version 10.404.0
+
+      - name: Publish Mac Catalyst
+        run: >
+          dotnet publish $env:PROJECT -c Release -f net10.0-maccatalyst -p:CreatePackage=false
+          "-p:ApplicationDisplayVersion=$env:VERSION"
+          "-p:ApplicationVersion=$env:VERSION_CODE"
+
+      - name: Package the app
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          $app = @(Get-ChildItem src/DAC70Setup/bin/Release/net10.0-maccatalyst -Directory -Filter *.app)
+          if ($app.Count -ne 1)
+          {
+              Get-ChildItem src/DAC70Setup/bin -Directory -Filter *.app -Recurse | ForEach-Object FullName
+              throw "Expected one .app in src/DAC70Setup/bin/Release/net10.0-maccatalyst, found $($app.Count)."
+          }
+          codesign --verify --deep --strict --verbose=2 $app[0].FullName
+          codesign --display --entitlements - $app[0].FullName
+          New-Item -ItemType Directory -Force release | Out-Null
+          # ditto keeps the symlinks and attributes inside the .app that a plain zip would lose
+          ditto -c -k --sequesterRsrc --keepParent $app[0].FullName "release/DAC70Setup-v$env:VERSION-macos.zip"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: mac
+          path: release/
+          if-no-files-found: error
+
+  release:
+    needs: [version, windows, mac]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      VERSION_CODE: ${{ needs.version.outputs.version-code }}
+      BUMP: ${{ inputs.bump }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v8
+        with:
+          path: release
+          merge-multiple: true
+
       - name: Commit and tag the version
         run: |
           $PSNativeCommandUseErrorActionPreference = $true
@@ -144,10 +237,22 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           if ($env:BUMP -ne 'none')
           {
+              $text = [IO.File]::ReadAllText($env:PROJECT)
+              $text = $text -replace '<ApplicationDisplayVersion>[^<]*</ApplicationDisplayVersion>', "<ApplicationDisplayVersion>$env:VERSION</ApplicationDisplayVersion>"
+              $text = $text -replace '<ApplicationVersion>[^<]*</ApplicationVersion>', "<ApplicationVersion>$env:VERSION_CODE</ApplicationVersion>"
+              [IO.File]::WriteAllText($env:PROJECT, $text, [Text.UTF8Encoding]::new($true))
+
               git add $env:PROJECT
               git commit -m "build: raise the version to $env:VERSION"
           }
           git tag -a "v$env:VERSION" -m "DAC-70 Setup $env:VERSION"
+
+          # The tag stays on the commit that was built. If main moved on while the builds ran,
+          # the version commit is merged into it instead of being pushed on top of an old main.
+          $released = git rev-parse HEAD
+          git fetch origin main
+          git switch --detach FETCH_HEAD
+          git merge --no-edit -m "build: merge the version $env:VERSION into main" $released
           git push --atomic origin HEAD:main "v$env:VERSION"
 
       - name: Create the draft release
