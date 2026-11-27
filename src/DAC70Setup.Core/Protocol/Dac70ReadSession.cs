@@ -23,6 +23,8 @@ public class Dac70ReadSession
         _connection = connection;
     }
 
+    /// <exception cref="OperationCanceledException">The caller cancelled.</exception>
+    /// <exception cref="IOException">Reading from the device failed.</exception>
     public static async Task<Dac70ReadSession> CreateAsync(IDac70Connection connection, CancellationToken cancellationToken)
     {
         var session = new Dac70ReadSession(connection);
@@ -31,6 +33,13 @@ public class Dac70ReadSession
         return session;
     }
 
+    /// <summary>
+    /// Reads the firmware version. Read it first: until the session knows the firmware reply,
+    /// it cannot separate two equal replies, and the second of them times out.
+    /// </summary>
+    /// <returns>The reply, or null when none arrived within 3 seconds.</returns>
+    /// <exception cref="OperationCanceledException">The caller cancelled.</exception>
+    /// <exception cref="IOException">Writing to or reading from the device failed.</exception>
     public async Task<byte[]?> ReadFirmwareVersionAsync(CancellationToken cancellationToken)
     {
         _firmwareReply = await RequestAsync(Dac70FirmwareVersion.GetReadPayload(), isFirmware: true, cancellationToken);
@@ -38,6 +47,9 @@ public class Dac70ReadSession
         return _firmwareReply;
     }
 
+    /// <returns>The reply, or null when none arrived within 3 seconds.</returns>
+    /// <exception cref="OperationCanceledException">The caller cancelled.</exception>
+    /// <exception cref="IOException">Writing to or reading from the device failed.</exception>
     public async Task<byte[]?> ReadAsync(byte[] payload, CancellationToken cancellationToken)
     {
         if (_firmwareReply != null && !_isCurrentReplyFirmware)

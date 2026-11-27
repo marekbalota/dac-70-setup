@@ -6,6 +6,9 @@ public record Dac70InputSignal(int Width, int Height, double FrameRate, bool IsI
 {
     public const string Name = "Input Signal";
 
+    /// <summary>
+    /// A size of 0x0 means nothing is connected to the device's input.
+    /// </summary>
     public bool HasSignal => Width > 0 && Height > 0;
 
     public static byte[] GetReadPayload()
@@ -20,6 +23,11 @@ public record Dac70InputSignal(int Width, int Height, double FrameRate, bool IsI
         return payload;
     }
 
+    /// <summary>
+    /// Bytes 2-3 hold the width and 4-5 the height, both big-endian, byte 6 the whole frame rate,
+    /// byte 7 its hundredths, and byte 8 is non-zero for interlaced.
+    /// </summary>
+    /// <returns>Null when the response is not a DAC-70 reply.</returns>
     public static Dac70InputSignal? FromReadResponse(ReadOnlySpan<byte> response)
     {
         if (response.Length != Dac70UsbIdentity.ReportLength || response[0] != 0x13 || response[1] != 0x3E)

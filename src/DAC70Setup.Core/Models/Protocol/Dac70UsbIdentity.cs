@@ -6,6 +6,9 @@ public static class Dac70UsbIdentity
 
     public const int ProductId = 0xB246;
 
+    /// <summary>
+    /// The length of every report the app writes and reads.
+    /// </summary>
     public const int ReportLength = 64;
 
     public const byte OutEndpointAddress = 0x02;
