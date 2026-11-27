@@ -16,7 +16,7 @@ public partial class DeviceSnapshot : ObservableObject
     public IReadOnlyDictionary<SettingKey, Dac70SettingValue> Values { get; }
 
     [ObservableProperty]
-    public partial DateTime? LastFullSync { get; private set; }
+    public partial DateTime? LastDownload { get; private set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasDeviceInfo))]
@@ -44,8 +44,16 @@ public partial class DeviceSnapshot : ObservableObject
         OnPropertyChanged(nameof(Values));
     }
 
-    public void CompleteFullSync(DateTime date)
+    public void CompleteDownload(DateTime date)
     {
-        LastFullSync = date;
+        LastDownload = date;
+    }
+
+    public void ClearValues()
+    {
+        _values.Clear();
+        LastDownload = null;
+
+        OnPropertyChanged(nameof(Values));
     }
 }

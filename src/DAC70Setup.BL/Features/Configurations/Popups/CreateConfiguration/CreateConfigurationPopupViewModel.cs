@@ -8,6 +8,7 @@ using DAC70Setup.BL.Services;
 using DAC70Setup.BL.Services.Device;
 using DAC70Setup.BL.Services.ImportExport;
 using DAC70Setup.Core.Models.Values;
+using DAC70Setup.Core.Serialization;
 using LocalizationResourceManager.Maui;
 
 namespace DAC70Setup.BL.Features.Configurations.Popups.CreateConfiguration;
@@ -279,13 +280,13 @@ public partial class CreateConfigurationPopupViewModel : ObservableObject, IQuer
 
             detailKey = nameof(CreateConfigurationPopupSR.NewConfigurationFromDeviceUnavailable);
         }
-        else if (_deviceConnectionService.SelectedDevice?.Snapshot.LastFullSync != null)
+        else if (_deviceConnectionService.SelectedDevice?.Snapshot.LastDownload != null)
         {
-            detailKey = nameof(CreateConfigurationPopupSR.NewConfigurationFromDeviceSynced);
+            detailKey = nameof(CreateConfigurationPopupSR.NewConfigurationFromDeviceDownloaded);
         }
         else
         {
-            detailKey = nameof(CreateConfigurationPopupSR.NewConfigurationFromDeviceNotSynced);
+            detailKey = nameof(CreateConfigurationPopupSR.NewConfigurationFromDeviceNotDownloaded);
         }
 
         DeviceDetail = new LocalizedString(() => _localizationResourceManager[detailKey]);

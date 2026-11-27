@@ -27,8 +27,10 @@ using DAC70Setup.BL.Services.Device;
 using DAC70Setup.BL.Services.ImportExport;
 using DAC70Setup.BL.Services.Navigation;
 using DAC70Setup.Core.Interfaces;
+using DAC70Setup.Core.Serialization;
 using DAC70Setup.Data;
 using DAC70Setup.Transport.Usb;
+using DAC70Setup.Transport.Virtual;
 using LocalizationResourceManager.Maui;
 using Microsoft.Extensions.Logging;
 
@@ -84,6 +86,7 @@ public static class MauiProgram
     {
         string databasePath = Path.Combine(FileSystem.AppDataDirectory, "dac70setup.db3");
         services.AddSingleton<IConfigurationRepository>(new ConfigurationRepository(databasePath));
+        services.AddSingleton(Preferences.Default);
 
         services.AddSingleton<SettingMapper>();
         services.AddSingleton<ConfigurationMapper>();
@@ -96,6 +99,9 @@ public static class MauiProgram
         services.AddSingleton<ConfigurationImportExportService>();
 
         services.AddSingleton<IDac70Transport, UsbTransport>();
+#if DEBUG
+        services.AddSingleton<IDac70Transport, VirtualDac70Transport>();
+#endif
         services.AddSingleton<DeviceConnectionService>();
 
         services.AddSingleton<INavigationService, NavigationService>();

@@ -177,11 +177,11 @@
   <data name="NewConfigurationFromDevice" xml:space="preserve">
     <value>Použít data ze zařízení</value>
   </data>
-  <data name="NewConfigurationFromDeviceNotSynced" xml:space="preserve">
-    <value>Nejdřív se synchronizuje s DAC-70.</value>
+  <data name="NewConfigurationFromDeviceNotDownloaded" xml:space="preserve">
+    <value>Nejdřív se stáhne z DAC-70.</value>
   </data>
-  <data name="NewConfigurationFromDeviceSynced" xml:space="preserve">
-    <value>Data z poslední synchronizace.</value>
+  <data name="NewConfigurationFromDeviceDownloaded" xml:space="preserve">
+    <value>Data z posledního stažení.</value>
   </data>
   <data name="NewConfigurationFromDeviceUnavailable" xml:space="preserve">
     <value>Nejdřív připojte DAC-70.</value>

@@ -120,8 +120,8 @@
   <data name="SettingNotReadable" xml:space="preserve">
     <value>nelze přečíst</value>
   </data>
-  <data name="SettingNotSynced" xml:space="preserve">
-    <value>nesynchronizováno</value>
+  <data name="SettingNotDownloaded" xml:space="preserve">
+    <value>nestaženo</value>
   </data>
   <data name="SelectedSettingsCount" xml:space="preserve">
     <value>Vybráno: {0}</value>

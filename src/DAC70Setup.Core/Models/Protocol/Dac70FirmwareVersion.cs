@@ -15,6 +15,11 @@ public record Dac70FirmwareVersion(int Major, int Minor, int Build, int Revision
         return payload;
     }
 
+    /// <summary>
+    /// Each version part is one hex digit: byte 3 holds the major and minor part, byte 2 the build and revision,
+    /// so a reply with the bytes 34 12 reads as version 1.2.3.4.
+    /// </summary>
+    /// <returns>Null when the response is not a DAC-70 reply.</returns>
     public static Dac70FirmwareVersion? FromReadResponse(ReadOnlySpan<byte> response)
     {
         if (response.Length != Dac70UsbIdentity.ReportLength || response[0] != 0x13 || response[1] != 0x3E)

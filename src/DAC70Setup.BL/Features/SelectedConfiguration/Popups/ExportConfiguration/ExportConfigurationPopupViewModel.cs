@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DAC70Setup.BL.Models;
 using DAC70Setup.BL.Services.ImportExport;
+using DAC70Setup.Core.Serialization;
 
 namespace DAC70Setup.BL.Features.SelectedConfiguration.Popups.ExportConfiguration;
 

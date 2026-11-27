@@ -1,4 +1,4 @@
-﻿namespace DAC70Setup.BL.Services.ImportExport;
+﻿namespace DAC70Setup.Core.Serialization;
 
 public enum ConfigurationImportIssueKind
 {

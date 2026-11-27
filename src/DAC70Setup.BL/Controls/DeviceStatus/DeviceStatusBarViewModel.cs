@@ -117,25 +117,25 @@ public partial class DeviceStatusBarViewModel : ObservableObject
         private set => SetProperty(ref _progressValue, value);
     }
 
-    private bool _isSyncInfoVisible;
-    public bool IsSyncInfoVisible
+    private bool _isDownloadInfoVisible;
+    public bool IsDownloadInfoVisible
     {
-        get => _isSyncInfoVisible;
-        private set => SetProperty(ref _isSyncInfoVisible, value);
+        get => _isDownloadInfoVisible;
+        private set => SetProperty(ref _isDownloadInfoVisible, value);
     }
 
-    private bool _isSyncWarning;
-    public bool IsSyncWarning
+    private bool _isDownloadWarning;
+    public bool IsDownloadWarning
     {
-        get => _isSyncWarning;
-        private set => SetProperty(ref _isSyncWarning, value);
+        get => _isDownloadWarning;
+        private set => SetProperty(ref _isDownloadWarning, value);
     }
 
-    private LocalizedString _syncText = new(() => string.Empty);
-    public LocalizedString SyncText
+    private LocalizedString _downloadText = new(() => string.Empty);
+    public LocalizedString DownloadText
     {
-        get => _syncText;
-        private set => SetProperty(ref _syncText, value);
+        get => _downloadText;
+        private set => SetProperty(ref _downloadText, value);
     }
 
     [RelayCommand]
@@ -188,11 +188,11 @@ public partial class DeviceStatusBarViewModel : ObservableObject
         var selectedDevice = _deviceConnectionService.SelectedDevice;
 
         IsPickerAvailable = HasTransportChoice || devices.Count > (selectedDevice == null ? 0 : 1);
-        IsPickerEnabled = _deviceConnectionService.State is not (DeviceState.Sending or DeviceState.Syncing);
+        IsPickerEnabled = _deviceConnectionService.State is not (DeviceState.Sending or DeviceState.Downloading);
         IsChoiceRequired = selectedDevice == null && devices.Count > 0;
 
         UpdateStatus(devices);
-        UpdateSyncInfo();
+        UpdateDownloadInfo();
     }
 
     partial void OnSnapshotChanged(DeviceSnapshot? oldValue, DeviceSnapshot? newValue)
@@ -210,38 +210,38 @@ public partial class DeviceStatusBarViewModel : ObservableObject
 
     private void OnSnapshotPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(DeviceSnapshot.LastFullSync))
+        if (e.PropertyName == nameof(DeviceSnapshot.LastDownload))
         {
-            UpdateSyncInfo();
+            UpdateDownloadInfo();
         }
     }
 
-    private void UpdateSyncInfo()
+    private void UpdateDownloadInfo()
     {
         var snapshot = _deviceConnectionService.SelectedDevice?.Snapshot;
-        bool isSyncing = _deviceConnectionService.State == DeviceState.Syncing;
+        bool isDownloading = _deviceConnectionService.State == DeviceState.Downloading;
 
-        IsSyncInfoVisible = snapshot != null;
-        IsSyncWarning = snapshot?.LastFullSync == null && !isSyncing;
+        IsDownloadInfoVisible = snapshot != null;
+        IsDownloadWarning = snapshot?.LastDownload == null && !isDownloading;
 
-        if (isSyncing)
+        if (isDownloading)
         {
-            SyncText = new LocalizedString(() => _localizationResourceManager[nameof(DeviceStatusBarSR.DeviceSyncRunning)]);
+            DownloadText = new LocalizedString(() => _localizationResourceManager[nameof(DeviceStatusBarSR.DeviceDownloadRunning)]);
         }
-        else if (snapshot?.LastFullSync is { } lastFullSync)
+        else if (snapshot?.LastDownload is { } lastDownload)
         {
-            SyncText = new LocalizedString(() => _localizationResourceManager[nameof(DeviceStatusBarSR.DeviceSyncedAt),
-                lastFullSync.ToString(lastFullSync.Date == DateTime.Today ? "t" : "g", _localizationResourceManager.CurrentCulture)]);
+            DownloadText = new LocalizedString(() => _localizationResourceManager[nameof(DeviceStatusBarSR.DeviceDownloadedAt),
+                lastDownload.ToString(lastDownload.Date == DateTime.Today ? "t" : "g", _localizationResourceManager.CurrentCulture)]);
         }
         else
         {
-            SyncText = new LocalizedString(() => _localizationResourceManager[nameof(DeviceStatusBarSR.DeviceNotSynced)]);
+            DownloadText = new LocalizedString(() => _localizationResourceManager[nameof(DeviceStatusBarSR.DeviceNotDownloaded)]);
         }
     }
 
     private void UpdateStatus(IReadOnlyList<AttachedDevice> devices)
     {
-        var progress = _deviceConnectionService.State is DeviceState.Sending or DeviceState.Syncing
+        var progress = _deviceConnectionService.State is DeviceState.Sending or DeviceState.Downloading
             ? _deviceConnectionService.Progress
             : null;
 
@@ -308,12 +308,12 @@ public partial class DeviceStatusBarViewModel : ObservableObject
 
                 SetAction(_deviceConnectionService.CancelTransfer, nameof(DeviceStatusBarSR.DeviceCancel));
                 break;
-            case DeviceState.Syncing:
+            case DeviceState.Downloading:
                 Severity = DeviceStatusSeverity.Info;
 
                 if (progress != null)
                 {
-                    detail = () => _localizationResourceManager[nameof(DeviceStatusBarSR.DeviceSyncing),
+                    detail = () => _localizationResourceManager[nameof(DeviceStatusBarSR.DeviceDownloading),
                         progress.Completed + 1, progress.Total, progress.SettingName];
                 }
 

@@ -126,7 +126,7 @@ public partial class SettingSelectionViewModel : ObservableObject
     private bool CanUseDeviceValues()
     {
         return IsSelectionMode && SelectedRows.Any(row => row.DeviceValue != null)
-            && _deviceConnectionService.State is not (DeviceState.Sending or DeviceState.Syncing);
+            && _deviceConnectionService.State is not (DeviceState.Sending or DeviceState.Downloading);
     }
 
     [RelayCommand(CanExecute = nameof(CanSendSelected))]

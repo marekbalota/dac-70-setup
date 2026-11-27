@@ -7,6 +7,7 @@ using DAC70Setup.Core.Models;
 using DAC70Setup.Core.Models.Definitions;
 using DAC70Setup.Core.Models.Protocol;
 using DAC70Setup.Core.Models.Values;
+using DAC70Setup.Core.Protocol;
 
 namespace DAC70Setup.BL.Services.Device;
 
@@ -17,15 +18,20 @@ public partial class DeviceConnectionService : ObservableObject
     private const int DeviceInfoReadCount = 2;
 
     private readonly SemaphoreSlim _semaphore = new(1, 1);
+    private readonly IPreferences _preferences;
+    private readonly IDispatcher _dispatcher;
 
     private CancellationTokenSource? _transferCancellation;
 
-    public DeviceConnectionService(IEnumerable<IDac70Transport> transports)
+    public DeviceConnectionService(IEnumerable<IDac70Transport> transports, IPreferences preferences, IDispatcher dispatcher)
     {
+        _preferences = preferences;
+        _dispatcher = dispatcher;
+
         Transports = transports.Where(transport => transport.IsSupported).ToList();
         Devices = new ReadOnlyObservableCollection<AttachedDevice>(_devices);
 
-        string savedId = Preferences.Default.Get(SelectedTransportIdKey, string.Empty);
+        string savedId = _preferences.Get(SelectedTransportIdKey, string.Empty);
         SelectedTransport = Transports.FirstOrDefault(transport => transport.Id == savedId)
             ?? Transports.FirstOrDefault();
 
@@ -103,7 +109,7 @@ public partial class DeviceConnectionService : ObservableObject
 
             SelectedTransport = transport;
             transport.DevicesChanged += OnDevicesChanged;
-            Preferences.Default.Set(SelectedTransportIdKey, transport.Id);
+            _preferences.Set(SelectedTransportIdKey, transport.Id);
 
             SelectedDevice = null;
             _devices.Clear();
@@ -156,15 +162,15 @@ public partial class DeviceConnectionService : ObservableObject
         }
     }
 
-    /// <returns>True when every readable setting was read, false when the sync did not run or stopped early.</returns>
-    public async Task<bool> SyncAsync()
+    /// <returns>True when every readable setting was read, false when the download did not run, stopped early or a setting got no reply.</returns>
+    public async Task<bool> DownloadAsync()
     {
         await _semaphore.WaitAsync();
         try
         {
             if (SelectedTransport is { } transport && SelectedDevice is { } device && CanSend)
             {
-                return await SyncAsyncInt(transport, device);
+                return await DownloadAsyncInt(transport, device);
             }
 
             return false;
@@ -299,7 +305,7 @@ public partial class DeviceConnectionService : ObservableObject
         }
     }
 
-    private async Task<bool> SyncAsyncInt(IDac70Transport transport, AttachedDevice device)
+    private async Task<bool> DownloadAsyncInt(IDac70Transport transport, AttachedDevice device)
     {
         var requests = Dac70SettingCatalog.All
             .Where(definition => definition.IsReadable)
@@ -318,7 +324,7 @@ public partial class DeviceConnectionService : ObservableObject
         try
         {
             Progress = new TransferProgress(0, total, Dac70InputSignal.Name);
-            State = DeviceState.Syncing;
+            State = DeviceState.Downloading;
 
             try
             {
@@ -361,6 +367,8 @@ public partial class DeviceConnectionService : ObservableObject
                 snapshot.InputSignal = inputSignal;
             }
 
+            bool isEverySettingRead = true;
+
             foreach (var request in requests)
             {
                 Progress = new TransferProgress(completed, total, request[0].Name);
@@ -369,6 +377,8 @@ public partial class DeviceConnectionService : ObservableObject
 
                 if (reply == null)
                 {
+                    // The other settings are still read and kept, but the download does not count as complete
+                    isEverySettingRead = false;
                     continue;
                 }
 
@@ -381,8 +391,11 @@ public partial class DeviceConnectionService : ObservableObject
                 }
             }
 
-            snapshot.CompleteFullSync(DateTime.Now);
-            isComplete = true;
+            if (isEverySettingRead)
+            {
+                snapshot.CompleteDownload(DateTime.Now);
+                isComplete = true;
+            }
         }
         catch (OperationCanceledException)
         {
@@ -401,7 +414,7 @@ public partial class DeviceConnectionService : ObservableObject
 
             _transferCancellation = null;
 
-            if (State == DeviceState.Syncing)
+            if (State == DeviceState.Downloading)
             {
                 State = DeviceState.Ready;
             }
@@ -434,6 +447,8 @@ public partial class DeviceConnectionService : ObservableObject
             }
 
             await connection.WriteReportAsync(Dac70FactoryReset.GetPayload(), CancellationToken.None);
+
+            device.Snapshot.ClearValues();
         }
         catch (IOException)
         {
@@ -528,6 +543,6 @@ public partial class DeviceConnectionService : ObservableObject
 
     private void OnDevicesChanged(object? sender, EventArgs e)
     {
-        MainThread.BeginInvokeOnMainThread(() => _ = RefreshDevicesAsync());
+        _dispatcher.Dispatch(() => _ = RefreshDevicesAsync());
     }
 }

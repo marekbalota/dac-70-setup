@@ -24,7 +24,7 @@ public partial class SettingRowItem : ObservableObject, IDisposable
             }
             else if (Definition.IsReadable)
             {
-                return _localizationResourceManager[nameof(SettingSelectionViewSR.SettingNotSynced)];
+                return _localizationResourceManager[nameof(SettingSelectionViewSR.SettingNotDownloaded)];
             }
             else
             {
