@@ -1,9 +1,9 @@
 name: Release
 
 # Started by hand from the Actions tab. Runs the tests first, then raises the version in
-# DAC70Setup.csproj, builds the Android APK and the Windows zip, and only when both succeed
-# commits the new version, tags it and attaches the files to a draft GitHub release, which is
-# published by hand after review.
+# DAC70Setup.csproj, builds the Android APK, the Windows zip and the Windows installer, and only
+# when all of them succeed commits the new version, tags it and attaches the files to a draft
+# GitHub release, which is published by hand after review.
 on:
   workflow_dispatch:
     inputs:
@@ -129,6 +129,13 @@ jobs:
           New-Item -ItemType Directory -Force release | Out-Null
           Copy-Item publish/android/cz.muni.fi.xbalota.dac70setup-Signed.apk "release/DAC70Setup-v$env:VERSION-android.apk"
           7z a -tzip "release/DAC70Setup-v$env:VERSION-windows-x64.zip" ./publish/windows/DAC70Setup
+
+      # Inno Setup is preinstalled on the windows-2025 image
+      - name: Build the Windows installer
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          $iscc = Get-Item "C:\Program Files*\Inno Setup *\ISCC.exe" | Select-Object -Last 1
+          & $iscc.FullName "/DAppVersion=$env:VERSION" "/DSourceDir=$PWD\publish\windows\DAC70Setup" "/O$PWD\release" installer/DAC70Setup.iss
 
       - name: Commit and tag the version
         run: |
