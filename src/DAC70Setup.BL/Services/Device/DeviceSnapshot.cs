@@ -48,4 +48,12 @@ public partial class DeviceSnapshot : ObservableObject
     {
         LastDownload = date;
     }
+
+    public void ClearValues()
+    {
+        _values.Clear();
+        LastDownload = null;
+
+        OnPropertyChanged(nameof(Values));
+    }
 }

@@ -333,6 +333,23 @@ public class DeviceConnectionServiceTests
         Assert.Equal(DeviceState.Ready, service.State);
     }
 
+    [Fact]
+    public async Task FactoryResetAsync_AfterDownload_ClearsTheDownloadedValues()
+    {
+        var (service, device) = await CreateServiceWithDeviceAsync();
+        AnswerDownloadReads(device);
+        Assert.True(await service.DownloadAsync());
+        var snapshot = service.SelectedDevice!.Snapshot;
+        Assert.NotEmpty(snapshot.Values);
+        Assert.NotNull(snapshot.LastDownload);
+
+        await service.FactoryResetAsync();
+
+        Assert.Empty(snapshot.Values);
+        Assert.Null(snapshot.LastDownload);
+        Assert.NotNull(snapshot.FirmwareVersion);
+    }
+
     [Theory]
     [InlineData(typeof(IOException), DeviceState.ConnectionFailed)]
     [InlineData(typeof(Dac70PermissionDeniedException), DeviceState.PermissionRequired)]
@@ -348,14 +365,16 @@ public class DeviceConnectionServiceTests
     }
 
     [Fact]
-    public async Task FactoryResetAsync_WriteFails_ConnectionFailed()
+    public async Task FactoryResetAsync_WriteFails_ConnectionFailedAndKeepsTheValues()
     {
         var (service, device) = await CreateServiceWithDeviceAsync();
+        await service.SendValuesAsync(_values);
         device.BeforeWrite = _ => throw new IOException();
 
         await service.FactoryResetAsync();
 
         Assert.Equal(DeviceState.ConnectionFailed, service.State);
+        Assert.Equal(_values.Count, service.SelectedDevice!.Snapshot.Values.Count);
     }
 
     [Fact]

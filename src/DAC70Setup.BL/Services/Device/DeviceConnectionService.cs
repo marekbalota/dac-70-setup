@@ -447,6 +447,8 @@ public partial class DeviceConnectionService : ObservableObject
             }
 
             await connection.WriteReportAsync(Dac70FactoryReset.GetPayload(), CancellationToken.None);
+
+            device.Snapshot.ClearValues();
         }
         catch (IOException)
         {
